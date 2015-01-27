@@ -1,0 +1,476 @@
+* { outline: none !important; }
+
+body {
+    margin: 0px;
+    padding: 0px;
+    min-width: 1200px;
+    min-height: 1200px;
+    background: white;
+    font-family: Arial;
+    font-size: 12px;
+}
+
+table   { font-size: 14px; } 
+h1      { font-size: 20px; }
+h2      { font-size: 16px; }
+h3      { font-size: 14px; }
+small   { font-size: 11px; }
+img     { margin: 0em; padding: 0em; }
+hr      { border: 1px solid rgb(240,240,240); }
+
+ol          { list-style: upper-roman; }
+ol ol       { list-style: upper-alpha; }
+ol ol ol    { list-style: lower-roman; }
+ol ol ol ol { list-style: lower-alpha; }
+
+/* titlebar */
+div.titlebar {
+    margin: 0px;
+    padding: 0px;
+    height: 60px;
+    background: white;
+}
+
+div.titlebar ul.navigation {
+    font-size: 12px;
+    position: absolute;
+    right: 25px;
+    top: 50px;
+    list-style: none;
+    overflow: hidden;
+}
+
+div.titlebar ul.navigation li {
+    float: left;
+    margin-left:15px;
+}
+
+div.titlebar ul.navigation li a {
+    color: rgb(180, 180, 180);
+    text-decoration: none;
+    position: relative; 
+    display: block;
+    float: left;
+}
+
+div.titlebar ul.navigation li a:hover {
+    color: darkGreen;
+}
+
+div.titlebar h1 {
+    font-family: Impact, Arial;
+    font-weight: normal;
+    font-size: 2.5em;
+    position: absolute;
+    top: -20px;
+    right: 25px;
+    color: rgb(225, 225, 225);
+}
+
+div.titlebar h1 small {
+    font-size: 0.5em;
+}
+
+div.titlebar img.logo {
+    position:absolute;
+    left: 350px;
+    top: 10px;
+    float:left;
+}
+
+/* breadcrumbs */
+div.breadcrumbs {
+    height: 25px;
+    border-top: 1px solid rgb(230, 230, 230);
+    border-bottom: 1px solid rgb(230, 230, 230);
+    background: rgb(245, 245, 245);
+    color: black;
+}
+
+div.breadcrumbs ul {
+    list-style: none;
+    overflow: hidden;
+}
+
+div.breadcrumbs li {
+    float: left;
+}
+
+div.breadcrumbs li a {
+    color: rgb(160, 160, 160);
+    font-weight: normal;
+    text-decoration: none; 
+    padding: 5px 0 5px 65px;
+    background: white;
+    position: relative; 
+    display: block;
+    float: left;
+    background: white;
+}
+
+div.breadcrumbs li a:after { 
+    content: " "; 
+    display: block; 
+    width: 0; 
+    height: 0;
+    border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid white;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px; 
+    left: 100%;
+    z-index: 2;
+}
+
+div.breadcrumbs li a:before { 
+    content: " "; 
+    display: block; 
+    width: 0; 
+    height: 0;
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid rgb(230, 230, 230);
+    position: absolute;
+    top: 50%;
+    margin-top: -50px; 
+    margin-left: 1px;
+    left: 100%;
+    z-index: 1; 
+}
+
+div.breadcrumbs li a:hover { 
+    background: rgb(250, 250, 210); 
+}
+div.breadcrumbs li a:hover:after { border-left-color: rgb(250, 250, 210) !important; }
+
+/* contents */
+
+div.contents {
+    margin: 0px auto;
+    margin-top: 30px;
+    padding: 1em;
+    max-width: 900px;
+    background: white;
+    min-height: 80%;
+    font-size: 14px;
+    line-height: 22px;
+    color: rgb(120, 120, 120);
+}
+
+div.contents h1 {
+    margin: 0px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    
+    position: relative;
+    width: 888px;
+    min-width: 888px;
+    max-width: 888px;
+    
+    font-family: Tahome, Verdana, Arial;
+    border-bottom: 1px solid rgb(220, 220, 220);
+    font-size: 1.5em;
+    color: rgb(120, 120, 120);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+div.contents h1 small {
+    color: rgb(220, 220, 220);
+    font-size: 0.7em;
+}
+
+div.contents h2 {
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgb(200, 200, 200);
+    margin-bottom: 5px;
+}
+
+/* copyright */
+
+div.copyright {
+    text-align: center;
+    font-size: 10px;
+    color: rgb(160, 160, 160);
+    height: 70px;
+    padding-top:5px;
+}
+
+div.copyright a {
+    color: black;
+}
+
+div.copyright a:hover {
+    text-decoration: underline;
+}
+
+/* general */
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ul.navigation {
+    font-size: 11px;
+    margin-top: -10px;
+    margin-left: 20px;
+    list-style-type: square;
+}
+ul.navigation li {
+    margin-top: 2px;
+}
+
+div.summary ul.contents {
+    background: rgb(248,248,248);
+    border-radius: 8px;
+    border: 1px solid rgb(210,210,210);
+    padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+div.summary ul.contents li {
+    margin-top: 4px;
+    color: rgb(160,160,160);
+}
+
+div.summary ul.inherits {
+    margin-left: 37px;
+    list-style-type: square;
+}
+
+a {
+    color: rgb(80, 140, 80);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    color: darkGreen;
+    text-decoration: underline;
+}
+
+div.summary ul.contents a { font-weight: bold; }
+
+p.header {
+    background: rgb(245,245,245);
+    border-radius: 8px;
+    border: 1px solid rgb(220,220,220);
+    font-weight: bold;
+    font-size: 16px;
+    padding: 5px;
+}
+
+table.enum {
+    margin-left: 60px;
+    border: 1px solid rgb(140,140,140);
+    min-width: 240px;
+    border-collapse: collapse;
+}
+
+table.enum th {
+    background: rgb(220,220,220);
+    border: 1px solid rgb(140,140,140);
+    min-width: 120px;
+    padding: 5px;
+}
+
+table.enum td {
+    min-width:120px;
+    background: rgb(235,235,235);
+    border: 1px solid rgb(140,140,140);
+    padding: 5px;
+}
+
+.panel_box {
+    border-spacing: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.panel {
+    background: white;
+    border: 1px solid rgb(160,160,160);
+    border-radius: 12px 12px 12px 12px;
+    padding: 1em;
+    min-width: 200px;
+}
+
+/*---------------------------------------*/
+/* Wiki styles */
+
+div.toc * {
+    margin: 0px;
+    padding: 0px;
+    text-align: left;
+}
+
+div.toc {
+    display: inline-block;
+    min-width: 250px;
+    color: black;
+    padding: 6px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 18px;
+    border: solid 1px rgb(220,220,220);
+    background: rgb(250,250,210);
+    font-size: 10.5px;
+    border-radius: 8px;
+}
+
+div.toc a {
+    color: black;
+    font-weight: normal;
+}
+
+div.toc a:hover {
+    text-decoration: underline;
+}
+
+div.toc ol {
+    list-style: none;
+}
+
+div.toc_title {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+span.type {
+    font-size: 1.1em;
+    color: rgb(140, 140, 140);
+    font-weight: bold;
+}
+
+div.toc ol {
+    margin-left: 10px;
+}
+
+div.wiki img {
+    padding: 1em;
+}
+
+a.wiki_missing {
+    color: red;
+}
+
+div.wiki_spacer {
+    height: 10px;
+}
+
+div.wiki_section {
+    margin-left: 25px;
+    margin-right: 25px;
+    border-radius: 8px;
+}
+
+div.wiki_section strong {
+    font-weight: bold;
+    font-size: 1.15em;
+    margin-left: -10px;
+    line-height: 2em;
+    color: rgb(140,140,140);
+}
+
+ul.wiki {
+    margin-left: 20px;
+    list-style-type:circle;
+}
+
+div.note {
+    color: #A18300;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 20px;
+    line-height: 20px;
+    border: solid 1px #A18300;
+    background: #FFF7C7;
+}
+
+div.info {
+    background: #DCE3F2;
+    color: #3A27A8;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 20px;
+    line-height: 20px;
+    border: solid 1px #3A27A8;
+}
+
+div.todo {
+    color: #787878;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 20px;
+    line-height: 20px;
+    border: solid 1px #787878;
+    background: #E8E8E8;
+}
+
+div.warning {
+    color: #856600;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 20px;
+    line-height: 20px;
+    border: solid 1px #856600;
+    background: #FFCB3D;
+}
+
+div.error {
+    color: #6B0C00;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 20px;
+    line-height: 20px;
+    border: solid 1px #6B0C00;
+    background: #FF7663;
+}
+
+div.wiki_section img.icon {
+    position: relative;
+    float: left;
+    top: -20px;
+    left: -20px;
+}
+
+pre.nowiki {
+    margin-left: -25px;
+}
+
+pre.code {
+    font-size: 12px;
+    font-family: Courier, "Courier New", mono;
+    color: #000000;
+    margin-left: 20px;
+    margin-right: 40px;
+    padding:10px;
+    border: 1px solid rgb(200,200,200);
+    background: rgb(250, 250, 250);
+}
+
+table.wiki {
+    border: 1px solid rgb(230,230,230);
+    min-width: 25%;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-collapse: collapse;
+}
+
+table.wiki td,
+table.wiki th {
+    border: 1px solid rgb(210,210,210);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table.wiki th {
+    background: rgb(235,235,235);
+}

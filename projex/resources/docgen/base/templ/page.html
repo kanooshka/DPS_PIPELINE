@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>%(title)s - %(module_title)s</title>
+        
+        <link type="text/css" rel="stylesheet" href="%(static_url)s/css/style.css"/>
+        <link rel="shortcut icon" href="%(static_url)s/images/favicon.ico"/>
+        <script type="text/javascript" src="%(static_url)s/prettify/js/prettify.js"></script>
+        <link type="text/css" rel="stylesheet" href="%(static_url)s/prettify/css/prettify.css"/>
+    </head>
+    <body class="docs" onload="prettyPrint()">
+        <div class="titlebar">
+            <h1>%(module_title)s docs <small>(v%(module_version)s)</small></h1>
+            <img class="logo" src="%(static_url)s/images/logo.png"/>
+            <ul class="navigation">%(navigation)s</ul>
+        </div>
+        <div class="breadcrumbs"><ul>%(breadcrumbs)s</ul></div> 
+        <div class="contents">%(contents)s</div>
+        <div class="copyright">%(copyright)s</a></div>
+    </body>
+</html>
