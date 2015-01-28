@@ -201,6 +201,9 @@ class XGanttWidget(QWidget):
         
         item._viewItem = weakref.ref(vitem)
         
+	#set scrollbar offset
+	#item.treeWidget._scrollBar = self.uiGanttTREE.verticalScrollBar()
+	
         item.sync(recursive = True)
         
     def alternateBrush( self ):

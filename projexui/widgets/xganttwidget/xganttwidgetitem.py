@@ -70,6 +70,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         self._reverseDependencies       = {}
         self._dbEntry                   = ''
         self._workdays                  = 0
+        self._ganttWidget               = ganttWidget
         #self._calculateWeekdays         = 0
         #self._dbDepartmentAssignment    = ''
     
@@ -655,6 +656,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
         view_x  = gantt.viewWidget().scene().dateXPos(self.dateStart())
         tree_y  = tree_rect.y()
         tree_y += tree.header().height()
+        #add scrollbar value
+        # ganttWidget.scroll.uiGanttTREE.verticalScrollBar()
+        tree_y += self._ganttWidget.uiGanttTREE.verticalScrollBar().value()
         view_w  = self.duration() * cell_w 
         tree_h  = tree_rect.height()
         

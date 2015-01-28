@@ -47,7 +47,8 @@ class XGanttViewItem(QGraphicsRectItem):
         self._percentComplete           = 0
         self._text                      = ''
         self._syncing                   = False
-        self._treeItem                  = weakref.ref(treeItem)
+        self._treeItem                  = weakref.ref(treeItem)        
+        self._scrollBar                 = ''
         
         # setup standard properties
         flags  = self.ItemIsMovable 
@@ -369,8 +370,11 @@ class XGanttViewItem(QGraphicsRectItem):
         # generate the rect
         rect    = self.rect()
         
-        x       = 0
+        x       = 0        
         y       = self.padding()
+        #add scroll position to y
+        #y = y+self._scrollBar.value()
+        
         w       = rect.width()
         h       = rect.height() - (2 * self.padding()) - 1
         radius  = self.borderRadius()
