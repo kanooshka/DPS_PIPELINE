@@ -45,3 +45,4 @@ Temporary Items
 #compiled python
 *.pyc
 *.komodoproject
+*.spec

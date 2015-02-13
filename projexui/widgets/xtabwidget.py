@@ -11,13 +11,13 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 # maintanence information
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
-
-from projexui.qt import Signal, SIGNAL, Property
-from projexui.qt.QtCore   import QPoint,\
+from projexui import qt
+from qt import Signal, SIGNAL, Property, QtCore,QtGui
+from QtCore   import QPoint,\
                                  QSize,\
                                  Qt
                            
-from projexui.qt.QtGui    import QApplication,\
+from QtGui    import QApplication,\
                                  QCursor, \
                                  QIcon, \
                                  QTabWidget,\
