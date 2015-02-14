@@ -29,6 +29,7 @@ __all__ = [
 ]
 
 from .. import errorcode
+import mysql.connector.locales.eng
 
 def get_client_error(error, language='eng'):
     """Lookup client error
