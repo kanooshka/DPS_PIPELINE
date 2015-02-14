@@ -529,7 +529,7 @@ class XGanttWidget(QWidget):
         
         if type(value) == QDateTime:
             value = value.date()
-            item.setData(index, Qt.EditRole, wrapVariant(value))
+            item.setData(index, Qt.EditRole, qt.wrapVariant(value))
         
         if type(value) == QDate:
             value = value.toPython()
