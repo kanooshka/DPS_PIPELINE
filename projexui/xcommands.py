@@ -259,9 +259,9 @@ def loadUi(modulefile, inst, uifile=None):
     
     if not widget:
         # normalize the path
-        print ("\nnot widget before uifile assignment: " + uifile)
+        #print ("\nnot widget before uifile assignment: " + uifile)
         uifile = os.path.normpath(uifile)
-        print ("\nnot widget after uifile assignment: " + uifile)
+        #print ("\nnot widget after uifile assignment: " + uifile)
         QtCore.QDir.setCurrent(os.path.dirname(uifile))
         
         widget = uic.loadUi(uifile, inst)

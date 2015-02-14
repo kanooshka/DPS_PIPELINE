@@ -52,8 +52,8 @@ class XGanttWidget(QWidget):
         
         # load the user interface
         if getattr(sys, 'frozen', None):
-	    print (sys._MEIPASS+"/xganttwidget.ui");
-	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/xganttwidget.ui"))
+	    #print (sys._MEIPASS+"/ui/xganttwidget.ui");
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/xganttwidget.ui"))
 	    
 	else:
 	    projexui.loadUi(__file__, self)
