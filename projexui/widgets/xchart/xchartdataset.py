@@ -19,7 +19,7 @@ __email__           = 'team@projexsoftware.com'
 
 import random
 
-from projexui.qt.QtGui import QColor
+from PyQt4.QtGui import QColor
 
 class XChartDataset(object):
     """ """

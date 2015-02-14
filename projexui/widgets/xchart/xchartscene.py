@@ -13,7 +13,7 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtGui import QGraphicsScene
+from PyQt4.QtGui import QGraphicsScene
 
 from .xchartdatasetitem import XChartDatasetItem
 

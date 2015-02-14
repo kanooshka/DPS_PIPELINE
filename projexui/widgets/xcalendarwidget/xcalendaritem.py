@@ -11,13 +11,13 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software, LLC'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtCore   import QDate,\
+from PyQt4.QtCore   import QDate,\
                                  QTime,\
                                  QDateTime,\
                                  QRectF,\
                                  Qt
 
-from projexui.qt.QtGui    import QGraphicsPathItem,\
+from PyQt4.QtGui    import QGraphicsPathItem,\
                                  QPainterPath,\
                                  QColor
 

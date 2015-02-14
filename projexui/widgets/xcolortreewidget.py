@@ -16,8 +16,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore  import QSize
-from projexui.qt.QtGui   import QColorDialog,\
+from PyQt4.QtCore  import QSize
+from PyQt4.QtGui   import QColorDialog,\
                                 QTreeWidgetItem,\
                                 QPalette
 

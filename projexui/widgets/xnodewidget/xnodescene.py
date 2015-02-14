@@ -18,12 +18,12 @@ __email__           = 'team@projexsoftware.com'
 import re
 
 from projexui.qt import Signal
-from projexui.qt.QtCore       import  QLine,\
+from PyQt4.QtCore       import  QLine,\
                                       QRectF,\
                                       Qt,\
                                       QParallelAnimationGroup
                                 
-from projexui.qt.QtGui        import  QColor, \
+from PyQt4.QtGui        import  QColor, \
                                       QCursor, \
                                       QGraphicsItem, \
                                       QGraphicsScene, \

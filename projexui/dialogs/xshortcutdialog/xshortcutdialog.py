@@ -19,8 +19,8 @@ import os.path
 
 from projexui.qt import uic
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui  import QAction,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui  import QAction,\
                                QDialog,\
                                QKeySequence,\
                                QMessageBox,\

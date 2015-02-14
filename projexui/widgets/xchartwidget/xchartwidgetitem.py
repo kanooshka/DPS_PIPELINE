@@ -13,11 +13,11 @@ __email__           = 'team@projexsoftware.com'
 
 import random
 
-from projexui.qt.QtCore import QPointF,\
+from PyQt4.QtCore import QPointF,\
                                QRectF,\
                                Qt
 
-from projexui.qt.QtGui import QGraphicsPathItem,\
+from PyQt4.QtGui import QGraphicsPathItem,\
                               QColor,\
                               QPainterPath,\
                               QPen,\

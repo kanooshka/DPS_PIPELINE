@@ -19,8 +19,8 @@ import os.path
 
 from projexui.qt import uic
 
-from projexui.qt.QtCore import Qt, QSize
-from projexui.qt.QtGui  import QDialog,\
+from PyQt4.QtCore import Qt, QSize
+from PyQt4.QtGui  import QDialog,\
                                QIcon,\
                                QWidget
 

@@ -16,8 +16,8 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt       import Signal, Property, QStringList
-from projexui.qt.QtCore import QSize
-from projexui.qt.QtGui import QAction,\
+from PyQt4.QtCore import QSize
+from PyQt4.QtGui import QAction,\
                               QActionGroup,\
                               QBoxLayout,\
                               QSizePolicy,\

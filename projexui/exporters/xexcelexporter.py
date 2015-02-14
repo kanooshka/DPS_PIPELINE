@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 
 import logging
 
-from projexui.qt import unwrapVariant
-from projexui.qt.QtCore import Qt
+from projexui import qt #import unwrapVariant
+from PyQt4.QtCore import Qt
 from projexui.xexporter import XExporter
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class XExcelExporter(XExporter):
         """
         # export item information
         for c, col in enumerate(cols):
-            data = unwrapVariant(item.data(Qt.EditRole, col))
+            data = qt.unwrapVariant(item.data(Qt.EditRole, col))
             if data:
                 sheet.write(self._currrow, c, str(data))
             else:

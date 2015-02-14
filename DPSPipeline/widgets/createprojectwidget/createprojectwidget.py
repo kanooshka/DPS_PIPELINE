@@ -2,13 +2,13 @@ import weakref
 import projexui
 import sharedDB
 import math
+import sys
 
 from datetime import timedelta
-from projexui.qt import Signal
-from projexui.qt import QtGui
-from projexui.qt.QtGui    import QWidget
-from projexui.qt.QtCore   import QDate
-from projexui.qt.QtCore   import QTime
+#from projexui import qt import Signal
+from PyQt4 import QtGui
+from PyQt4.QtGui    import QWidget
+from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
 
 class CreateProjectWidget(QWidget):
@@ -17,8 +17,14 @@ class CreateProjectWidget(QWidget):
         
         super(CreateProjectWidget, self).__init__( parent )
         
-        # load the user interface
-        projexui.loadUi(__file__, self)
+        # load the user interface# load the user interface
+        if getattr(sys, 'frozen', None):
+	    print (sys._MEIPASS+"/createprojectwidget.ui");
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/createprojectwidget.ui"))
+	    
+	else:
+	    projexui.loadUi(__file__, self)
+        #projexui.loadUi(__file__, self)
         
         # define custom properties
         

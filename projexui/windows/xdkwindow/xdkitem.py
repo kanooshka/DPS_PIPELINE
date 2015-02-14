@@ -24,8 +24,8 @@ import projex.text
 
 from xml.etree import ElementTree
 
-from projexui.qt.QtCore import QSize, QDir, Qt
-from projexui.qt.QtGui import QIcon,\
+from PyQt4.QtCore import QSize, QDir, Qt
+from PyQt4.QtGui import QIcon,\
                               QTreeWidgetItem,\
                               QApplication
 

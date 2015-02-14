@@ -12,12 +12,10 @@ __email__           = 'team@projexsoftware.com'
 
 import webbrowser
 
-from projexui.qt import Signal,\
-                        Slot,\
-                        Property
+from projexui import qt
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget,\
                               QHBoxLayout,\
                               QIcon,\
                               QToolButton
@@ -26,8 +24,8 @@ from projexui.widgets.xlineedit import XLineEdit
 from projexui import resources
 
 class XUrlWidget(QWidget):
-    urlChanged = Signal(str)
-    urlEdited  = Signal()
+    urlChanged = qt.Signal(str)
+    urlEdited  = qt.Signal()
     
     def __init__( self, parent ):
         super(XUrlWidget, self).__init__(parent)
@@ -95,7 +93,7 @@ class XUrlWidget(QWidget):
         """
         self._urlEdit.setFocus()
     
-    @Slot(str)
+    @qt.Slot(str)
     def setHint( self, hint ):
         """
         Sets the hint associated with this widget.
@@ -104,7 +102,7 @@ class XUrlWidget(QWidget):
         """
         self._urlEdit.setHint(hint)
     
-    @Slot(str)
+    @qt.Slot(str)
     def setUrl( self, url ):
         """
         Sets the url for this widget to the inputed url.
@@ -121,7 +119,7 @@ class XUrlWidget(QWidget):
         """
         return str(self._urlEdit.text())
     
-    x_hint   = Property(str, hint, setHint)
-    x_url    = Property(str, url, setUrl)
+    x_hint   = qt.Property(str, hint, setHint)
+    x_url    = qt.Property(str, url, setUrl)
 
 __designer_plugins__ = [XUrlWidget]

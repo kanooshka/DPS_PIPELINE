@@ -8,8 +8,8 @@ __copyright__ = 'Tesla Motors (c) 2013'
 
 import glob
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QGraphicsView,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QGraphicsView,\
                               QPixmap
 
 import projexui

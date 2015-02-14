@@ -17,8 +17,8 @@ __email__           = 'team@projexsoftware.com'
 
 import logging
 
-from projexui.qt import unwrapVariant
-from projexui.qt.QtGui  import QApplication,\
+from projexui import qt #import unwrapVariant
+from PyQt4.QtGui  import QApplication,\
                                QMdiArea
 
 from projex.dataset     import DataSet
@@ -50,7 +50,7 @@ class XScheme(DataSet):
         
         palette = self.value('colorSet').palette()
         
-        if ( unwrapVariant(QApplication.instance().property('useScheme')) ):
+        if ( qt.unwrapVariant(QApplication.instance().property('useScheme')) ):
             QApplication.instance().setFont(font)
             QApplication.instance().setPalette(palette)
             

@@ -13,7 +13,7 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtGui import QCompleter,\
+from PyQt4.QtGui import QCompleter,\
                               QStandardItemModel,\
                               QStandardItem
 

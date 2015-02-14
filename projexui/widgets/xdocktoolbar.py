@@ -13,7 +13,7 @@ __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
 from projexui.qt import Signal
-from projexui.qt.QtCore import QRect,\
+from PyQt4.QtCore import QRect,\
                                Qt,\
                                QSize,\
                                QPoint,\
@@ -21,7 +21,7 @@ from projexui.qt.QtCore import QRect,\
                                QTimer,\
                                QEasingCurve
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QPainter,\
                               QBoxLayout,\
                               QLabel,\

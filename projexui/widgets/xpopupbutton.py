@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt          import Signal
-from projexui.qt.QtCore   import QPoint, Qt
-from projexui.qt.QtGui    import QToolButton,\
+from PyQt4.QtCore   import QPoint, Qt
+from PyQt4.QtGui    import QToolButton,\
                                  QDialogButtonBox,\
                                  QApplication
 

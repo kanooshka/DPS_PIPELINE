@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 import logging
 import weakref
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui  import QSplashScreen, QColor
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui  import QSplashScreen, QColor
 
 logger = logging.getLogger()
 

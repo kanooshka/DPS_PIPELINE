@@ -16,10 +16,10 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import Signal
-from projexui.qt.QtCore import Qt,\
+from PyQt4.QtCore import Qt,\
                                QObject
 
-from projexui.qt.QtGui  import QIcon
+from PyQt4.QtGui  import QIcon
 
 class XAnimatedIconHelper(QObject):
     iconChanged = Signal(QIcon)

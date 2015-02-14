@@ -26,8 +26,8 @@ from xml.etree import ElementTree
 
 import projex.sorting
 
-from projexui.qt import Signal, Slot, Property, wrapVariant, unwrapVariant
-from projexui.qt.QtCore   import Qt, \
+from projexui import qt #import Signal, Slot, Property, wrapVariant, unwrapVariant
+from PyQt4.QtCore   import Qt, \
                                  QLine, \
                                  QRectF, \
                                  QPoint,\
@@ -40,7 +40,7 @@ from projexui.qt.QtCore   import Qt, \
                                  QTime,\
                                  QTimer
 
-from projexui.qt.QtGui    import QApplication,\
+from PyQt4.QtGui    import QApplication,\
                                  QBrush, \
                                  QColor, \
                                  QCursor,\
@@ -104,13 +104,13 @@ class XTreeWidgetItem(QTreeWidgetItem):
         col = tree.sortColumn()
         
         # compare sorting data
-        mdata = unwrapVariant(self.data(col, self.SortRole))
-        odata = unwrapVariant(other.data(col, self.SortRole))
+        mdata = qt.unwrapVariant(self.data(col, self.SortRole))
+        odata = qt.unwrapVariant(other.data(col, self.SortRole))
         
         # compare editing data
         if mdata is None or odata is None:
-            mdata = unwrapVariant(self.data(col, Qt.EditRole))
-            odata = unwrapVariant(other.data(col, Qt.EditRole))
+            mdata = qt.unwrapVariant(self.data(col, Qt.EditRole))
+            odata = qt.unwrapVariant(other.data(col, Qt.EditRole))
         
         if type(mdata) == type(odata) and not type(mdata) in (str, unicode):
             return mdata < odata
@@ -384,7 +384,7 @@ class XTreeWidgetItem(QTreeWidgetItem):
         :param      column | <int>
                     data   | <variant>
         """
-        self.setData(column, self.SortRole, wrapVariant(data))
+        self.setData(column, self.SortRole, qt.wrapVariant(data))
     
     def sizeHint(self, column):
         """
@@ -407,10 +407,10 @@ class XTreeWidgetItem(QTreeWidgetItem):
         
         :return     <variant>
         """
-        value = unwrapVariant(self.data(column, self.SortRole))
+        value = qt.unwrapVariant(self.data(column, self.SortRole))
         if value is None:
             return None
-        return unwrapVariant(self.data(column, Qt.EditRole))
+        return qt.unwrapVariant(self.data(column, Qt.EditRole))
     
     def takeFromTree(self):
         """
@@ -859,7 +859,7 @@ class XTreeWidgetDelegate(QItemDelegate):
         # grab the check information
         checkState = Qt.Unchecked
         size       = opt.decorationSize
-        value      = unwrapVariant(index.data(Qt.CheckStateRole))
+        value      = qt.unwrapVariant(index.data(Qt.CheckStateRole))
         
         if value is not None:
             checkState = item.checkState(index.column())
@@ -953,14 +953,14 @@ class XTreeWidgetDelegate(QItemDelegate):
                 fg = item.hoverForeground(column, fg)
         
         if not bg:
-            bg_role = unwrapVariant(item.data(column, Qt.BackgroundRole))
+            bg_role = qt.unwrapVariant(item.data(column, Qt.BackgroundRole))
             if bg_role is not None:
                 bg = item.background(column)
             else:
                 bg = self.background(column)
         
         if not fg:
-            fg_role = unwrapVariant(item.data(column, Qt.ForegroundRole))
+            fg_role = qt.unwrapVariant(item.data(column, Qt.ForegroundRole))
             if fg_role is not None:
                 fg = item.foreground(column)
             else:
@@ -972,11 +972,11 @@ class XTreeWidgetDelegate(QItemDelegate):
         # draw custom text
         mapper = self.displayMapper(column)
         if mapper:
-            text = mapper(unwrapVariant(index.data(), ''))
+            text = mapper(qt.unwrapVariant(index.data(), ''))
         
         # draw specific type text
         else:
-            data = unwrapVariant(index.data(Qt.EditRole), None)
+            data = qt.unwrapVariant(index.data(Qt.EditRole), None)
             
             # map the data to python
             if type(data) in (QDate, QDateTime, QTime):
@@ -996,7 +996,7 @@ class XTreeWidgetDelegate(QItemDelegate):
             
             # draw standard text
             else:
-                text = unwrapVariant(index.data(Qt.DisplayRole), '')
+                text = qt.unwrapVariant(index.data(Qt.DisplayRole), '')
         
         opt.displayAlignment = Qt.Alignment(item.textAlignment(index.column()))
         if ( not opt.displayAlignment & (Qt.AlignVCenter | \
@@ -1276,13 +1276,13 @@ class XTreeWidget(QTreeWidget):
     
     __designer_icon__ = resources.find('img/ui/tree.png')
     
-    columnHiddenChanged     = Signal(int, bool)
-    headerMenuAboutToShow   = Signal(QMenu, int)
-    sortingChanged          = Signal(int, Qt.SortOrder)
-    itemCheckStateChanged   = Signal(QTreeWidgetItem, int)
-    itemMiddleClicked       = Signal(object, int)
-    itemMiddleDoubleClicked = Signal(object, int)
-    itemRightDoubleClicked  = Signal(object, int)
+    columnHiddenChanged     = qt.Signal(int, bool)
+    headerMenuAboutToShow   = qt.Signal(QMenu, int)
+    sortingChanged          = qt.Signal(int, Qt.SortOrder)
+    itemCheckStateChanged   = qt.Signal(QTreeWidgetItem, int)
+    itemMiddleClicked       = qt.Signal(object, int)
+    itemMiddleDoubleClicked = qt.Signal(object, int)
+    itemRightDoubleClicked  = qt.Signal(object, int)
     
     HoverMode             = enum('NoHover', 'HoverRows', 'HoverItems')
     
@@ -1738,7 +1738,7 @@ class XTreeWidget(QTreeWidget):
         single argument for a list of items and then return a QMimeData \
         instance.
         
-        :usage      |from projexui.qt.QtCore import QMimeData, QWidget
+        :usage      |from PyQt4.QtCore import QMimeData, QWidget
                     |from projexui.widgets.xtreewidget import XTreeWidget
                     |
                     |def collectData(tree, items):
@@ -1820,7 +1820,7 @@ class XTreeWidget(QTreeWidget):
         Returns a drag and drop filter method.  If set, the method should \
         accept 2 arguments: a QWidget and a drag/drop event and process it.
         
-        :usage      |from projexui.qt.QtCore import QEvent
+        :usage      |from PyQt4.QtCore import QEvent
                     |
                     |class MyWidget(QWidget):
                     |   def __init__( self, parent ):
@@ -1985,7 +1985,7 @@ class XTreeWidget(QTreeWidget):
         """
         return self._filteredColumns
     
-    @Slot(str)
+    @qt.Slot(str)
     def filterItems( self, 
                      terms, 
                      autoExpand = True, 
@@ -2510,7 +2510,7 @@ class XTreeWidget(QTreeWidget):
         if self._lockedView:
             self.__updateLockedView()
     
-    @Slot()
+    @qt.Slot()
     def resizeToContents( self ):
         """
         Resizes all of the columns for this tree to fit their contents.
@@ -3174,24 +3174,24 @@ class XTreeWidget(QTreeWidget):
         return rect
     
     # define Qt properties
-    x_arrowStyle        = Property(bool, isArrowStyle, setArrowStyle)
-    x_defaultItemHeight = Property(int,  defaultItemHeight, setDefaultItemHeight)
-    x_hint              = Property(str,  hint, setHint)
-    x_showGrid          = Property(bool, showGrid, setShowGrid)
-    x_showGridRows      = Property(bool, showGridRows, setShowGridRows)
-    x_showRichText      = Property(bool, showRichText, setShowRichText)
-    x_editable          = Property(bool, isEditable, setEditable)
-    x_extendsTree       = Property(bool, extendsTree,  setExtendsTree)
-    x_useDragPixmaps    = Property(bool, useDragPixmaps, setUseDragPixmaps)
-    x_usePopupToolTip   = Property(bool, 
+    x_arrowStyle        = qt.Property(bool, isArrowStyle, setArrowStyle)
+    x_defaultItemHeight = qt.Property(int,  defaultItemHeight, setDefaultItemHeight)
+    x_hint              = qt.Property(str,  hint, setHint)
+    x_showGrid          = qt.Property(bool, showGrid, setShowGrid)
+    x_showGridRows      = qt.Property(bool, showGridRows, setShowGridRows)
+    x_showRichText      = qt.Property(bool, showRichText, setShowRichText)
+    x_editable          = qt.Property(bool, isEditable, setEditable)
+    x_extendsTree       = qt.Property(bool, extendsTree,  setExtendsTree)
+    x_useDragPixmaps    = qt.Property(bool, useDragPixmaps, setUseDragPixmaps)
+    x_usePopupToolTip   = qt.Property(bool, 
                                        usePopupToolTip, 
                                        setUsePopupToolTip)
-    x_showGridColumns   = Property(bool, 
+    x_showGridColumns   = qt.Property(bool, 
                                        showGridColumns, 
                                        setShowGridColumns)
-    x_showHighlights    = Property(bool, showHighlights, setShowHighlights)
+    x_showHighlights    = qt.Property(bool, showHighlights, setShowHighlights)
                                        
-    x_maximumFilterLevel = Property(int, 
+    x_maximumFilterLevel = qt.Property(int, 
                                         maximumFilterLevel, 
                                         setMaximumFilterLevel)
 

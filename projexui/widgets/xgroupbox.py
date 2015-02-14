@@ -21,7 +21,7 @@ __email__           = 'team@projexsoftware.com'
 import projexui.resources
 
 from projexui.qt        import Property
-from projexui.qt.QtGui  import QGroupBox, QWidget
+from PyQt4.QtGui  import QGroupBox, QWidget
 
 MAX_INT = 10000
 

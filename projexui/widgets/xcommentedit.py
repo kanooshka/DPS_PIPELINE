@@ -15,8 +15,8 @@ __email__       = 'team@projexsoftware.com'
 import os.path
 
 from projexui.qt import Property, Signal, Slot
-from projexui.qt.QtCore import Qt, QSize
-from projexui.qt.QtGui import QToolBar,\
+from PyQt4.QtCore import Qt, QSize
+from PyQt4.QtGui import QToolBar,\
                               QPushButton,\
                               QSizePolicy,\
                               QWidget,\

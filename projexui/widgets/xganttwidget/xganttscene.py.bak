@@ -15,12 +15,12 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore   import QDate,\
+from PyQt4.QtCore   import QDate,\
                                  QLine,\
                                  QRect,\
                                  Qt
                            
-from projexui.qt.QtGui    import QGraphicsScene,\
+from PyQt4.QtGui    import QGraphicsScene,\
                                  QLinearGradient,\
                                  QBrush,\
                                  QColor

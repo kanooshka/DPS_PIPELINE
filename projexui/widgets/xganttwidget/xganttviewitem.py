@@ -17,9 +17,9 @@ __email__           = 'team@projexsoftware.com'
 
 import weakref
 
-from projexui.qt          import wrapVariant
-from projexui.qt.QtCore   import Qt
-from projexui.qt.QtGui    import QGraphicsRectItem,\
+from projexui import qt          #import wrapVariant
+from PyQt4.QtCore   import Qt
+from PyQt4.QtGui    import QGraphicsRectItem,\
                                  QColor,\
                                  QBrush,\
                                  QLinearGradient,\
@@ -162,7 +162,7 @@ class XGanttViewItem(QGraphicsRectItem):
         point.setY( self.pos().y() )
         
         # create the return value
-        new_value = wrapVariant(point)
+        new_value = qt.wrapVariant(point)
         
         # call the base method to operate on the new point
         return super(XGanttViewItem, self).itemChange(change, new_value)

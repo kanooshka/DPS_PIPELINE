@@ -16,7 +16,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import Signal
-from projexui.qt.QtGui  import QWidget,\
+from PyQt4.QtGui  import QWidget,\
                                QLineEdit,\
                                QCompleter,\
                                QStandardItemModel,\

@@ -18,14 +18,14 @@ __email__           = 'team@projexsoftware.com'
 from xml.etree          import ElementTree
 from xml.parsers.expat  import ExpatError
 
-from projexui.qt import wrapVariant, unwrapVariant
-from projexui.qt.QtCore import Qt,\
+from projexui import qt #import wrapVariant, unwrapVariant
+from PyQt4.QtCore import Qt,\
                                QSize,\
                                QMimeData,\
                                QByteArray,\
                                QEvent
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QDialog,\
                               QVBoxLayout,\
                               QDialogButtonBox,\
@@ -107,7 +107,7 @@ class XMenuTemplateWidget(QWidget):
             item.setIcon(0, action.icon())
         
         item.setSizeHint(0, QSize(120, 20))
-        item.setData(0, Qt.UserRole, wrapVariant(key))
+        item.setData(0, Qt.UserRole, qt.wrapVariant(key))
         
         flags = item.flags()
         flags ^= Qt.ItemIsDropEnabled
@@ -140,7 +140,7 @@ class XMenuTemplateWidget(QWidget):
         
         item.setIcon(0, QIcon(ico))
         item.setSizeHint(0, QSize(120, 20))
-        item.setData(0, Qt.UserRole, wrapVariant('menu'))
+        item.setData(0, Qt.UserRole, qt.wrapVariant('menu'))
         
         return item
     
@@ -161,7 +161,7 @@ class XMenuTemplateWidget(QWidget):
         font = item.font(0)
         font.setStrikeOut(True)
         item.setFont(0, font)
-        item.setData(0, Qt.UserRole, wrapVariant('separator'))
+        item.setData(0, Qt.UserRole, qt.wrapVariant('separator'))
         flags = item.flags()
         flags ^= Qt.ItemIsDropEnabled
         item.setFlags(flags)
@@ -287,7 +287,7 @@ class XMenuTemplateWidget(QWidget):
         :param      xparent | <xml.etree.ElementTree.Element>
                     item    | <QTreeWidgetItem>
         """
-        key = str(unwrapVariant(item.data(0, Qt.UserRole)))
+        key = str(qt.unwrapVariant(item.data(0, Qt.UserRole)))
         
         if ( key == 'separator' ):
             ElementTree.SubElement(xparent, 'separator')
@@ -381,7 +381,7 @@ class XMenuTemplateWidget(QWidget):
         
         actions = []
         for item in items:
-            actions.append(str(unwrapVariant(item.data(0, Qt.UserRole))))
+            actions.append(str(qt.unwrapVariant(item.data(0, Qt.UserRole))))
         actionstr = ','.join(actions)
         
         data.setData('application/x-actions', QByteArray(actionstr))

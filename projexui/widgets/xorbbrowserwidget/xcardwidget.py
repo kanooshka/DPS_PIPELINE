@@ -12,9 +12,9 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software, LLC'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtCore import QSize
+from PyQt4.QtCore import QSize
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QIcon,\
                               QLabel,\
                               QHBoxLayout

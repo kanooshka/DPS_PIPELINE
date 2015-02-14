@@ -14,8 +14,8 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import Signal, SIGNAL, Slot
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QWidget, QPalette
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget, QPalette
 from projexui.widgets.xlineedit import XLineEdit
 from projexui.widgets.xorbcolumnnavigator import XOrbColumnNavigator
 

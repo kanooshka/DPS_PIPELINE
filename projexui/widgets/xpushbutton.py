@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Property
-from projexui.qt.QtGui import QPushButton, QLabel
+from projexui import qt #import Property
+from PyQt4.QtGui import QPushButton, QLabel
 
 class XPushButton(QPushButton):
     def __init__(self, *args, **kwds):
@@ -117,6 +117,6 @@ class XPushButton(QPushButton):
         """
         return self._text
 
-    x_showRichText = Property(bool, showRichText, setShowRichText)
+    x_showRichText = qt.Property(bool, showRichText, setShowRichText)
 
 __designer_plugins__ = [XPushButton]

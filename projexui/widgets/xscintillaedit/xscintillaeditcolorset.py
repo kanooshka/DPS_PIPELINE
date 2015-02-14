@@ -16,7 +16,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtGui import QColor
+from PyQt4.QtGui import QColor
 from projexui.xcolorset import XColorSet
 
 class XScintillaEditColorSet(XColorSet):

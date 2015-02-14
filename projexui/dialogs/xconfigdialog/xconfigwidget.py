@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 import os.path
 
 from projexui.qt import uic, unwrapVariant
-from projexui.qt.QtCore import QDir
-from projexui.qt.QtGui import QWidget
+from PyQt4.QtCore import QDir
+from PyQt4.QtGui import QWidget
 
 import projexui
 

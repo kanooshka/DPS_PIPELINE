@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 
 #----------------------------------------------------------
 
-from projexui.qt.QtCore import Qt, QTimer
-from projexui.qt.QtGui import QCompleter,\
+from PyQt4.QtCore import Qt, QTimer
+from PyQt4.QtGui import QCompleter,\
                               QStringListModel
 
 class XOrbSearchCompleter(QCompleter):

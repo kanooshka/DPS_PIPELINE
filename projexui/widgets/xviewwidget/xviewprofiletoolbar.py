@@ -12,16 +12,13 @@ __email__           = 'team@projexsoftware.com'
 
 import os.path
 
-from projexui.qt import Signal,\
-                        Slot,\
-                        Property,\
-                        PyObject,\
-                        wrapVariant,\
-                        unwrapVariant
-from projexui.qt.QtCore import Qt,\
+import projexui
+from projexui import qt
+
+from PyQt4.QtCore import Qt,\
                                QSize
 
-from projexui.qt.QtGui import QAction,\
+from PyQt4.QtGui import QAction,\
                               QActionGroup,\
                               QApplication,\
                               QCursor,\
@@ -75,10 +72,10 @@ class XViewProfileAction(QAction):
 #------------------------------------------------------------------------------
 
 class XViewProfileToolBar(XToolBar):
-    profileCreated        = Signal(PyObject)
-    profileChanged        = Signal(PyObject)
-    profileRemoved        = Signal(PyObject)
-    currentProfileChanged = Signal(PyObject)
+    profileCreated        = qt.Signal(qt.PyObject)
+    profileChanged        = qt.Signal(qt.PyObject)
+    profileRemoved        = qt.Signal(qt.PyObject)
+    currentProfileChanged = qt.Signal(qt.PyObject)
     
     def __init__( self, parent ):
         super(XViewProfileToolBar, self).__init__(parent)
@@ -148,7 +145,7 @@ class XViewProfileToolBar(XToolBar):
         if ( not self.signalsBlocked() ):
             self.profileCreated.emit(prof)
     
-    @Slot(PyObject)
+    @qt.Slot(qt.PyObject)
     def editProfile( self, profile ):
         """
         Prompts the user to edit the given profile.
@@ -301,7 +298,7 @@ class XViewProfileToolBar(XToolBar):
         
         self.loadString(value)
     
-    @Slot(PyObject)
+    @qt.Slot(qt.PyObject)
     def removeProfile( self, profile ):
         """
         Removes the given profile from the toolbar.
@@ -373,7 +370,7 @@ class XViewProfileToolBar(XToolBar):
         if ( not self.signalsBlocked() ):
             self.profileChanged.emit(profile)
     
-    @Slot(PyObject)
+    @qt.Slot(qt.PyObject)
     def setCurrentProfile( self, profile ):
         """
         Sets the current profile for this toolbar to the inputed profile.
@@ -534,4 +531,4 @@ class XViewProfileToolBar(XToolBar):
         """
         return self._viewWidget
     
-    x_editingEnabled = Property(bool, isEditingEnabled, setEditingEnabled)
+    x_editingEnabled = qt.Property(bool, isEditingEnabled, setEditingEnabled)

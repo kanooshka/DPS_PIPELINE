@@ -19,11 +19,11 @@ import logging
 import re
 import weakref
 
-from projexui.qt import Signal
-from projexui.qt.QtCore import QMutex,\
+from projexui import qt #import Signal
+from PyQt4.QtCore import QMutex,\
                                QMutexLocker
 
-from projexui.qt.QtGui import QColor, \
+from PyQt4.QtGui import QColor, \
                               QTextCharFormat, \
                               QTextEdit
 
@@ -173,8 +173,8 @@ class XLoggerWidget(QTextEdit):
         logging.CRITICAL: ('critical', resources.find('img/log/critical.png')),
     }
     
-    messageLogged       = Signal(int, unicode)
-    pythonMessageLogged = Signal(int, unicode)
+    messageLogged       = qt.Signal(int, unicode)
+    pythonMessageLogged = qt.Signal(int, unicode)
         
     """ Defines the main logger widget class. """
     def __init__( self, parent ):

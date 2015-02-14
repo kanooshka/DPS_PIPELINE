@@ -19,8 +19,8 @@ __email__           = 'team@projexsoftware.com'
 
 import weakref
 
-from projexui.qt.QtCore   import Qt
-from projexui.qt.QtGui    import QTableWidget
+from PyQt4.QtCore   import Qt
+from PyQt4.QtGui    import QTableWidget
 
 import projexui.resources
 
@@ -87,7 +87,7 @@ class XTableWidget(QTableWidget):
         single argument for a list of items and then return a QMimeData \
         instance.
         
-        :usage      |from projexui.qt.QtCore import QMimeData, QWidget
+        :usage      |from PyQt4.QtCore import QMimeData, QWidget
                     |from projexui.widgets.xtablewidget import XTableWidget
                     |
                     |def collectData(table, items):
@@ -145,7 +145,7 @@ class XTableWidget(QTableWidget):
         Returns a drag and drop filter method.  If set, the method should \
         accept 2 arguments: a QWidget and a drag/drop event and process it.
         
-        :usage      |from projexui.qt.QtCore import QEvent
+        :usage      |from PyQt4.QtCore import QEvent
                     |
                     |class MyWidget(QWidget):
                     |   def __init__( self, parent ):

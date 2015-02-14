@@ -19,14 +19,14 @@ __email__           = 'team@projexsoftware.com'
 import logging
 
 from projexui.qt import Signal, unwrapVariant
-from projexui.qt.QtCore import Qt,\
+from PyQt4.QtCore import Qt,\
                                QDateTime,\
                                QDate,\
                                QTime,\
                                QSize,\
                                QTimer
 
-from projexui.qt.QtGui import QApplication,\
+from PyQt4.QtGui import QApplication,\
                               QDialog,\
                               QDialogButtonBox,\
                               QWidget,\

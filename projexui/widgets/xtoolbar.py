@@ -12,9 +12,9 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt import Signal
-from projexui.qt.QtCore   import Qt
-from projexui.qt.QtGui    import QIcon,\
+from projexui import qt #import Signal
+from PyQt4.QtCore   import Qt
+from PyQt4.QtGui    import QIcon,\
                                  QSizePolicy,\
                                  QToolBar,\
                                  QToolButton,\
@@ -25,7 +25,7 @@ from projexui       import resources
 MAX_SIZE = 16777215
 
 class XToolBar(QToolBar):
-    collapseToggled = Signal(bool)
+    collapseToggled = qt.Signal(bool)
     
     def __init__( self, *args ):
         super(XToolBar, self).__init__( *args )

@@ -17,12 +17,12 @@ __email__           = 'team@projexsoftware.com'
 
 import weakref
 
-from projexui.qt import Signal, Slot
-from projexui.qt.QtCore   import QSize,\
+from projexui import qt #import Signal, Slot
+from PyQt4.QtCore   import QSize,\
                                  Qt,\
                                  QPropertyAnimation
                            
-from projexui.qt.QtGui    import QAbstractButton,\
+from PyQt4.QtGui    import QAbstractButton,\
                                  QBitmap,\
                                  QColor,\
                                  QCursor,\
@@ -67,13 +67,13 @@ class XPopupWidget(QWidget):
                      'BottomCenter',
                      'BottomRight')
     
-    aboutToShow     = Signal()
-    accepted        = Signal()
-    closed          = Signal()
-    rejected        = Signal()
-    resetRequested  = Signal()
-    shown           = Signal()
-    buttonClicked   = Signal(QAbstractButton)
+    aboutToShow     = qt.Signal()
+    accepted        = qt.Signal()
+    closed          = qt.Signal()
+    rejected        = qt.Signal()
+    resetRequested  = qt.Signal()
+    shown           = qt.Signal()
+    buttonClicked   = qt.Signal(QAbstractButton)
     
     def __init__(self, parent=None, buttons=None):
         super(XPopupWidget, self).__init__(parent)
@@ -302,7 +302,7 @@ class XPopupWidget(QWidget):
         
         self.move(pos)
     
-    @Slot()
+    @qt.Slot()
     def accept(self):
         """
         Emits the accepted signal and closes the popup.
@@ -621,7 +621,7 @@ class XPopupWidget(QWidget):
         
         return False
     
-    @Slot(QAbstractButton)
+    @qt.Slot(QAbstractButton)
     def handleButtonClick(self, button):
         """
         Handles the button click for this widget.  If the Reset button was
@@ -865,7 +865,7 @@ class XPopupWidget(QWidget):
         """
         return self._positionLinkedTo
     
-    @Slot()
+    @qt.Slot()
     def reject(self):
         """
         Emits the accepted signal and closes the popup.
@@ -991,7 +991,7 @@ class XPopupWidget(QWidget):
         self._currentMode = mode
         self.updateModeSettings()
     
-    @Slot()
+    @qt.Slot()
     def setDialogMode(self):
         """
         Sets the current mode value to Dialog.

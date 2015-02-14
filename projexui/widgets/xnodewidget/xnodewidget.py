@@ -18,9 +18,9 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Property, Slot, Signal
-from projexui.qt.QtCore   import Qt, QSize, QPoint, QRectF, QPointF
-from projexui.qt.QtGui    import QGraphicsView,\
+from projexui import qt #import Property, Slot, Signal
+from PyQt4.QtCore   import Qt, QSize, QPoint, QRectF, QPointF
+from PyQt4.QtGui    import QGraphicsView,\
                                  QApplication
 
 from projexui.xanimation import XObjectAnimation
@@ -34,7 +34,7 @@ class XNodeWidget(QGraphicsView):
     """ Defines the main widget for creating node graph views. """
     __designer_icon__ = projexui.resources.find('img/ui/node.png')
     
-    zoomAmountChanged = Signal(int)
+    zoomAmountChanged = qt.Signal(int)
     
     def __init__( self, parent, sceneClass = None ):
         # initialize the super class
@@ -75,14 +75,14 @@ class XNodeWidget(QGraphicsView):
         layout.runTest(self.scene())
         return True
     
-    @Slot()
+    @qt.Slot()
     def autoLayout( self ):
         """
         Auto-lays out the whole scene.
         """
         self.scene().autoLayout()
     
-    @Slot()
+    @qt.Slot()
     def autoLayoutSelected( self ):
         """
         Auto-lays out the selected items.
@@ -170,7 +170,7 @@ class XNodeWidget(QGraphicsView):
         
         super(XNodeWidget, self).closeEvent(event)
     
-    @Slot()
+    @qt.Slot()
     def disableViewMode(self):
         """
         Sets the node widget into selection mode which allows the user to select
@@ -178,7 +178,7 @@ class XNodeWidget(QGraphicsView):
         """
         self.scene().setViewMode(False)
     
-    @Slot()
+    @qt.Slot()
     def enableViewMode(self):
         """
         Sets the node widget into view mode which allows the user to pan
@@ -222,7 +222,7 @@ class XNodeWidget(QGraphicsView):
         """
         self._cleanupOnClose = state
     
-    @Slot(bool)
+    @qt.Slot(bool)
     def setIsolationMode( self, state ):
         """
         Sets whether or not the widget is in isolation mode.
@@ -231,7 +231,7 @@ class XNodeWidget(QGraphicsView):
         """
         self.scene().setIsolationMode(state)
     
-    @Slot(int)
+    @qt.Slot(int)
     def setZoomAmount(self, amount):
         """
         Sets the zoom amount for this widget to the inputed amount.
@@ -274,7 +274,7 @@ class XNodeWidget(QGraphicsView):
         """
         return self.scene().zoomAmount()
     
-    @Slot()
+    @qt.Slot()
     def zoomExtents(self):
         """
         Fits all the nodes in the view.
@@ -290,19 +290,19 @@ class XNodeWidget(QGraphicsView):
         if not self.signalsBlocked():
             self.zoomAmountChanged.emit(self.zoomAmount())
         
-    @Slot()
+    @qt.Slot()
     def zoomIn(self):
         """
         Zooms in for this widget by the scene's zoom step amount.
         """
         self.scene().zoomIn()
     
-    @Slot()
+    @qt.Slot()
     def zoomOut(self):
         """
         Zooms out for this widget by the scene's zoom step amount.
         """
         self.scene().zoomOut()
     
-    x_isolationMode  = Property(bool, isolationMode, setIsolationMode)
-    x_cleanupOnClose = Property(bool, cleanupOnClose, setCleanupOnClose)
+    x_isolationMode  = qt.Property(bool, isolationMode, setIsolationMode)
+    x_cleanupOnClose = qt.Property(bool, cleanupOnClose, setCleanupOnClose)

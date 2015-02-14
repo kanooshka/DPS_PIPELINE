@@ -17,9 +17,9 @@ __email__           = 'team@projexsoftware.com'
 
 import weakref
 
-from projexui.qt.QtCore   import QPointF
+from PyQt4.QtCore   import QPointF
 
-from projexui.qt.QtGui    import QGraphicsPathItem,\
+from PyQt4.QtGui    import QGraphicsPathItem,\
                                  QColor,\
                                  QPainterPath,\
                                  QPolygonF

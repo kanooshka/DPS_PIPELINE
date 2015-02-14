@@ -38,7 +38,7 @@ PLUGIN_DEF = """\
 ''' Auto-generated ui widget plugin '''
 
 from projexui.qt.QtDesigner import QPyDesignerCustomWidgetPlugin
-from projexui.qt.QtGui import QIcon
+from PyQt4.QtGui import QIcon
 
 import projex.resources
 from %(module)s import %(class)s as Base

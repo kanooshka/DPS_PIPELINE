@@ -12,11 +12,11 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt import Signal, unwrapVariant, wrapVariant, PyObject
-from projexui.qt.QtCore import QPoint,\
+from projexui import qt #import Signal, unwrapVariant, wrapVariant, PyObject
+from PyQt4.QtCore import QPoint,\
                                Qt
 
-from projexui.qt.QtGui import QComboBox, \
+from PyQt4.QtGui import QComboBox, \
                               QToolButton,\
                               QHBoxLayout,\
                               QIcon,\
@@ -28,8 +28,8 @@ from projexui.widgets.xviewwidget.xviewprofilemanagermenu \
                                 import XViewProfileManagerMenu
 
 class XViewProfileManager(QWidget):
-    currentProfileChanged = Signal(PyObject)
-    optionsMenuRequested  = Signal(QPoint)
+    currentProfileChanged = qt.Signal(qt.PyObject)
+    optionsMenuRequested  = qt.Signal(QPoint)
     
     def __init__( self, parent = None ):
         super(XViewProfileManager, self).__init__(parent)
@@ -139,13 +139,13 @@ class XViewProfileManager(QWidget):
         settings.beginGroup(self.objectName())
         
         curr_prof = None
-        curr_name = unwrapVariant(settings.value('current'))
+        curr_name = qt.unwrapVariant(settings.value('current'))
         
         profiles = []
         for prof_name in settings.childGroups():
             settings.beginGroup(prof_name)
             
-            prof_str = unwrapVariant(settings.value('profile'))
+            prof_str = qt.unwrapVariant(settings.value('profile'))
             profile  = XViewProfile.fromString(prof_str)
             profile.setName(prof_name)
             
@@ -182,7 +182,7 @@ class XViewProfileManager(QWidget):
         
         for profile in self.profiles():
             settings.beginGroup(profile.name())
-            settings.setValue('profile', wrapVariant(profile.toString()))
+            settings.setValue('profile', qt.wrapVariant(profile.toString()))
             settings.endGroup()
         
         settings.endGroup()

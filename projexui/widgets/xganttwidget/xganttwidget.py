@@ -16,15 +16,17 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import weakref
+import sys
 
-from projexui.qt import Signal
-from projexui.qt    import QtCore
-from projexui.qt.QtCore   import QDate,\
+from projexui import qt
+
+from PyQt4    import QtCore
+from PyQt4.QtCore   import QDate,\
                                  QSize,\
                                  QDateTime,\
                                  Qt
 
-from projexui.qt.QtGui    import QWidget,\
+from PyQt4.QtGui    import QWidget,\
                                  QPen,\
                                  QBrush,\
                                  QPalette,\
@@ -34,14 +36,14 @@ from projex.enum import enum
 
 import projexui
 
-from projexui.qt import unwrapVariant, wrapVariant
+#from projexui.qt import unwrapVariant, wrapVariant
 from projexui.widgets.xganttwidget.xganttscene   import XGanttScene
 
 
 from datetime import datetime 
 
 class XGanttWidget(QWidget):
-    dateRangeChanged = Signal()
+    dateRangeChanged = qt.Signal()
     
     Timescale = enum('Week', 'Month', 'Year')
     
@@ -49,7 +51,12 @@ class XGanttWidget(QWidget):
         super(XGanttWidget, self).__init__( parent )
         
         # load the user interface
-        projexui.loadUi(__file__, self)
+        if getattr(sys, 'frozen', None):
+	    print (sys._MEIPASS+"/xganttwidget.ui");
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/xganttwidget.ui"))
+	    
+	else:
+	    projexui.loadUi(__file__, self)
         
         # define custom properties
         self._backend               = None
@@ -518,7 +525,7 @@ class XGanttWidget(QWidget):
         :param      item    | <XGanttWidgetItem>
                     index   | <int>
         """
-        value = unwrapVariant(item.data(index, Qt.EditRole))
+        value = qt.unwrapVariant(item.data(index, Qt.EditRole))
         
         if type(value) == QDateTime:
             value = value.date()

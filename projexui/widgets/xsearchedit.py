@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 from projexui import resources
 from projexui.widgets.xlineedit import XLineEdit
-from projexui.qt.QtGui import QToolButton, QIcon
+from PyQt4.QtGui import QToolButton, QIcon
 
 
 class XSearchEdit(XLineEdit):

@@ -19,12 +19,12 @@ __email__           = 'team@projexsoftware.com'
 import weakref
 
 from projexui.qt import Signal
-from projexui.qt.QtCore import QLineF,\
+from PyQt4.QtCore import QLineF,\
                                Qt,\
                                QRectF,\
                                QPointF
 
-from projexui.qt.QtGui import QGraphicsScene,\
+from PyQt4.QtGui import QGraphicsScene,\
                               QFontMetrics,\
                               QApplication,\
                               QPen,\

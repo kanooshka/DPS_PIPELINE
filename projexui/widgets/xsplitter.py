@@ -19,9 +19,9 @@ __email__           = 'team@projexsoftware.com'
 
 from projex.enum import enum
 
-from projexui.qt.QtCore   import Qt, QLine
+from PyQt4.QtCore   import Qt, QLine
 
-from projexui.qt.QtGui import QSplitter,\
+from PyQt4.QtGui import QSplitter,\
                               QSplitterHandle,\
                               QToolButton,\
                               QBoxLayout,\

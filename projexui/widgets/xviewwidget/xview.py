@@ -16,14 +16,14 @@ from xml.etree import ElementTree
 
 import weakref
 
-from projexui.qt import Signal, SIGNAL
-from projexui.qt.QtCore   import Qt,\
+from projexui import qt #import Signal, SIGNAL
+from PyQt4.QtCore   import Qt,\
                                  QObject,\
                                  QSettings,\
                                  QThread,\
                                  QTimer
                            
-from projexui.qt.QtGui    import QApplication,\
+from PyQt4.QtGui    import QApplication,\
                                  QWidget,\
                                  QDialog,\
                                  QVBoxLayout
@@ -170,12 +170,12 @@ class XViewDispatch(QObject):
 #------------------------------------------------------------------------------
 
 class XView(QWidget):
-    activated               = Signal()
-    currentStateChanged     = Signal()
-    windowTitleChanged      = Signal(str)
-    sizeConstraintChanged   = Signal()
-    initialized             = Signal()
-    visibleStateChanged     = Signal(bool)
+    activated               = qt.Signal()
+    currentStateChanged     = qt.Signal()
+    windowTitleChanged      = qt.Signal(str)
+    sizeConstraintChanged   = qt.Signal()
+    initialized             = qt.Signal()
+    visibleStateChanged     = qt.Signal(bool)
     
     _registry       = {}
     _globals        = {}

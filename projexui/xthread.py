@@ -16,7 +16,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import os
-from projexui.qt.QtCore import QThread
+from PyQt4.QtCore import QThread
 
 class XThread(QThread):
     _globalThreadingEnabled = os.environ.get('XTHREADING_DISABLED') != '1'

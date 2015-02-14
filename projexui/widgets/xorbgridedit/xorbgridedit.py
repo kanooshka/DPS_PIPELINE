@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 from xml.etree import ElementTree
 
 from projexui.qt import Property
-from projexui.qt.QtCore import Qt, QSize
-from projexui.qt.QtGui import QWidget, QAction
+from PyQt4.QtCore import Qt, QSize
+from PyQt4.QtGui import QWidget, QAction
 from projexui.widgets.xorbquerywidget   import XOrbQueryWidget
 from projexui.widgets.xorbtreewidget    import XOrbRecordItem
 from projexui.widgets.xpopupwidget      import XPopupWidget

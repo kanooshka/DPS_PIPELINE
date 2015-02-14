@@ -20,7 +20,7 @@ from projexui.widgets.xscintillaedit import XScintillaEdit
 from projexui.widgets.xfilepathedit  import XFilepathEdit
 from projexui.widgets.xlineedit      import XLineEdit
 
-from projexui.qt.QtGui import QTextEdit
+from PyQt4.QtGui import QTextEdit
 
 #------------------------------------------------------------------------------
 

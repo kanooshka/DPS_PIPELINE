@@ -19,8 +19,8 @@ import time
 
 from projex.decorators import abstractmethod
 from projex.plugin import Plugin
-from projexui.qt.QtCore import Qt, QPointF, QRectF
-from projexui.qt.QtGui import QApplication
+from PyQt4.QtCore import Qt, QPointF, QRectF
+from PyQt4.QtGui import QApplication
 from projexui.widgets.xnodewidget.xnode import XNodeAnimation
 
 class XNodeLayout(Plugin):

@@ -17,14 +17,14 @@ __email__           = 'team@projexsoftware.com'
 
 import datetime
 
-from projexui.qt import wrapVariant, unwrapVariant, Signal
-from projexui.qt.QtCore           import  QObject, \
+from projexui import qt #import wrapVariant, unwrapVariant, Signal
+from PyQt4.QtCore           import  QObject, \
                                           QPointF, \
                                           QRectF, \
                                           QSize,\
                                           Qt
                                 
-from projexui.qt.QtGui            import  QApplication,\
+from PyQt4.QtGui            import  QApplication,\
                                           QBrush, \
                                           QColor, \
                                           QFontMetrics,\
@@ -50,9 +50,9 @@ class XNodeDispatcher( QObject ):
     object.  QGraphicsItem's are not QObject's (at least until Qt 4.6), \
     and so this will guarantee backward compatibility.
     """
-    geometryChanged     = Signal(QPointF)
-    visibilityChanged   = Signal(bool)
-    removed             = Signal()
+    geometryChanged     = qt.Signal(QPointF)
+    visibilityChanged   = qt.Signal(bool)
+    removed             = qt.Signal()
 
 class XNodeAnimation(XObjectAnimation):
     def updateCurrentValue(self, value):
@@ -1056,7 +1056,7 @@ class XNode( QGraphicsRectItem ):
         if ( not scene ):
             return super(XNode, self).itemChange( change, value )
             
-        point = unwrapVariant(value)
+        point = qt.unwrapVariant(value)
         
         # update the x position
         if ( self.isXLocked() ):
@@ -1079,7 +1079,7 @@ class XNode( QGraphicsRectItem ):
             point.setY(center_y - offset_y)
             
         # create the return value
-        new_value = wrapVariant(point)
+        new_value = qt.wrapVariant(point)
         
         # call the base method to operate on the new point
         result = super(XNode, self).itemChange(change, new_value)

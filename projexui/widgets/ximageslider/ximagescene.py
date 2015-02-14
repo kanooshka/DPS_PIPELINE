@@ -6,8 +6,8 @@ __copyright__ = 'Tesla Motors (c) 2013'
 
 import random
 
-from projexui.qt.QtCore import Qt, QRectF
-from projexui.qt.QtGui import QGraphicsScene,\
+from PyQt4.QtCore import Qt, QRectF
+from PyQt4.QtGui import QGraphicsScene,\
                               QLinearGradient,\
                               QColor
 

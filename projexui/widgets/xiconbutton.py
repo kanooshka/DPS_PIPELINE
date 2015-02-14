@@ -22,9 +22,9 @@ import os.path
 import urllib
 
 import projexui
-from projexui.qt import Signal, Property
-from projexui.qt.QtCore import QDir
-from projexui.qt.QtGui import QPushButton,\
+from projexui import qt #import Signal, Property
+from PyQt4.QtCore import QDir
+from PyQt4.QtGui import QPushButton,\
                               QFileDialog,\
                               QIcon
 
@@ -34,7 +34,7 @@ class XIconButton(QPushButton):
     """ """
     __designer_icon__ = projexui.resources.find('img/ui/icon.png')
     
-    filepathChanged = Signal(str)
+    filepathChanged = qt.Signal(str)
     
     def __init__( self, parent = None ):
         super(XIconButton, self).__init__( parent )
@@ -163,7 +163,7 @@ class XIconButton(QPushButton):
         
         return icon
 
-    x_filepath  = Property(str, filepath, setFilepath)
-    x_fileTypes = Property(str, fileTypes, setFileTypes)
+    x_filepath  = qt.Property(str, filepath, setFilepath)
+    x_fileTypes = qt.Property(str, fileTypes, setFileTypes)
 
 __designer_plugins__ = [XIconButton]

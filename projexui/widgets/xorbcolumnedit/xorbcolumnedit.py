@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import Signal, Slot, Property, PyObject
-from projexui.qt.QtGui  import QWidget, QHBoxLayout
+from PyQt4.QtGui  import QWidget, QHBoxLayout
 
 import projex
 projex.requires('orb')

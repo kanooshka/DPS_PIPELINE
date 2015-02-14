@@ -8,7 +8,7 @@ from PyQt4.QtCore import QDate
 
 import sharedDB
 
-from projexui.qt.QtGui import QColor
+from PyQt4.QtGui import QColor
 
 class GanttTest():
 

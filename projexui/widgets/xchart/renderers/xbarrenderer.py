@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QPainterPath,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QPainterPath,\
                               QPen,\
                               QColor,\
                               QBrush,\

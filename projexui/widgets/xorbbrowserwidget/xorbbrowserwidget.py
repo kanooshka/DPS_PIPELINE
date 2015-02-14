@@ -17,11 +17,11 @@ __email__           = 'team@projexsoftware.com'
 import math
 
 from projexui.qt import Signal, Property, PyObject
-from projexui.qt.QtCore import QPoint,\
+from PyQt4.QtCore import QPoint,\
                                QSize,\
                                Qt
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QListWidget,\
                               QLabel,\
                               QVBoxLayout,\

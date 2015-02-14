@@ -52,7 +52,7 @@ import logging
 from xml.etree          import ElementTree
 from xml.parsers.expat  import ExpatError
 
-from projexui.qt.QtCore   import Qt, QByteArray
+from PyQt4.QtCore   import Qt, QByteArray
 
 import projex.text
 from projex.dataset import DataSet

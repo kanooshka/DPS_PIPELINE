@@ -11,13 +11,16 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 # maintanence information
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
+
+import projexui
 from projexui import qt
-from qt import Signal, SIGNAL, Property, QtCore,QtGui
-from QtCore   import QPoint,\
+#from cutie import Signal, SIGNAL, Property
+
+from PyQt4.QtCore   import QPoint,\
                                  QSize,\
                                  Qt
                            
-from QtGui    import QApplication,\
+from PyQt4.QtGui    import QApplication,\
                                  QCursor, \
                                  QIcon, \
                                  QTabWidget,\
@@ -27,7 +30,7 @@ from QtGui    import QApplication,\
 from projexui import resources
 
 class XTabBar(QTabBar):
-    resized = Signal()
+    resized = qt.Signal()
     
     def resizeEvent(self, event):
         """
@@ -42,8 +45,8 @@ class XTabBar(QTabBar):
 #------------------------------------------------------------------------------
 
 class XTabWidget(QTabWidget):
-    addRequested     = Signal(QPoint)
-    optionsRequested = Signal(QPoint)
+    addRequested     = qt.Signal(QPoint)
+    optionsRequested = qt.Signal(QPoint)
     
     def __init__(self, *args):
         super(XTabWidget, self).__init__(*args)
@@ -210,7 +213,7 @@ class XTabWidget(QTabWidget):
         """
         return self._showOptionsButton
     
-    x_showAddButton = Property(bool, showAddButton, setShowAddButton)
-    x_showOptionsButton = Property(bool, showOptionsButton, setShowOptionsButton)
+    x_showAddButton = qt.Property(bool, showAddButton, setShowAddButton)
+    x_showOptionsButton = qt.Property(bool, showOptionsButton, setShowOptionsButton)
 
 __designer_plugins__ = [XTabWidget]

@@ -3,8 +3,8 @@
 """ Defines some additions the Qt Animation framework. """
 
 from projex.enum import enum
-from projexui.qt.QtCore import QSize
-from projexui.qt.QtGui import QIcon, QColor, QPixmap
+from PyQt4.QtCore import QSize
+from PyQt4.QtGui import QIcon, QColor, QPixmap
 
 class XColorIcon(QIcon):
     Style = enum('Plain')

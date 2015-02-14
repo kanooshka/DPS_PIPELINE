@@ -19,7 +19,7 @@ import os.path
 
 from projexui.qt import wrapVariant
 
-from projexui.qt.QtGui import QFontComboBox,\
+from PyQt4.QtGui import QFontComboBox,\
                               QHBoxLayout,\
                               QLabel,\
                               QSpinBox,\

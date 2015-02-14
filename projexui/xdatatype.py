@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 import logging
 import os.path
 
-from projexui.qt import wrapVariant, unwrapVariant
-from projexui.qt import QtGui
+from projexui import qt #import wrapVariant, unwrapVariant
+from PyQt4 import QtGui
 
 # used to register saving and loading systems
 from projexui.xcolorset                import XColorSet, XPaletteColorSet
@@ -46,8 +46,8 @@ def restoreDataSet( settings, key, dataSet ):
                 dataSet  | <projex.dataset.DataSet>
     """
     for datakey in dataSet.keys():
-        vtype = unwrapVariant(settings.value('%s/%s/type' % (key, datakey)))
-        value = unwrapVariant(settings.value('%s/%s/value' % (key, datakey)))
+        vtype = qt.unwrapVariant(settings.value('%s/%s/type' % (key, datakey)))
+        value = qt.unwrapVariant(settings.value('%s/%s/value' % (key, datakey)))
         
         if ( vtype is None ):
             continue
@@ -81,35 +81,35 @@ def saveDataSet( settings, key, dataSet ):
         else:
             datavalue = value
         
-        settings.setValue('%s/%s/type' % (key, datakey), wrapVariant(datatype))
-        settings.setValue('%s/%s/value' % (key, datakey), wrapVariant(datavalue))
+        settings.setValue('%s/%s/type' % (key, datakey), qt.wrapVariant(datatype))
+        settings.setValue('%s/%s/value' % (key, datakey), qt.wrapVariant(datavalue))
 
 #-------------------------------------------------------------------------------
 
 # register getter/setter value types
 registerDataType('bool',
                  lambda pyvalue:  int(pyvalue),
-                 lambda qvariant: unwrapVariant(qvariant, False))
+                 lambda qvariant: qt.unwrapVariant(qvariant, False))
 
 registerDataType('int',
                  lambda pyvalue:  int(pyvalue),
-                 lambda qvariant: unwrapVariant(qvariant, 0))
+                 lambda qvariant: qt.unwrapVariant(qvariant, 0))
 
 registerDataType('float',
                  lambda pyvalue:  float(pyvalue),
-                 lambda qvariant: unwrapVariant(qvariant, 0.0))
+                 lambda qvariant: qt.unwrapVariant(qvariant, 0.0))
 
 registerDataType('str',
                  lambda pyvalue:  str(pyvalue),
-                 lambda qvariant: str(unwrapVariant(qvariant, '')))
+                 lambda qvariant: str(qt.unwrapVariant(qvariant, '')))
                  
 registerDataType('unicode',
                  lambda pyvalue:  unicode(pyvalue),
-                 lambda qvariant: unicode(unwrapVariant(qvariant, '')))
+                 lambda qvariant: unicode(qt.unwrapVariant(qvariant, '')))
 
 def decodeFont(qvariant):
     font = QtGui.QFont()
-    font.fromString(unwrapVariant(qvariant))
+    font.fromString(qt.unwrapVariant(qvariant))
     return font
 
 registerDataType('QFont',
@@ -118,8 +118,8 @@ registerDataType('QFont',
 
 registerDataType('XColorSet',
                 lambda pyvalue:  pyvalue.toString(),
-                lambda qvariant: XColorSet.fromString(unwrapVariant(qvariant, '')))
+                lambda qvariant: XColorSet.fromString(qt.unwrapVariant(qvariant, '')))
 
 registerDataType('XPaletteColorSet',
             lambda pyvalue:  pyvalue.toString(),
-            lambda qvariant: XPaletteColorSet.fromString(unwrapVariant(qvariant, '')))
+            lambda qvariant: XPaletteColorSet.fromString(qt.unwrapVariant(qvariant, '')))

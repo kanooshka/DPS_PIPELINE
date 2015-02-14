@@ -25,8 +25,8 @@ from projexui.qt import Signal,\
                         unwrapVariant,\
                         SIGNAL
 
-from projexui.qt.QtCore import QPoint, Qt, QObject, QThread
-from projexui.qt.QtGui import QApplication
+from PyQt4.QtCore import QPoint, Qt, QObject, QThread
+from PyQt4.QtGui import QApplication
 from projexui.widgets.xcombobox import XComboBox
 from projexui.widgets.xloaderwidget import XLoaderWidget
 from projexui.widgets.xtreewidget import XTreeWidget

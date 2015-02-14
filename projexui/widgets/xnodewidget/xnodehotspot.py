@@ -12,7 +12,7 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software, LLC'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtGui import QColor, QIcon, QToolTip, QCursor
+from PyQt4.QtGui import QColor, QIcon, QToolTip, QCursor
 
 from projex.enum import enum
 

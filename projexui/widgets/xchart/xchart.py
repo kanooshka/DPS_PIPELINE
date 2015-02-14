@@ -18,9 +18,9 @@ __email__           = 'team@projexsoftware.com'
 import projexui
 from xml.etree import ElementTree
 
-from projexui.qt import Property, wrapVariant, unwrapVariant, Signal
-from projexui.qt.QtCore import Qt, QSize, QPoint
-from projexui.qt.QtGui import QFrame,\
+from projexui import qt #Property, wrapVariant, unwrapVariant, Signal
+from PyQt4.QtCore import Qt, QSize, QPoint
+from PyQt4.QtGui import QFrame,\
                               QPalette,\
                               QScrollBar,\
                               QAction,\
@@ -81,7 +81,7 @@ QToolButton::checked {
 
 class XChart(QFrame):
     """ """
-    middleClicked = Signal(QPoint)
+    middleClicked = qt.Signal(QPoint)
     
     def __init__( self, parent = None ):
         super(XChart, self).__init__( parent )
@@ -160,7 +160,7 @@ class XChart(QFrame):
         action.setIcon(XColorIcon(dataset.color()))
         action.setCheckable(True)
         action.setChecked(True)
-        action.setData(wrapVariant(dataset))
+        action.setData(qt.wrapVariant(dataset))
         action.toggled.connect(self.toggleDataset)
         
         self.uiDatasetTBAR.addAction(action)
@@ -700,7 +700,7 @@ class XChart(QFrame):
                     dataset | <XChartDataset>
         """
         if dataset is None and self.sender():
-            dataset = unwrapVariant(self.sender().data())
+            dataset = qt.unwrapVariant(self.sender().data())
         
         dataset.setVisible(state)
         self._dataChanged = True
@@ -742,16 +742,16 @@ class XChart(QFrame):
         """
         return self._verticalAxis
     
-    x_showColumns = Property(bool, showColumns, setShowColumns)
-    x_showRows = Property(bool, showRows, setShowRows)
-    x_showGrid = Property(bool, showGrid, setShowGrid)
-    x_showYAxis = Property(bool, showYAxis, setShowYAxis)
-    x_showXAxis = Property(bool, showXAxis, setShowXAxis)
+    x_showColumns = qt.Property(bool, showColumns, setShowColumns)
+    x_showRows = qt.Property(bool, showRows, setShowRows)
+    x_showGrid = qt.Property(bool, showGrid, setShowGrid)
+    x_showYAxis = qt.Property(bool, showYAxis, setShowYAxis)
+    x_showXAxis = qt.Property(bool, showXAxis, setShowXAxis)
     
-    x_showDatasetToolbar = Property(bool,
+    x_showDatasetToolbar = qt.Property(bool,
                                     showDatasetToolbar,
                                     setShowDatasetToolbar)
     
-    x_showTypeButton = Property(bool,
+    x_showTypeButton = qt.Property(bool,
                                 showTypeButton,
                                 setShowTypeButton)

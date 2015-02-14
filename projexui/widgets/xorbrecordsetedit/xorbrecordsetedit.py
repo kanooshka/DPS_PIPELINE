@@ -18,11 +18,11 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import wrapVariant, unwrapVariant
-from projexui.qt.QtCore import Qt,\
+from PyQt4.QtCore import Qt,\
                                QSize,\
                                QPoint
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QTreeWidgetItem,\
                               QApplication,\
                               QDialogButtonBox,\

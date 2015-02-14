@@ -14,7 +14,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Signal, Property
+from projexui import qt #import Signal, Property
 from projexui.widgets.xcombobox import XComboBox
 
 class XEnumBox(XComboBox):
@@ -59,7 +59,7 @@ class XEnumBox(XComboBox):
     |>>> combo.valueChanged.connect(printValue)
     
     """
-    valueChanged = Signal(int)
+    valueChanged = qt.Signal(int)
     
     def __init__( self, parent = None ):
         super(XEnumBox, self).__init__( parent )
@@ -171,6 +171,6 @@ class XEnumBox(XComboBox):
         """
         return self._sortByKey
     
-    x_sortByKey = Property(bool, sortByKey, setSortByKey)
+    x_sortByKey = qt.Property(bool, sortByKey, setSortByKey)
     
 __designer_plugins__ = [XEnumBox]

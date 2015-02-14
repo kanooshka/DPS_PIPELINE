@@ -19,10 +19,10 @@ __email__           = 'team@projexsoftware.com'
 
 import os.path
 
-from projexui.qt import Signal, Slot, Property
-from projexui.qt.QtCore import QDir, Qt
+from projexui import qt #import Signal, Slot, Property
+from PyQt4.QtCore import QDir, Qt
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QHBoxLayout,\
                               QIcon,\
                               QColor,\
@@ -66,7 +66,7 @@ class XFilepathEdit(QWidget):
     
     Mode = enum('OpenFile', 'SaveFile', 'Path', 'OpenFiles')
     
-    filepathChanged = Signal(str)
+    filepathChanged = qt.Signal(str)
     
     def __init__( self, parent = None ):
         super(XFilepathEdit, self).__init__( parent )
@@ -120,14 +120,14 @@ class XFilepathEdit(QWidget):
         """
         return self._filepathButton.autoRaise()
     
-    @Slot()
+    @qt.Slot()
     def clearFilepath( self ):
         """
         Clears the filepath contents for this path.
         """
         self.setFilepath('')
     
-    @Slot()
+    @qt.Slot()
     def copyFilepath( self ):
         """
         Copies the current filepath contents to the current clipboard.
@@ -365,7 +365,7 @@ class XFilepathEdit(QWidget):
         """
         self._filepathButton.setAutoRaise(state)
     
-    @Slot(int)
+    @qt.Slot(int)
     def setFilepathMode( self, mode ):
         """
         Sets the filepath mode for this widget to the inputed mode.
@@ -374,7 +374,7 @@ class XFilepathEdit(QWidget):
         """
         self._filepathMode = mode
     
-    @Slot(str)
+    @qt.Slot(str)
     def setFilepathModeText( self, text ):
         """
         Sets the filepath mode for this widget based on the inputed text.
@@ -389,7 +389,7 @@ class XFilepathEdit(QWidget):
         except KeyError:
             return False
     
-    @Slot(str)
+    @qt.Slot(str)
     def setFilepathTypes( self, filepathTypes ):
         """
         Sets the filepath type string that will be used when looking up \
@@ -399,7 +399,7 @@ class XFilepathEdit(QWidget):
         """
         self._filepathTypes = filepathTypes
     
-    @Slot(str)
+    @qt.Slot(str)
     def setFilepath(self, filepath):
         """
         Sets the filepath text for this widget to the inputed path.
@@ -468,7 +468,7 @@ class XFilepathEdit(QWidget):
         """
         self._normalizePath = state
     
-    @Slot(bool)
+    @qt.Slot(bool)
     def setReadOnly( self, state ):
         """
         Sets whether or not this filepath widget is readonly in the text edit.
@@ -477,7 +477,7 @@ class XFilepathEdit(QWidget):
         """
         self._filepathEdit.setReadOnly(state)
     
-    @Slot(bool)
+    @qt.Slot(bool)
     def setValidated( self, state ):
         """
         Set whether or not to validate the path as the user edits it.
@@ -556,32 +556,32 @@ class XFilepathEdit(QWidget):
         self._filepathEdit.setPalette(palette)
     
     # map Qt properties
-    x_autoRaise         = Property(bool, autoRaise,     setAutoRaise)
-    x_filepathTypes     = Property(str,  filepathTypes, setFilepathTypes)
-    x_filepath          = Property(str,  filepath,      setFilepath)
-    x_readOnly          = Property(bool, isReadOnly,    setReadOnly)
-    x_validated         = Property(bool, isValidated,   setValidated)
-    x_hint              = Property(str,  hint,          setHint)
-    x_icon              = Property('QIcon', icon,       setIcon)
-    x_normalizePath     = Property(bool, normalizePath, setNormalizePath)
+    x_autoRaise         = qt.Property(bool, autoRaise,     setAutoRaise)
+    x_filepathTypes     = qt.Property(str,  filepathTypes, setFilepathTypes)
+    x_filepath          = qt.Property(str,  filepath,      setFilepath)
+    x_readOnly          = qt.Property(bool, isReadOnly,    setReadOnly)
+    x_validated         = qt.Property(bool, isValidated,   setValidated)
+    x_hint              = qt.Property(str,  hint,          setHint)
+    x_icon              = qt.Property('QIcon', icon,       setIcon)
+    x_normalizePath     = qt.Property(bool, normalizePath, setNormalizePath)
     
-    x_invalidForeground = Property('QColor',
+    x_invalidForeground = qt.Property('QColor',
                                         invalidForeground,
                                         setInvalidForeground)
     
-    x_invalidBackground = Property('QColor',
+    x_invalidBackground = qt.Property('QColor',
                                         invalidBackground,
                                         setInvalidBackground)
     
-    x_validForeground   = Property('QColor',
+    x_validForeground   = qt.Property('QColor',
                                         validForeground,
                                         setValidForeground)
     
-    x_validBackground   = Property('QColor',
+    x_validBackground   = qt.Property('QColor',
                                         validBackground,
                                         setValidBackground)
     
-    x_filepathModeText  = Property(str, 
+    x_filepathModeText  = qt.Property(str, 
                                        filepathModeText, 
                                        setFilepathModeText)
 

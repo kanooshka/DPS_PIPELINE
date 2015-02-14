@@ -23,11 +23,11 @@ import logging
 from xml.etree          import ElementTree
 from xml.parsers.expat  import ExpatError
 
-from projexui.qt.QtCore import QPoint,\
+from PyQt4.QtCore import QPoint,\
                                QTimer,\
                                Qt
                            
-from projexui.qt.QtGui  import QCursor,\
+from PyQt4.QtGui  import QCursor,\
                                QFontMetrics,\
                                QIcon,\
                                QMenu, \

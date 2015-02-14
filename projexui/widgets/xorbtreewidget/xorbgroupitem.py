@@ -11,8 +11,8 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
-from projexui.qt.QtCore import QSize, Qt
-from projexui.qt.QtGui  import QIcon, QApplication
+from PyQt4.QtCore import QSize, Qt
+from PyQt4.QtGui  import QIcon, QApplication
 
 from projexui.widgets.xtreewidget import XTreeWidgetItem
 from projexui import resources

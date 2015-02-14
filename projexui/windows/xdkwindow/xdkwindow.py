@@ -23,10 +23,10 @@ import zipfile
 
 import projex.text
 from projexui.qt import Signal
-from projexui.qt.QtCore import Qt, QDir, QUrl, QObject, QThread
+from PyQt4.QtCore import Qt, QDir, QUrl, QObject, QThread
 
 from projexui.widgets.xtreewidget import XTreeWidgetItem
-from projexui.qt.QtGui import QApplication,\
+from PyQt4.QtGui import QApplication,\
                               QFileDialog,\
                               QMainWindow,\
                               QTreeWidgetItem

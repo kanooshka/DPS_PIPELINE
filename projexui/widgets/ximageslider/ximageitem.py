@@ -4,8 +4,8 @@ __author__ = 'Eric Hulser'
 __email__ = 'ehulser@teslamotors.com'
 __copyright__ = 'Tesla Motors (c) 2013'
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QGraphicsPixmapItem,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QGraphicsPixmapItem,\
                               QColor,\
                               QLinearGradient,\
                               QPixmap,\

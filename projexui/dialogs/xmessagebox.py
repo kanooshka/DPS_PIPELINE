@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtGui import QMessageBox,\
+from PyQt4.QtGui import QMessageBox,\
                               QPushButton,\
                               QSizePolicy,\
                               QLayout,\

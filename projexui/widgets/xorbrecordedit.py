@@ -19,9 +19,9 @@ __email__           = 'team@projexsoftware.com'
 import logging
 
 from projexui.qt import Signal, Slot
-from projexui.qt.QtCore import QObject, Qt
+from PyQt4.QtCore import QObject, Qt
 
-from projexui.qt.QtGui  import QWidget,\
+from PyQt4.QtGui  import QWidget,\
                                QFormLayout,\
                                QLabel,\
                                QDialogButtonBox,\

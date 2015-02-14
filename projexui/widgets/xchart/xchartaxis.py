@@ -18,8 +18,8 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import projex.text
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QApplication, QFontMetrics
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QApplication, QFontMetrics
 
 class XChartAxis(object):
     """ """

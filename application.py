@@ -4,6 +4,7 @@ from PyQt4 import Qt
 from PyQt4.QtCore import QDate
 
 import sharedDB
+#import projexui.pyi_hook
 
 from DPSPipeline.ganttTest import GanttTest
 import DPSPipeline.createprojecttest

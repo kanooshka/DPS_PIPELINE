@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 from orb import ColumnType
 from projexui.widgets.xorbcolumnedit import plugins
-from projexui.qt.QtGui import QCheckBox,\
+from PyQt4.QtGui import QCheckBox,\
                               QSpinBox,\
                               QDoubleSpinBox
 

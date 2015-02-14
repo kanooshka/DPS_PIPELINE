@@ -26,14 +26,14 @@ import projexui
 from projexui import resources
 
 from projexui.qt import Signal, Slot, Property, SIGNAL, unwrapNone
-from projexui.qt.QtCore import Qt,\
+from PyQt4.QtCore import Qt,\
                                QMimeData,\
                                QByteArray,\
                                QObject,\
                                QThread,\
                                QTimer
 
-from projexui.qt.QtGui import QTreeWidgetItem,\
+from PyQt4.QtGui import QTreeWidgetItem,\
                               QColor,\
                               QApplication,\
                               QMessageBox,\

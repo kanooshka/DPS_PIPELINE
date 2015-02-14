@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 
 import time
 
-from projexui.qt.QtCore import Qt, QRect, QPoint
-from projexui.qt.QtGui  import QWidget,\
+from PyQt4.QtCore import Qt, QRect, QPoint
+from PyQt4.QtGui  import QWidget,\
                                QApplication,\
                                QFileDialog,\
                                QPen,\

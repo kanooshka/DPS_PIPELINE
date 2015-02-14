@@ -16,7 +16,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtGui import QFont
+from PyQt4.QtGui import QFont
 from projex.dataset import DataSet
 
 class XScintillaEditOptions(DataSet):

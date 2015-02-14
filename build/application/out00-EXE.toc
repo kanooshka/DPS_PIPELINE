@@ -1,0 +1,9 @@
+('C:\\Users\\DoodleLights\\Documents\\GitHub\\DPS_PIPELINE\\dist\\application.exe',
+ True,
+ False,
+ None,
+ None,
+ [],
+ None,
+ False,
+ 1423886564L)

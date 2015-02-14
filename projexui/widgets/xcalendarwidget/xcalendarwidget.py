@@ -20,11 +20,11 @@ __email__           = 'team@projexsoftware.com'
 import weakref
 
 from projexui.qt import Signal, Slot, PyObject
-from projexui.qt.QtCore   import Qt,\
+from PyQt4.QtCore   import Qt,\
                                  QDate,\
                                  QDateTime
 
-from projexui.qt.QtGui    import QGraphicsView
+from PyQt4.QtGui    import QGraphicsView
 
 import projexui.resources
 from projexui.widgets.xcalendarwidget.xcalendarscene import XCalendarScene
@@ -123,7 +123,7 @@ class XCalendarWidget(QGraphicsView):
         Returns a drag and drop filter method.  If set, the method should \
         accept 2 arguments: a QWidget and a drag/drop event and process it.
         
-        :usage      |from projexui.qt.QtCore import QEvent
+        :usage      |from PyQt4.QtCore import QEvent
                     |
                     |class MyWidget(QWidget):
                     |   def __init__( self, parent ):

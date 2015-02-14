@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Property
+from projexui import qt #import Property
 from projexui.widgets.xcombobox import XComboBox
 
 class XBoolComboBox(XComboBox):
@@ -79,8 +79,8 @@ class XBoolComboBox(XComboBox):
         """
         return self.itemText(0)
     
-    x_checked = Property(bool, isChecked, setChecked)
-    x_falseText = Property(str, falseText, setFalseText)
-    x_trueText = Property(str, trueText, setTrueText)
+    x_checked = qt.Property(bool, isChecked, setChecked)
+    x_falseText = qt.Property(str, falseText, setFalseText)
+    x_trueText = qt.Property(str, trueText, setTrueText)
 
 __designer_plugins__ = [XBoolComboBox]

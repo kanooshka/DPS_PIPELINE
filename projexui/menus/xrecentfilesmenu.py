@@ -18,7 +18,7 @@ __email__           = 'team@projexsoftware.com'
 import os.path
 
 from projexui.qt import Signal, wrapVariant, unwrapVariant
-from projexui.qt.QtGui import QMenu
+from PyQt4.QtGui import QMenu
 
 class XRecentFilesMenu(QMenu):
     fileTriggered = Signal(str)

@@ -17,10 +17,10 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore import QRegExp,\
+from PyQt4.QtCore import QRegExp,\
                                Qt
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QToolButton,\
                               QAction,\
                               QCheckBox,\

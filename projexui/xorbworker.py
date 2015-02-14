@@ -15,7 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 import threading
 from projexui.qt import Signal
-from projexui.qt.QtCore import QObject, QCoreApplication
+from PyQt4.QtCore import QObject, QCoreApplication
 
 try:
     from orb.errors import Interruption, ConnectionLostError

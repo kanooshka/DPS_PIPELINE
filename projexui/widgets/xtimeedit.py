@@ -13,8 +13,8 @@ __email__           = 'team@projexsoftware.com'
 
 #----------------------------------------------------------------------
 
-from projexui.qt.QtCore import QDateTime
-from projexui.qt.QtGui import QTimeEdit
+from PyQt4.QtCore import QDateTime
+from PyQt4.QtGui import QTimeEdit
 
 class XTimeEdit(QTimeEdit):
     def __init__(self, parent=None):

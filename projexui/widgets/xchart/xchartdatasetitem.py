@@ -14,8 +14,8 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 from projexui.qt import wrapVariant
-from projexui.qt.QtCore import QMimeData
-from projexui.qt.QtGui import QGraphicsPathItem, QDrag
+from PyQt4.QtCore import QMimeData
+from PyQt4.QtGui import QGraphicsPathItem, QDrag
 
 class XChartDatasetItem(QGraphicsPathItem):
     def __init__(self, *args):

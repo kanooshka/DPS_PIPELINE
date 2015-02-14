@@ -30,3 +30,5 @@ if wrapper == 'PySide':
 elif wrapper == 'PyQt4':
     hiddenimports += ['PyQt4.QtUiTools', 'PyQt4.QtXml', 'PyQt4.QtWebKit']
     hiddenimports.remove('projexui.qt.pyside_wrapper')
+    
+#print hiddenimports

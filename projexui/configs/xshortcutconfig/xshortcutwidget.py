@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui  import QAction,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui  import QAction,\
                                QKeySequence,\
                                QMessageBox,\
                                QTreeWidgetItem

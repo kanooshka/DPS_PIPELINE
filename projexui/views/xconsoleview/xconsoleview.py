@@ -17,9 +17,9 @@ __email__           = 'team@projexsoftware.com'
 
 import logging
 
-from projexui.qt.QtCore import Qt, QSize
+from PyQt4.QtCore import Qt, QSize
 from projexui.qt        import wrapVariant, unwrapVariant, Signal
-from projexui.qt.QtGui  import QIcon
+from PyQt4.QtGui  import QIcon
 
 from projexui.widgets.xviewwidget   import XView
 from projexui.widgets.xloggerwidget import XLoggerWidget

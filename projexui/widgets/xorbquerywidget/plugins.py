@@ -15,8 +15,8 @@ import datetime
 
 from orb import ColumnType, Query
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QCheckBox,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QCheckBox,\
                               QSpinBox,\
                               QDoubleSpinBox
 

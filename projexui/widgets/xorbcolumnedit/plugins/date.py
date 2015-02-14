@@ -18,9 +18,9 @@ import datetime
 from orb import ColumnType
 from projexui.widgets.xorbcolumnedit import plugins
 
-from projexui.qt.QtCore import QDate, QTime, QDateTime
+from PyQt4.QtCore import QDate, QTime, QDateTime
 
-from projexui.qt.QtGui import QDateEdit,\
+from PyQt4.QtGui import QDateEdit,\
                               QTimeEdit,\
                               QDateTimeEdit
 

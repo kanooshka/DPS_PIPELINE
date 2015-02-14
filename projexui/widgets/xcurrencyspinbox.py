@@ -11,7 +11,7 @@ __maintainer__      = 'Projex Software, LLC'
 __email__           = 'team@projexsoftware.com'
 
 from projexui.qt import Slot, Property
-from projexui.qt.QtGui import QDoubleSpinBox
+from PyQt4.QtGui import QDoubleSpinBox
 
 import projex.money
 

@@ -12,7 +12,7 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt.QtGui import QMenu,\
+from PyQt4.QtGui import QMenu,\
                               QIcon,\
                               QMessageBox,\
                               QInputDialog

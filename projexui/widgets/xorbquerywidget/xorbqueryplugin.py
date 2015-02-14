@@ -12,7 +12,7 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 import projexui
-from projexui.qt.QtCore import Qt
+from PyQt4.QtCore import Qt
 from collections import OrderedDict
 from orb import Query, ColumnType
 

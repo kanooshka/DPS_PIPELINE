@@ -14,7 +14,7 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 from projexui.qt import wrapVariant, unwrapVariant
-from projexui.qt.QtCore import QVariantAnimation
+from PyQt4.QtCore import QVariantAnimation
 
 class XObjectAnimation(QVariantAnimation):
     """

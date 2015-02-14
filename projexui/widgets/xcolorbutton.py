@@ -16,14 +16,14 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
-
-from projexui.qt        import Signal, Property
-from projexui.qt.QtGui  import QPushButton,\
+import projexui
+from projexui import qt
+from PyQt4.QtGui  import QPushButton,\
                                QColor,\
                                QColorDialog
 
-class XColorButton(QPushButton):    """    The XColorButton class is a simple extension to the standard QPushButton    that will control color settings.  When teh user clicks on the button, the    QColorDialog will be displayed, prompting the user to select a new color.    Colors are stored internally can can be accessed by etter and setter     methods, as well as the colorChanged signal.        As the color is modified, either through code or by a user, the background    color for the button will automatically update to match.        == Example ==        |>>> from projexui.widgets.xcolorbutton import XColorButton    |>>> import projexui    |    |>>> # create the widget    |>>> btn = projexui.testWidget(XColorButton)    |    |>>> # click around, change the color    |>>> from projexui.qt.QtGui import QColor    |>>> print btn.color().red(), btn.color().green(), btn.color().blue()    |255 170 0    |>>> btn.setColor(QColor('red'))    |    |>>> # create connections    |>>> def printColor(clr): print clr.red(), clr.green(), clr.blue()    |>>> btn.colorChanged.connect(printColor)    |    |>>> # prompt the user to select a color for that button    |>>> btn.pickColor()    """
-    colorChanged = Signal(QColor)
+class XColorButton(QPushButton):    """    The XColorButton class is a simple extension to the standard QPushButton    that will control color settings.  When teh user clicks on the button, the    QColorDialog will be displayed, prompting the user to select a new color.    Colors are stored internally can can be accessed by etter and setter     methods, as well as the colorChanged signal.        As the color is modified, either through code or by a user, the background    color for the button will automatically update to match.        == Example ==        |>>> from projexui.widgets.xcolorbutton import XColorButton    |>>> import projexui    |    |>>> # create the widget    |>>> btn = projexui.testWidget(XColorButton)    |    |>>> # click around, change the color    |>>> from PyQt4.QtGui import QColor    |>>> print btn.color().red(), btn.color().green(), btn.color().blue()    |255 170 0    |>>> btn.setColor(QColor('red'))    |    |>>> # create connections    |>>> def printColor(clr): print clr.red(), clr.green(), clr.blue()    |>>> btn.colorChanged.connect(printColor)    |    |>>> # prompt the user to select a color for that button    |>>> btn.pickColor()    """
+    colorChanged = qt.Signal(QColor)
     
     def __init__( self, parent ):
         super(XColorButton, self).__init__(parent)
@@ -69,6 +69,6 @@ class XColorButton(QPushButton):    """    The XColorButton class is a simple 
         if ( not self.signalsBlocked() ):
             self.colorChanged.emit(color)
     
-    x_color = Property(QColor, color, setColor)
+    x_color = qt.Property(QColor, color, setColor)
     
 __designer_plugins__ = [XColorButton]

@@ -36,6 +36,13 @@ import logging
 import os
 import sys
 
+from PyQt4 import QtCore,\
+                  QtGui,\
+                  QtXml,\
+                  QtWebKit,\
+                  QtNetwork,\
+                  uic
+
 logger = logging.getLogger(__name__)
 
 QT_WRAPPER = os.environ.get('PROJEXUI_QT_WRAPPER', 'PyQt4')
@@ -94,9 +101,9 @@ if package:
     sys.modules[package].createMap(globals())
     
     # define the modules for importing
-    sys.modules['projexui.qt.QtCore']     = QtCore
+    sys.modules['PyQt4.QtCore']     = QtCore
     sys.modules['projexui.qt.QtDesigner'] = QtDesigner
-    sys.modules['projexui.qt.QtGui']      = QtGui
+    sys.modules['PyQt4.QtGui']      = QtGui
     sys.modules['projexui.qt.Qsci']       = Qsci
     sys.modules['projexui.qt.QtWebKit']   = QtWebKit
     sys.modules['projexui.qt.QtNetwork']  = QtNetwork

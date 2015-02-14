@@ -18,9 +18,9 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Signal, Slot, Property
-from projexui.qt.QtCore import Qt, QPoint
-from projexui.qt.QtGui import QComboBox, QListView, QColor
+from projexui import qt #import Signal, Slot, Property
+from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtGui import QComboBox, QListView, QColor
 
 import projexui.resources
 from projexui.widgets.xlineedit import XLineEdit
@@ -66,8 +66,8 @@ class XComboBox(QComboBox):
     """
     __designer_icon__ = projexui.resources.find('img/ui/combobox.png')
     
-    checkedIndexesChanged = Signal(list)
-    checkedItemsChanged   = Signal(list)
+    checkedIndexesChanged = qt.Signal(list)
+    checkedItemsChanged   = qt.Signal(list)
     
     def __init__( self, parent = None ):
         super(XComboBox, self).__init__( parent )
@@ -365,7 +365,7 @@ class XComboBox(QComboBox):
         if isinstance(lineEdit, XLineEdit):
             lineEdit.setHintColor(color)
     
-    @Slot(str)
+    @qt.Slot(str)
     def setSeparator( self, separator ):
         """
         Sets the separator that will be used when joining the checked items
@@ -452,8 +452,8 @@ class XComboBox(QComboBox):
         item.setCheckState(state)
     
     # define qt properties
-    x_hint      = Property(str,  hint,        setHint)
-    x_checkable = Property(bool, isCheckable, setCheckable)
-    x_separator = Property(str,  separator,   setSeparator)
+    x_hint      = qt.Property(str,  hint,        setHint)
+    x_checkable = qt.Property(bool, isCheckable, setCheckable)
+    x_separator = qt.Property(str,  separator,   setSeparator)
 
 __designer_plugins__ = [XComboBox]

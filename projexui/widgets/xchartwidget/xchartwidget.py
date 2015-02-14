@@ -16,8 +16,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QGraphicsView
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QGraphicsView
 
 from projexui.widgets.xchartwidget.xchartscene import XChartScene
 

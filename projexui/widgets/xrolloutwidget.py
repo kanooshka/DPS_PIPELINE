@@ -21,8 +21,8 @@ __email__           = 'team@projexsoftware.com'
 import datetime
 
 from projexui.qt import Signal
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QFrame,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QFrame,\
                               QHBoxLayout,\
                               QLabel,\
                               QPainter,\

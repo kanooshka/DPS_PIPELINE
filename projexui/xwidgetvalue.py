@@ -18,9 +18,9 @@ __email__           = 'team@projexsoftware.com'
 import logging
 import os.path
 
-from projexui.qt import unwrapVariant
-from projexui.qt.QtGui    import QAction, QApplication
-from projexui.qt          import QtGui, QtCore
+from projexui import qt #import unwrapVariant
+from PyQt4 import QtCore,QtGui
+from PyQt4.QtGui    import QAction, QApplication
 
 # used to register saving and loading systems
 from projexui.widgets.xcolortreewidget import XColorTreeWidget
@@ -94,12 +94,12 @@ def getComboValue(combo):
     
     :return     <int> || <str>
     """
-    dataType = unwrapVariant(combo.property('dataType'))
+    dataType = qt.unwrapVariant(combo.property('dataType'))
     
     if dataType == 'string':
         return combo.currentText()
     elif dataType == 'data':
-        return unwrapVariant(combo.itemData(combo.currentIndex()))
+        return qt.unwrapVariant(combo.itemData(combo.currentIndex()))
     return combo.currentIndex()
 
 def setComboValue(combo, value):
@@ -111,13 +111,13 @@ def setComboValue(combo, value):
     
     :return     <int> || <str>
     """
-    dataType = unwrapVariant(combo.property('dataType'))
+    dataType = qt.unwrapVariant(combo.property('dataType'))
     
     if dataType == 'string':
         return combo.setCurrentIndex(combo.findText(value))
     elif dataType == 'data':
         for i in range(combo.count()):
-            if unwrapVariant(combo.itemData(i)) == value:
+            if qt.unwrapVariant(combo.itemData(i)) == value:
                 return combo.setCurrentIndex(i)
         return combo.setCurrentIndex(-1)
     return combo.setCurrentIndex(value)

@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from projexui.qt import Signal
-from projexui.qt.QtCore import QPoint, Qt
-from projexui.qt.QtGui import QIcon
+from PyQt4.QtCore import QPoint, Qt
+from PyQt4.QtGui import QIcon
 from projexui.widgets.xtreewidget import XTreeWidget, XTreeWidgetItem
 from projexui.widgets.xcombobox import XComboBox
 from projexui.completers.xjoincompleter import XJoinCompleter

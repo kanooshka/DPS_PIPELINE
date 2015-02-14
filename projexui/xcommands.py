@@ -26,6 +26,16 @@ import projex.text
 
 from xml.etree import ElementTree
 
+from PyQt4 import QtCore,\
+                  QtGui,\
+                  QtXml,\
+                  QtWebKit,\
+                  QtNetwork,\
+                  uic
+
+#from projexui.widgets.xviewwidget import XView
+from projexui.widgets import xviewwidget #import XView
+
 USE_COMPILED = os.environ.get('PROJEXUI_USE_COMPILED', '').lower() == 'true'
 QT_WRAPPER   = os.environ.get('PROJEXUI_QT_WRAPPER', 'PyQt4')
 
@@ -155,8 +165,8 @@ def import_qt(glbls):
     if 'QtCore' in glbls:
         return
         
-    from projexui.qt import QtCore, QtGui, wrapVariant, uic
-    from projexui.widgets.xloggersplashscreen import XLoggerSplashScreen
+    #from projexui.qt import QtCore, QtGui, wrapVariant, uic
+    #from projexui.widgets.xloggersplashscreen import XLoggerSplashScreen
     
     glbls['QtCore'] = QtCore
     glbls['QtGui'] = QtGui
@@ -249,8 +259,11 @@ def loadUi(modulefile, inst, uifile=None):
     
     if not widget:
         # normalize the path
+        print ("\nnot widget before uifile assignment: " + uifile)
         uifile = os.path.normpath(uifile)
+        print ("\nnot widget after uifile assignment: " + uifile)
         QtCore.QDir.setCurrent(os.path.dirname(uifile))
+        
         widget = uic.loadUi(uifile, inst)
         QtCore.QDir.setCurrent(currpath)
     
@@ -284,7 +297,7 @@ def exec_( window, data ):
         data['app'].setWindowIcon(window.windowIcon())
         
         # connects the xview system to widget focusing
-        from projexui.widgets.xviewwidget import XView
+        #from projexui.widgets.xviewwidget import XView
         try:
             data['app'].focusChanged.connect(XView.updateCurrentView,
                                              QtCore.Qt.UniqueConnection)

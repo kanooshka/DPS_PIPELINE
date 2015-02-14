@@ -12,10 +12,10 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt import Slot, wrapVariant, unwrapVariant, PyObject
-from projexui.qt.QtCore import QDir, Qt
+from projexui import qt #import Slot, wrapVariant, unwrapVariant, PyObject
+from PyQt4.QtCore import QDir, Qt
 
-from projexui.qt.QtGui import QCursor, \
+from PyQt4.QtGui import QCursor, \
                               QIcon,\
                               QMenu, \
                               QMessageBox,\
@@ -236,7 +236,7 @@ class XViewWidget(QScrollArea):
             if ( window ):
                 cls.registerToWindow(window)
     
-    @Slot(PyObject)
+    @qt.Slot(qt.PyObject)
     def restoreProfile( self, profile ):
         """
         Restores the profile settings based on the inputed profile.
@@ -253,7 +253,7 @@ class XViewWidget(QScrollArea):
         :param      settings | <QSettings>
         """
         key     = self.objectName()
-        value   = unwrapVariant(settings.value('%s/profile' % key))
+        value   = qt.unwrapVariant(settings.value('%s/profile' % key))
         
         if ( not value ):
             self.reset(force = True)
@@ -334,7 +334,7 @@ class XViewWidget(QScrollArea):
         profile = self.saveProfile()
         key     = self.objectName()
         
-        settings.setValue('%s/profile' % key, wrapVariant(profile.toString()))
+        settings.setValue('%s/profile' % key, qt.wrapVariant(profile.toString()))
         
         # record the view type settings
         for viewType in self.viewTypes():

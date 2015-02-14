@@ -21,8 +21,8 @@ import re
 import weakref
 
 from projexui.qt        import Slot, Property
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui  import QListWidget,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui  import QListWidget,\
                                QListWidgetItem,\
                                QPainter,\
                                QColor

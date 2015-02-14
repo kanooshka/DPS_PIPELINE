@@ -1,7 +1,7 @@
 
 from DPSPipeline.widgets.createprojectwidget.createprojectwidget import CreateProjectWidget
 
-from projexui.qt.QtGui import QColor
+from PyQt4.QtGui import QColor
 
 class CreateProjectTest():
 

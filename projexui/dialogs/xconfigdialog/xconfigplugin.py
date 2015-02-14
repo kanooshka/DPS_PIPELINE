@@ -16,7 +16,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import projexui
-from projexui.qt.QtCore import QObject
+from PyQt4.QtCore import QObject
 from projexui.qt import Signal
 from projexui.dialogs.xconfigdialog.xconfigwidget import XConfigWidget
 

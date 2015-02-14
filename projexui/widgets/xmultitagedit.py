@@ -12,11 +12,11 @@ __email__           = 'team@projexsoftware.com'
 
 import projexui
 from projexui.qt import Signal, Slot, Property
-from projexui.qt.QtCore import QSize,\
+from PyQt4.QtCore import QSize,\
                                Qt,\
                                QMimeData
 
-from projexui.qt.QtGui import QListWidgetItem,\
+from PyQt4.QtGui import QListWidgetItem,\
                               QItemDelegate,\
                               QPainter,\
                               QFontMetrics,\

@@ -13,7 +13,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtGui import QDialog
+from PyQt4.QtGui import QDialog
 
 import projexui
 from projexui import resources

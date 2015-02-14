@@ -16,10 +16,10 @@ __email__           = 'team@projexsoftware.com'
 #---------------------------------------------------------------------
 
 from projexui.qt import Signal, Slot, wrapVariant
-from projexui.qt.QtCore import Qt,\
+from PyQt4.QtCore import Qt,\
                                QSize
                          
-from projexui.qt.QtGui import QButtonGroup,\
+from PyQt4.QtGui import QButtonGroup,\
                               QCompleter,\
                               QCursor,\
                               QHBoxLayout,\

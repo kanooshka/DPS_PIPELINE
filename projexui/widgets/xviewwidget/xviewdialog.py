@@ -16,11 +16,11 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QDialog,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QDialog,\
                               QVBoxLayout
                         
-from projexui.widgets.xviewwidget import XViewWidget
+#from projexui.widgets.xviewwidget import XViewWidget
 
 class XViewDialog(QDialog):
     def __init__( self, parent = None, viewTypes = None ):

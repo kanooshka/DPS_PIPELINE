@@ -14,9 +14,9 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 from orb import Query, QueryCompound
-from projexui.qt import Signal, SIGNAL
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QWidget, QVBoxLayout, QMenu
+from projexui import qt #import Signal, SIGNAL
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget, QVBoxLayout, QMenu
 
 from projexui.widgets.xorbquerywidget.xorbqueryentrywidget \
               import XOrbQueryEntryWidget
@@ -25,9 +25,9 @@ import projexui
 
 class XOrbQueryContainer(QWidget):
     """ """
-    entriesUpdated = Signal()
-    enterCompoundRequested = Signal(object, object)
-    exitCompoundRequested = Signal()
+    entriesUpdated = qt.Signal()
+    enterCompoundRequested = qt.Signal(object, object)
+    exitCompoundRequested = qt.Signal()
     
     def __init__( self, parent = None ):
         super(XOrbQueryContainer, self).__init__( parent )

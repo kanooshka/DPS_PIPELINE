@@ -17,12 +17,12 @@ __maintainer__      = 'Projex Software, LLC'
 __email__           = 'team@projexsoftware.com'
 
 from projexui.qt import Signal, Slot, Property
-from projexui.qt.QtCore import QEasingCurve,\
+from PyQt4.QtCore import QEasingCurve,\
                                QPoint,\
                                QPropertyAnimation,\
                                QParallelAnimationGroup
 
-from projexui.qt.QtGui import QStackedWidget
+from PyQt4.QtGui import QStackedWidget
 
 from projex.enum import enum
 

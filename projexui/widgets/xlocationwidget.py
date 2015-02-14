@@ -21,11 +21,10 @@ except ImportError:
 
 import webbrowser
 
-from projexui.qt import Signal,\
-                        Slot,\
-                        Property
+import projexui
+from projexui import qt
 
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtGui import QWidget,\
                               QHBoxLayout,\
                               QIcon,\
                               QToolButton
@@ -34,8 +33,8 @@ from projexui.widgets.xlineedit import XLineEdit
 from projexui import resources
 
 class XLocationWidget(QWidget):
-    locationChanged = Signal(str)
-    locationEdited  = Signal()
+    locationChanged = qt.Signal(str)
+    locationEdited  = qt.Signal()
     
     def __init__( self, parent ):
         super(XLocationWidget, self).__init__(parent)
@@ -108,7 +107,7 @@ class XLocationWidget(QWidget):
         """
         return str(self._locationEdit.text())
     
-    @Slot(str)
+    @qt.Slot(str)
     def setHint( self, hint ):
         """
         Sets the hint associated with this widget.
@@ -117,7 +116,7 @@ class XLocationWidget(QWidget):
         """
         self._locationEdit.setHint(hint)
     
-    @Slot(str)
+    @qt.Slot(str)
     def setLocation( self, location ):
         """
         Sets the location for this widget to the inputed location.
@@ -159,9 +158,9 @@ class XLocationWidget(QWidget):
         """
         return self._urlTemplate
     
-    x_hint        = Property(str, hint, setHint)
-    x_location    = Property(str, location, setLocation)
-    x_urlQueryKey = Property(str, urlQueryKey, setUrlQueryKey)
-    x_urlTemplate = Property(str, urlTemplate, setUrlTemplate)
+    x_hint        = qt.Property(str, hint, setHint)
+    x_location    = qt.Property(str, location, setLocation)
+    x_urlQueryKey = qt.Property(str, urlQueryKey, setUrlQueryKey)
+    x_urlTemplate = qt.Property(str, urlTemplate, setUrlTemplate)
 
 __designer_plugins__ = [XLocationWidget]

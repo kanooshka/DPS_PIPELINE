@@ -12,9 +12,9 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt import wrapVariant, unwrapVariant
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QActionGroup,\
+from projexui import qt #import wrapVariant, unwrapVariant
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QActionGroup,\
                               QMenu,\
                               QIcon,\
                               QInputDialog,\
@@ -22,6 +22,7 @@ from projexui.qt.QtGui import QActionGroup,\
                               QSplitter
 
 from projexui.menus.xmenu import XMenu
+import projexui.widgets.xviewwidget# import XViewDialog
 
 from projexui import resources
 
@@ -122,14 +123,14 @@ class XViewPanelMenu(XMenu):
             self._groupingMenu.setIcon(icon)
             
             act = self._groupingMenu.addAction('No Grouping')
-            act.setData(wrapVariant(0))
+            act.setData(qt.wrapVariant(0))
             act.setCheckable(True)
             self._groupingMenu.addSeparator()
             self._groupingGroup.addAction(act)
             
             for i in range(1, 6):
                 act = self._groupingMenu.addAction('Group %i' % i)
-                act.setData(wrapVariant(i))
+                act.setData(qt.wrapVariant(i))
                 act.setCheckable(True)
                 
                 self._groupingGroup.addAction(act)
@@ -167,7 +168,7 @@ class XViewPanelMenu(XMenu):
         
         :param      action | <QAction>
         """
-        grp  = unwrapVariant(action.data())
+        grp  = qt.unwrapVariant(action.data())
         view = self._currentPanel.currentView()
         view.setViewingGroup(grp)
     
@@ -201,7 +202,7 @@ class XViewPanelMenu(XMenu):
         """
         Detaches the current panel as a floating window.
         """
-        from projexui.widgets.xviewwidget import XViewDialog
+        #from projexui.widgets.xviewwidget import XViewDialog
         
         dlg = XViewDialog(self._viewWidget, self._viewWidget.viewTypes())
         size = self._currentPanel.size()
@@ -213,7 +214,7 @@ class XViewPanelMenu(XMenu):
         """
         Detaches the current panel as a floating window.
         """
-        from projexui.widgets.xviewwidget import XViewDialog
+        #from projexui.widgets.xviewwidget import XViewDialog
         
         dlg = XViewDialog(self._viewWidget, self._viewWidget.viewTypes())
         size = self._currentPanel.size()
@@ -301,7 +302,7 @@ class XViewPanelMenu(XMenu):
         
         self._groupingGroup.blockSignals(True)
         for act in self._groupingGroup.actions():
-            act.setChecked(grp == unwrapVariant(act.data()))
+            act.setChecked(grp == qt.unwrapVariant(act.data()))
         self._groupingGroup.blockSignals(False)
         
         if ( self._groupingMenu ):

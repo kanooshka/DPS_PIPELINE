@@ -20,11 +20,11 @@ import os
 import sys
 
 from projexui.qt import Signal
-from projexui.qt.QtCore   import Qt,\
+from PyQt4.QtCore   import Qt,\
                                  QDir,\
                                  QFile
                            
-from projexui.qt.QtGui    import QFileDialog,\
+from PyQt4.QtGui    import QFileDialog,\
                                  QFont,\
                                  QFontMetrics,\
                                  QMessageBox,\
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 from projexui.qt import Qsci
 if not Qsci:
-    from projexui.qt.QtGui import QTextEdit as QsciScintilla
+    from PyQt4.QtGui import QTextEdit as QsciScintilla
 else:
     QsciScintilla = Qsci.QsciScintilla
 

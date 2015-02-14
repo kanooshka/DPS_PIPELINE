@@ -20,20 +20,24 @@ from projex.enum import enum
 import projexui
 import projex.dates
 
-from projexui.qt import wrapVariant
-from projexui.qt.QtCore   import QDate,\
+from projexui import qt
+from PyQt4.QtCore   import QDate,\
                                  QRectF,\
                                  QSize,\
                                  QTime,\
                                  QDateTime,\
                                  Qt
-from projexui.qt.QtGui import QIcon
+from PyQt4.QtGui import QIcon
 
 from projexui.widgets.xtreewidget import XTreeWidgetItem
+import projexui.widgets.xganttwidget
+#from projexui.widgets.xganttwidget import XGanttWidget
 
 from projexui.widgets.xganttwidget.xganttviewitem import XGanttViewItem
 from projexui.widgets.xganttwidget.xganttdepitem  import XGanttDepItem
-from projexui.widgets.xganttwidget.xganttwidget   import XGanttWidget
+
+#from projexui.widgets.xganttwidget.xganttwidget   import XGanttWidget
+
 import datetime
 from datetime import timedelta
 #------------------------------------------------------------------------------
@@ -275,8 +279,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
         if ( not tree ):
             return None
         
-        from projexui.widgets.xganttwidget import XGanttWidget
-        return projexui.ancestor(tree, XGanttWidget)
+        #from projexui.widgets.xganttwidget import XGanttWidget
+        return projexui.ancestor(tree, projexui.widgets.xganttwidget.XGanttWidget)
     
     def insertChild( self, index, item ):
         """
@@ -464,7 +468,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         if tree:
             col = tree.column('Name')
             if col != -1:
-                self.setData(col, Qt.EditRole, wrapVariant(name))
+                self.setData(col, Qt.EditRole, qt.wrapVariant(name))
     
     def setProperty( self, key, value ):
         """
@@ -500,7 +504,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
             if tree:
                 col = tree.column(key)
                 if col != -1:
-                    self.setData(col, Qt.EditRole, wrapVariant(value))
+                    self.setData(col, Qt.EditRole, qt.wrapVariant(value))
     
     def setTimeEnd( self, time ):
         """
@@ -613,7 +617,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         for c, col in enumerate(tree.columns()):
             value = self.property(col, '')
             #if (col == "Work Days" or col == "Calendar Days"):
-            self.setData(c, Qt.EditRole, wrapVariant(value))
+            self.setData(c, Qt.EditRole, qt.wrapVariant(value))
         
         if recursive:
             for i in range(self.childCount()):

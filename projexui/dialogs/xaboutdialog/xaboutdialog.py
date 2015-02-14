@@ -18,7 +18,7 @@ __email__           = 'team@projexsoftware.com'
 import os.path
 
 from projexui.qt       import uic
-from projexui.qt.QtGui import QDialog, \
+from PyQt4.QtGui import QDialog, \
                               QPixmap
 
 class XAboutDialog( QDialog ):

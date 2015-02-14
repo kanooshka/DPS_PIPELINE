@@ -15,8 +15,8 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import unwrapVariant
-from projexui.qt.QtGui import QApplication,\
+from projexui import qt #import unwrapVariant
+from PyQt4.QtGui import QApplication,\
                               QColor,\
                               QPalette
 
@@ -189,7 +189,7 @@ class XColorSet(object):
         from projexui.xdatatype import registerDataType
         registerDataType(cls.__name__,
             lambda pyvalue:  pyvalue.toString(),
-            lambda qvariant: cls.fromString(unwrapVariant(qvariant)))
+            lambda qvariant: cls.fromString(qt.unwrapVariant(qvariant)))
 
 #------------------------------------------------------------------------------
 

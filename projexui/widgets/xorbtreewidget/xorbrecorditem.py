@@ -14,13 +14,13 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 from projexui.qt import wrapVariant
-from projexui.qt.QtCore   import QSize,\
+from PyQt4.QtCore   import QSize,\
                                  Qt,\
                                  QDate,\
                                  QDateTime,\
                                  QTime
 
-from projexui.qt.QtGui    import QColor, QBrush
+from PyQt4.QtGui    import QColor, QBrush
 
 import datetime
 import projex.dates

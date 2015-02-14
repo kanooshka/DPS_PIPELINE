@@ -24,11 +24,11 @@ import sys
 
 import projex.text
 from projexui.qt import Signal
-from projexui.qt.QtCore import QObject,\
+from PyQt4.QtCore import QObject,\
                                QPoint,\
                                Qt
                          
-from projexui.qt.QtGui import QApplication,\
+from PyQt4.QtGui import QApplication,\
                               QCursor,\
                               QFont,\
                               QTextCursor,\

@@ -14,8 +14,8 @@ __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
 from projexui.qt import Property, Slot, Signal
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QTextEdit,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTextEdit,\
                               QPainter,\
                               QColor,\
                               QApplication,\

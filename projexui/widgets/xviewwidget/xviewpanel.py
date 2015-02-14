@@ -12,11 +12,11 @@ __copyright__   = 'Copyright (c) 2011, Projex Software'
 __maintainer__  = 'Projex Software'
 __email__       = 'team@projexsoftware.com'
 
-from projexui.qt.QtCore   import Qt,\
+from PyQt4.QtCore   import Qt,\
                                  QMimeData,\
                                  QSize
                            
-from projexui.qt.QtGui    import QApplication,\
+from PyQt4.QtGui    import QApplication,\
                                  QBoxLayout, \
                                  QCursor, \
                                  QDrag,\
@@ -29,10 +29,15 @@ from projexui.qt.QtGui    import QApplication,\
                                  QTabBar,\
                                  QWidget
 
+
+import projexui
 from projexui.widgets.xtabwidget                 import XTabWidget
 from projexui.widgets.xviewwidget.xviewpanelmenu import XViewPanelMenu
 from projexui.widgets.xviewwidget.xview          import XView
 from projexui.widgets.xsplitter                  import XSplitter
+
+#from projexui.widgets.xviewwidget.xview import XViewDialog
+#from projexui.widgets.xviewwidget.xview import XViewWidget
 
 MAX_INT = 2**16
 

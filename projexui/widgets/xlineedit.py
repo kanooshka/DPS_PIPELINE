@@ -18,12 +18,12 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
-from projexui.qt import Property, Slot, Signal
-from projexui.qt.QtCore import  QSize,\
+from projexui import qt #import Property, Slot, Signal
+from PyQt4.QtCore import  QSize,\
                                 Qt,\
                                 QSize
 
-from projexui.qt.QtGui import QFontMetrics,\
+from PyQt4.QtGui import QFontMetrics,\
                               QLineEdit,\
                               QPalette,\
                               QPainter,\
@@ -54,7 +54,7 @@ class XLineEdit( QLineEdit ):
     
     __designer_icon__ = projexui.resources.find('img/ui/lineedit.png')
     
-    textEntered = Signal(str)
+    textEntered = qt.Signal(str)
     
     InputFormat = enum('Normal', 
                        'CamelHump', 
@@ -449,7 +449,7 @@ class XLineEdit( QLineEdit ):
         
         self.adjustStyleSheet()
     
-    @Slot(str)
+    @qt.Slot(str)
     def setHint( self, hint ):
         """
         Sets the hint text to the inputed value.
@@ -589,15 +589,15 @@ class XLineEdit( QLineEdit ):
         return self._useHintValue
     
     # create Qt properties
-    x_hint              = Property(str, hint, setHint)
-    x_icon              = Property('QIcon', icon, setIcon)
-    x_iconSize          = Property(QSize, iconSize, setIconSize)
-    x_hintColor         = Property('QColor', hintColor, setHintColor)
-    x_cornerRadius      = Property(int, cornerRadius, setCornerRadius)
-    x_inputFormatText   = Property(str, inputFormatText, setInputFormatText)
-    x_spacer            = Property(str, spacer, setSpacer)
-    x_selectAllOnFocus  = Property(bool, selectAllOnFocus, setSelectAllOnFocus)
-    x_useHintValue      = Property(bool, useHintValue, setUseHintValue)
+    x_hint              = qt.Property(str, hint, setHint)
+    x_icon              = qt.Property('QIcon', icon, setIcon)
+    x_iconSize          = qt.Property(QSize, iconSize, setIconSize)
+    x_hintColor         = qt.Property('QColor', hintColor, setHintColor)
+    x_cornerRadius      = qt.Property(int, cornerRadius, setCornerRadius)
+    x_inputFormatText   = qt.Property(str, inputFormatText, setInputFormatText)
+    x_spacer            = qt.Property(str, spacer, setSpacer)
+    x_selectAllOnFocus  = qt.Property(bool, selectAllOnFocus, setSelectAllOnFocus)
+    x_useHintValue      = qt.Property(bool, useHintValue, setUseHintValue)
     
     # hack for qt
     setX_icon = setIcon

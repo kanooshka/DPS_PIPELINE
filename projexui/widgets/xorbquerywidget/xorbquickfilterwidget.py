@@ -24,8 +24,8 @@ except ImportError:
 import projexui
 
 from projexui.qt import Signal, Property
-from projexui.qt.QtCore import Qt
-from projexui.qt.QtGui import QWidget,\
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget,\
                               QHBoxLayout,\
                               QVBoxLayout,\
                               QSizePolicy,\
