@@ -144,6 +144,17 @@ class XGanttScene(QGraphicsScene):
         for rect in self._weekendRects:
             painter.drawRect(rect)
         
+	# draw the holidays
+	
+        for rect in self._holidayRects:
+            painter.setBrush(gantt.holidayBrush())
+	    painter.drawRect(rect)
+	    
+	# draw the currentday
+	painter.setBrush(gantt._currentDayBrush)
+        for rect in self._currentDayRects:
+            painter.drawRect(rect)
+	
         # draw the default background
         painter.setPen(gantt.gridPen())
         painter.drawLines(self._hlines + self._vlines)
@@ -189,6 +200,8 @@ class XGanttScene(QGraphicsScene):
         self._hlines            = []
         self._vlines            = []
         self._weekendRects      = []
+	self._holidayRects      = []
+	self._currentDayRects   = []
         self._alternateRects    = []
         self._topLabels         = []
         
@@ -231,11 +244,18 @@ class XGanttScene(QGraphicsScene):
             rect  = QRect(x, half, cell_width, half)
             self._labels.append((rect, label))
             
+	    # store current day rectangle
+	    if ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
+                rect = QRect(x, 0, cell_width, height)
+                self._currentDayRects.append(rect)
+		
             # store weekend rectangles
-            if ( curr.dayOfWeek() in (6, 7) ):
+            elif ( curr.dayOfWeek() in (6, 7) ):
                 rect = QRect(x, 0, cell_width, height)
                 self._weekendRects.append(rect)
             
+	    
+		
             # increment the dates
             curr = curr.addDays(increment)
             x += cell_width

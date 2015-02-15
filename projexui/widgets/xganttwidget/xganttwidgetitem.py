@@ -17,6 +17,8 @@ __email__           = 'team@projexsoftware.com'
 
 from projex.enum import enum
 
+import sharedDB
+
 import projexui
 import projex.dates
 
@@ -210,7 +212,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
         """
         Sets the database entry to updated for save.
         """
-        self._dbEntry._updated = 1
+        if (sharedDB.freezeDBUpdates == 0):
+            self._dbEntry._updated = 1
         self._dbEntry._startdate = startdate.toPyDate()
         self._dbEntry._enddate = enddate.toPyDate()
     

@@ -49,7 +49,7 @@ class CreateProjectWidget(QWidget):
         
         self.descriptionTextEdit.setText("Enter Description Here")
         self.durationEdit.setTime(QTime.fromString("00:01:00"))
-        self.projectNameQLineEdit.setText("WalrusProtector")
+        self.projectNameQLineEdit.setText("Project Name")
         self.fps.setValue(25)
         
     def CreateProject(self):        

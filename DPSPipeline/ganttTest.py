@@ -33,7 +33,7 @@ class GanttTest():
 		self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 		#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
 		#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
-		#projectXGanttWidgetItem.setDateEnd(QDate(project._due_date.year,project._due_date.month,project._due_date.day))
+		
 		
 
 		
@@ -43,8 +43,12 @@ class GanttTest():
 			#print phase._idphases
 			self.AddPhase(projectXGanttWidgetItem, phase)
 		
-		projectXGanttWidgetItem.sync(recursive = True)
+		#projectXGanttWidgetItem.setDateEnd(QDate(project._due_date.year,project._due_date.month,project._due_date.day))
+		#projectXGanttWidgetItem.sync(recursive = True)
+		#projectXGanttWidgetItem.syncDependencies(recursive = True)
 		self._myXGanttWidget.SaveToDatabase()
+		sharedDB.freezeDBUpdates = 0;
+		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)
 		#self.AddPhase(projectXGanttWidgetItem, 'Storyboard', project._story_board_start, project._story_board_end, QColor(220,0,0))
 				
 		#if project starts before view start date
@@ -75,7 +79,9 @@ class GanttTest():
 		startDate = phase._startdate
 		endDate = phase._enddate
 		
-		
+		if (startDate<sharedDB.earliestDate):
+			sharedDB.earliestDate = startDate
+			#print (startDate)
 		
 		
 		childItem = XGanttWidgetItem(self._myXGanttWidget)

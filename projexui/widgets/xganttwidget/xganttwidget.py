@@ -77,6 +77,8 @@ class XGanttWidget(QWidget):
         self._gridPen           = QPen(color.darker(135))
         self._brush             = QBrush(color)
         self._alternateBrush    = QBrush(color.darker(25))
+	self._currentDayBrush   = QBrush(QColor(146,252,186))
+	self._holidayBrush      = QBrush(QColor(166,46,46))
         
         weekendColor            = color.darker(148)
         self._weekendBrush      = QBrush(weekendColor)

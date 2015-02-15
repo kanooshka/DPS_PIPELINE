@@ -41,6 +41,7 @@ class PhaseAssignments():
 			cursor.close()
 			#connection.closeConnection()
 			cnx.close()
+			self._updated = 0
 			
 		
 	
