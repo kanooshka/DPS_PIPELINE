@@ -47,8 +47,8 @@ class CreateProjectWidget(QWidget):
                 self.phaseListWidget.setItemSelected(item,True)
         
         
-        self.descriptionTextEdit.setText("This is a rubber walrus protector!")
-        self.durationEdit.setTime(QTime.fromString("00:01:02"))
+        self.descriptionTextEdit.setText("Enter Description Here")
+        self.durationEdit.setTime(QTime.fromString("00:01:00"))
         self.projectNameQLineEdit.setText("WalrusProtector")
         self.fps.setValue(25)
         
