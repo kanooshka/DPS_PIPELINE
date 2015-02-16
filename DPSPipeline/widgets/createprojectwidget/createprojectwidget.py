@@ -94,7 +94,7 @@ def InitializeDates(phases,due_date,duration):
             if myPhase._idphases == phase._idphases:
                 #multiply duration(minutes) by _manHoursToMinuteRatio / work hours in a day       
                 daysGoal = math.ceil(QTime().secsTo(duration)/60.0*myPhase._manHoursToMinuteRatio/8.0)
-                print daysGoal
+                #print daysGoal
                 numdays = 0
                 #while numdays < work days
                 while numdays<daysGoal:

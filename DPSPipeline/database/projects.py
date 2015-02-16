@@ -88,8 +88,12 @@ def QueryLatestID():
 	rows = cursor.fetchall()
 	
 	for row in rows:
-		maxidprojects = row[0]+1
-	
+		if (type(row[0])) is int:
+			maxidprojects = row[0]+1
+		else:
+			maxidprojects = 1;
 	connection.closeConnection()
 	cnx.close()
+	
 	return maxidprojects
+
