@@ -1,9 +1,0 @@
-('D:\\Users\\Admin\\Documents\\GitHub\\DPS_PIPELINE\\dist\\application.exe',
- True,
- False,
- None,
- None,
- [],
- None,
- False,
- 1423928648L)
