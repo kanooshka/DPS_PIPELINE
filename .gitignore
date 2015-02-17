@@ -45,3 +45,7 @@ Temporary Items
 #compiled python
 *.pyc
 *.komodoproject
+
+#builds
+dist/
+build/
