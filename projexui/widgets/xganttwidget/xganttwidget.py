@@ -278,14 +278,15 @@ class XGanttWidget(QWidget):
     
     def closeEvent(self, event):
 
-	quit_msg = "Are you sure you want to exit the program?"
+	quit_msg = "Save before exit?"
 	reply = QtGui.QMessageBox.question(self, 'Message', 
 			 quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
     
 	if reply == QtGui.QMessageBox.Yes:
+	    self.SaveToDatabase;
 	    event.accept()
 	else:
-	    event.ignore()
+	    event.accept()
     
     def columns( self ):
         """
