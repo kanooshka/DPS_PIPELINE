@@ -18,6 +18,8 @@ __email__           = 'team@projexsoftware.com'
 import weakref
 import sys
 
+import sharedDB
+
 from projexui import qt
 
 from PyQt4    import QtCore
@@ -539,6 +541,43 @@ class XGanttWidget(QWidget):
         columnName = self.treeWidget().columnOf(index)
         item.setProperty(columnName, value)
         item.sync()
+    
+    def updatePhaseVisibility(self, visibility, phaseName = ''):
+	if (phaseName != ''):
+	    #print ("Changing "+ phaseName + " to : "+ str(visibility))	    
+	    #iterate through all projects
+	    for x in range(0,self.treeWidget().topLevelItemCount()):
+		projectWidgetItem = self.treeWidget().topLevelItem(x)
+		for c in range(projectWidgetItem.childCount()):
+		    child = projectWidgetItem.child(c)
+		    if (child._name== phaseName):
+			child.setHidden(not visibility)			
+			#print child._name
+		#print ("item: " + str(x))
+		    #iterate through all phases
+		    
+	    #if phase matches, change visibility
+	    
+	    for phase in sharedDB.myPhases:
+		if (phase._name == phaseName):
+		    phase._visible = visibility
+	    
+	else:
+	    #iterate through all projects
+	    #iterate through all phases
+	    #change visibility
+	    for x in range(0,self.treeWidget().topLevelItemCount()):
+		projectWidgetItem = self.treeWidget().topLevelItem(x)
+		for c in range(projectWidgetItem.childCount()):
+		    child = projectWidgetItem.child(c)
+		    child.setHidden(not visibility)
+	    
+	    
+	    for phase in sharedDB.myPhases:
+		phase._visible = visibility
+	    #print ("Changing all phases to: "+ str(visibility))
+	    
+	self.syncView()
     
     def viewWidget( self ):
         """

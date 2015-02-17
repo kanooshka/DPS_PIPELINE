@@ -70,6 +70,8 @@ from projexui.xexporter import XExporter
 from projexui.widgets.xloaderwidget import XLoaderWidget
 from projexui.widgets.xpopupwidget import XPopupWidget
 
+import sharedDB
+
 COLUMN_FILTER_EXPR = re.compile('((\w+):([\w,\*]+|"[^"]+"?))')
 
 ARROW_STYLESHEET = """
@@ -1692,7 +1694,7 @@ class XTreeWidget(QTreeWidget):
         act = menu.addAction("Hide '%s'" % self.columnOf(index))
         act.triggered.connect( self.headerHideColumn )
         
-        menu.addSeparator()
+        '''menu.addSeparator()
         
         act = menu.addAction('Sort Ascending')
         act.setIcon(QIcon(resources.find('img/sort_ascending.png')))
@@ -1705,9 +1707,27 @@ class XTreeWidget(QTreeWidget):
         act = menu.addAction('Resize to Contents')
         act.setIcon(QIcon(resources.find('img/treeview/fit.png')))
         act.triggered.connect( self.resizeToContents )
-        
+        '''
         menu.addSeparator()
         
+        #Show/Hide Phases
+        phaseFilterMenu = menu.addMenu( 'Show/Hide Phases' )
+        phaseFilterMenu.setIcon(QIcon(resources.find('img/columns.png')))
+        phaseFilterMenu.addAction('Show All')
+        phaseFilterMenu.addAction('Hide All')
+        phaseFilterMenu.addSeparator()
+        
+        hitem = self.headerItem()        
+        phases = sharedDB.myPhases
+        for phase in sorted(sharedDB.myPhases):
+            #col    = self.column(column)
+            action = phaseFilterMenu.addAction(phase._name)
+            action.setCheckable(True)
+            action.setChecked(phase._visible)
+        
+        phaseFilterMenu.triggered.connect( self.togglePhasesByAction )
+        
+        '''#Show/Hide Columns
         colmenu = menu.addMenu( 'Show/Hide Columns' )
         colmenu.setIcon(QIcon(resources.find('img/columns.png')))
         colmenu.addAction('Show All')
@@ -1722,12 +1742,12 @@ class XTreeWidget(QTreeWidget):
             action.setCheckable(True)
             action.setChecked(not self.isColumnHidden(col))
         
-        colmenu.triggered.connect( self.toggleColumnByAction )
+        colmenu.triggered.connect( self.toggleColumnByAction )'''
         
-        menu.addSeparator()
-        export = menu.addAction('Export as...')
-        export.setIcon(QIcon(resources.find('img/export.png')))
-        export.triggered.connect(self.exportAs)
+        #menu.addSeparator()
+        #export = menu.addAction('Export as...')
+        #export.setIcon(QIcon(resources.find('img/export.png')))
+        #export.triggered.connect(self.exportAs)
         
         return menu
     
@@ -3118,6 +3138,62 @@ class XTreeWidget(QTreeWidget):
             
             if not found:
                 self.setColumnHidden(0, False)
+        
+        self.resizeToContents()
+        self.update()
+        
+    def togglePhasesByAction( self, action ):
+        """
+        Toggles whether or not the column at the inputed action's name should \
+        be hidden.
+        `
+        :param      action | <QAction>
+        """
+        if ( action.text() == 'Show All' ):
+            self.blockSignals(True)
+            self.setUpdatesEnabled(False)
+            #for col in range(self.columnCount()):
+            #    self.setColumnHidden(col, False)
+            print "Showing All Phases"
+            sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(True)
+            
+            self.setUpdatesEnabled(True)
+            self.blockSignals(False)
+            
+            self.setColumnHidden(0, False)
+            
+        elif ( action.text() == 'Hide All' ):
+            self.blockSignals(True)
+            self.setUpdatesEnabled(False)
+            #for col in range(self.columnCount()):
+            #    self.setColumnHidden(col, True)
+            sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(False)
+            print "Hiding All Phases"
+            
+            # ensure we have at least 1 column visible
+            self.blockSignals(False)
+            self.setUpdatesEnabled(True)
+            
+            self.setColumnHidden(0, False)
+            
+        else:
+            #col     = self.column(action.text())
+            state   = action.isChecked()
+            #self.setColumnHidden(col, state)
+            #print (action.text() + " = " + str(state))
+            sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(state,action.text())
+            #if ( state ):
+            #    self.resizeColumnToContents(col)
+            
+            # ensure we at least have 1 column visible
+            found = False
+            #for col in range(self.columnCount()):
+             #   if ( not self.isColumnHidden(col) ):
+             #       found = True
+             #       break
+            
+            #if not found:
+             #   self.setColumnHidden(0, False)
         
         self.resizeToContents()
         self.update()

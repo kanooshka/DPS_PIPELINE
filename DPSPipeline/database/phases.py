@@ -11,6 +11,7 @@ class Phases():
 		self._ganttChartBGColor    = _ganttChartBGColor
 		self._ganttChartTextColor    = _ganttChartTextColor
 		self._manHoursToMinuteRatio    = _manHoursToMinuteRatio
+		self._visible = 1
 
 def GetPhaseNames():
 	phases = []
