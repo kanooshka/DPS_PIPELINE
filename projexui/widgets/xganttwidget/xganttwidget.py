@@ -22,7 +22,7 @@ import sharedDB
 
 from projexui import qt
 
-from PyQt4    import QtCore
+from PyQt4    import QtCore,QtGui
 from PyQt4.QtCore   import QDate,\
                                  QSize,\
                                  QDateTime,\
@@ -32,7 +32,7 @@ from PyQt4.QtGui    import QWidget,\
                                  QPen,\
                                  QBrush,\
                                  QPalette,\
-                                 QColor
+                                 QColor, QMenuBar
 
 from projex.enum import enum
 
@@ -52,6 +52,18 @@ class XGanttWidget(QWidget):
     def __init__( self, parent = None ):
         super(XGanttWidget, self).__init__( parent )
         
+	menubar = QMenuBar(self)
+	#menubar.sizeHint(QSize.setHeight(10))
+	
+	fileMenu = menubar.addMenu('&File')
+	
+        fileMenu.addAction('Create Project')
+	fileMenu.addSeparator()
+	fileMenu.addAction('Save')
+	fileMenu.addSeparator()
+	fileMenu.addAction('Exit')
+	fileMenu.triggered.connect( self.fileMenuActions )
+	
         # load the user interface
         if getattr(sys, 'frozen', None):
 	    #print (sys._MEIPASS+"/ui/xganttwidget.ui");
@@ -130,9 +142,9 @@ class XGanttWidget(QWidget):
     
         #connect Save button
         #self.button = self.QPushButton('saveButton', self)
-        self.saveButton.clicked.connect(self.SaveToDatabase)
+        #self.saveButton.clicked.connect(self.SaveToDatabase)
         
-        self.createProjectButton.clicked.connect(self.CreateProject)
+        #self.createProjectButton.clicked.connect(self.CreateProject)
     
     def __del__(self):
         self.uiGanttVIEW.scene().selectionChanged.disconnect(self.__selectTree)
@@ -264,6 +276,17 @@ class XGanttWidget(QWidget):
         self.uiGanttTREE.clear()
         self.uiGanttVIEW.scene().clear()
     
+    def closeEvent(self, event):
+
+	quit_msg = "Are you sure you want to exit the program?"
+	reply = QtGui.QMessageBox.question(self, 'Message', 
+			 quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+    
+	if reply == QtGui.QMessageBox.Yes:
+	    event.accept()
+	else:
+	    event.ignore()
+    
     def columns( self ):
         """
         Returns a list of the columns being used in the treewidget of this gantt
@@ -277,10 +300,7 @@ class XGanttWidget(QWidget):
         #self._myCreateProjectWidget = CreateProjectWidget()
 	#self._myCreateProjectWidget.show()
         QtCore.QCoreApplication.instance().myCreateProjectTest._myCreateProjectWidget.show()
-        QtCore.QCoreApplication.instance().myCreateProjectTest._myCreateProjectWidget.activateWindow()
-        
-        #appTest.CreateProject()
-    
+        QtCore.QCoreApplication.instance().myCreateProjectTest._myCreateProjectWidget.activateWindow()    
     
     def dateEnd( self ):
         """
@@ -319,6 +339,19 @@ class XGanttWidget(QWidget):
         if ( event.type() == event.Resize ):
             self.__updateViewRect()
         return False
+    
+    def fileMenuActions( self, action ):
+        """
+        Handles file menu actions
+        `
+        :param      action | <QAction>
+        """
+        if ( action.text() == 'Save' ):
+            self.SaveToDatabase()
+        elif ( action.text() == 'Create Project' ):            
+	    self.CreateProject()
+	elif (action.text() == 'Exit'):
+	    self.close()
     
     def gridPen( self ):
         """

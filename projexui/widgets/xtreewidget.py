@@ -3150,50 +3150,18 @@ class XTreeWidget(QTreeWidget):
         :param      action | <QAction>
         """
         if ( action.text() == 'Show All' ):
-            self.blockSignals(True)
-            self.setUpdatesEnabled(False)
-            #for col in range(self.columnCount()):
-            #    self.setColumnHidden(col, False)
-            print "Showing All Phases"
+            #print "Showing All Phases"
             sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(True)
-            
-            self.setUpdatesEnabled(True)
-            self.blockSignals(False)
-            
-            self.setColumnHidden(0, False)
+
             
         elif ( action.text() == 'Hide All' ):
-            self.blockSignals(True)
-            self.setUpdatesEnabled(False)
-            #for col in range(self.columnCount()):
-            #    self.setColumnHidden(col, True)
             sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(False)
-            print "Hiding All Phases"
-            
-            # ensure we have at least 1 column visible
-            self.blockSignals(False)
-            self.setUpdatesEnabled(True)
-            
-            self.setColumnHidden(0, False)
-            
+            #print "Hiding All Phases"    
         else:
-            #col     = self.column(action.text())
             state   = action.isChecked()
-            #self.setColumnHidden(col, state)
             #print (action.text() + " = " + str(state))
             sharedDB.GanttTest._myXGanttWidget.updatePhaseVisibility(state,action.text())
-            #if ( state ):
-            #    self.resizeColumnToContents(col)
             
-            # ensure we at least have 1 column visible
-            found = False
-            #for col in range(self.columnCount()):
-             #   if ( not self.isColumnHidden(col) ):
-             #       found = True
-             #       break
-            
-            #if not found:
-             #   self.setColumnHidden(0, False)
         
         self.resizeToContents()
         self.update()

@@ -1,4 +1,5 @@
 from DPSPipeline.database.connection import Connection
+import socket
 
 class PhaseAssignments():
 
@@ -26,11 +27,13 @@ class PhaseAssignments():
 			cnx = connection._cnx
 			cursor = connection._cnx.cursor()
 			
+			updatedBy = socket.gethostbyname(socket.gethostname())
+			
 			#cnx = mysql.connector.connect(user='root', database='dpstudio', password='poop')
 			#cursor = cnx.cursor()
 			
 			#print (self._name+" Updated!")
-			query = "INSERT INTO phaseassignments (idphases, idprojects, startdate, enddate, archived, timestamp) VALUES ('"+str(self._idphases)+"', '"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '0', '" + str(timestamp) + "');"
+			query = "INSERT INTO phaseassignments (idphases, idprojects, startdate, enddate, ip, archived,  timestamp) VALUES ('"+str(self._idphases)+"', '"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0', '" + str(timestamp) + "');"
 			
 			#print query
 			
