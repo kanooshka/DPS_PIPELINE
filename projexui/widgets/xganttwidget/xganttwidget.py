@@ -278,15 +278,19 @@ class XGanttWidget(QWidget):
     
     def closeEvent(self, event):
 
-	quit_msg = "Save before exit?"
-	reply = QtGui.QMessageBox.question(self, 'Message', 
-			 quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-    
-	if reply == QtGui.QMessageBox.Yes:
-	    self.SaveToDatabase;
-	    event.accept()
-	else:
-	    event.accept()
+	if sharedDB.changesToBeSaved:
+	    quit_msg = "Save before exit?"
+	    reply = QtGui.QMessageBox.question(self, 'Message', 
+			     quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No,QtGui.QMessageBox.Cancel)
+	
+	    if reply == QtGui.QMessageBox.Yes:
+		self.SaveToDatabase()
+		event.accept()
+	    elif reply == QtGui.QMessageBox.No:
+		event.accept()
+	    else:
+		event.ignore()
+		
     
     def columns( self ):
         """
@@ -401,6 +405,7 @@ class XGanttWidget(QWidget):
             topItem = self.topLevelItem(x)
             for i in range(topItem.childCount()):
                 topItem.child(i)._dbEntry.Save(timestamp)
+	sharedDB.changesToBeSaved = 0
     
     def setAlternateBrush( self, brush ):
         """

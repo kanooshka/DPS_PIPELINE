@@ -8,4 +8,5 @@ earliestDate = QDate.currentDate().toPyDate()
 
 myPhases = phases.GetPhaseNames()
 projectList = projects.GetActiveProjects()
-GanttTest = '';
+GanttTest = ''
+changesToBeSaved = 0
