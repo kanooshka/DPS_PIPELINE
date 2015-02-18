@@ -38,10 +38,12 @@ class Application():
         self.app.myCreateProjectTest._myCreateProjectWidget.hide()
     
         sharedDB.GanttTest = self.app.GTEST
-        for project in sharedDB.projectList:
+        for project in sharedDB.projectList:            
+            
             myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
             myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
-            self.app.GTEST.AddProject(project,myPhaseAssignments)
+            if (not project._hidden):
+                self.app.GTEST.AddProject(project,myPhaseAssignments)
         
         self.app.GTEST._myXGanttWidget.show()
         self.app.GTEST._myXGanttWidget.emitDateRangeChanged()

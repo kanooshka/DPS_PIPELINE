@@ -24,7 +24,11 @@ class Projects():
 		self._phases                 = phases
 		self._updated                = _updated
 		self._type                   = "project"
-	
+		self._hidden                 = False
+		
+		if self._idstatus == 3:
+			self._hidden = True
+			
 	def Save(self,timestamp):
 		
 		if self._updated:
@@ -36,13 +40,13 @@ def GetActiveProjects():
 	connection = Connection()
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
-	query = ("SELECT idprojects, name, due_date FROM projects WHERE idstatuses != 4")            
+	query = ("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")            
 	cursor.execute(query)
 	rows = cursor.fetchall()
 	
 	for row in rows:
 		#print row[0]
-		activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2]))
+		activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatus = row[3]))
 	cursor.close()
 	connection.closeConnection()
 	
