@@ -49,8 +49,11 @@ class Application():
         
         #self.CreateProjectWidget(self.app)
         
+        self.app.GTEST._myXGanttWidget.expandAllTrees()
+        
         self.app.exec_()
 
+        
 
     #def CreateProjectWidget(self,a):
         

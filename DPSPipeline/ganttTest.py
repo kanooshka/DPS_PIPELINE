@@ -33,10 +33,7 @@ class GanttTest():
 		self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 		#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
 		#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
-		
-		
 
-		
 		#for phase in project
 		
 		for phase in phases:
@@ -44,8 +41,7 @@ class GanttTest():
 			self.AddPhase(projectXGanttWidgetItem, phase)
 		
 		#projectXGanttWidgetItem.setDateEnd(QDate(project._due_date.year,project._due_date.month,project._due_date.day))
-		#projectXGanttWidgetItem.sync(recursive = True)
-		#projectXGanttWidgetItem.syncDependencies(recursive = True)
+
 		self._myXGanttWidget.SaveToDatabase()
 		sharedDB.freezeDBUpdates = 0;
 		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)
