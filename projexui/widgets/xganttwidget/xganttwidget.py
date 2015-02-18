@@ -341,6 +341,7 @@ class XGanttWidget(QWidget):
 	for x in range(0,self.treeWidget().topLevelItemCount()):
 	    self.treeWidget().topLevelItem(x).setExpanded(True)
 	self.uiGanttTREE.blockSignals(False)
+	self.syncView()
     
     def eventFilter( self, object, event ):
         if ( event.type() == event.Resize ):

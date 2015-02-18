@@ -40,6 +40,7 @@ class GanttTest():
 			#print phase._idphases
 			self.AddPhase(projectXGanttWidgetItem, phase)
 		
+		#projectXGanttWidgetItem.adjustRange()
 		#projectXGanttWidgetItem.setDateEnd(QDate(project._due_date.year,project._due_date.month,project._due_date.day))
 
 		self._myXGanttWidget.SaveToDatabase()
