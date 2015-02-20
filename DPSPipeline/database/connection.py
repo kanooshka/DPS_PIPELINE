@@ -10,7 +10,7 @@ class Connection():
 		self._cnx = mysql.connector.connect()
 		self._user = _user
 		self._password = _password
-		self._host = '10.9.21.199'
+		self._host = '10.9.21.12'
 		self._database = 'dpstudio'
 		#print "connection initiated"
 	
