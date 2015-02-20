@@ -7,8 +7,8 @@ import sharedDB
 #import projexui.pyi_hook
 
 from DPSPipeline.ganttTest import GanttTest
-from DPSPipeline.widgets.loginwidget.loginwidget import LoginWidget
-from DPSPipeline.widgets.createprojectwidget.createprojectwidget import CreateProjectWidget
+from DPSPipeline.widgets.loginwidget import loginwidget
+from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 import DPSPipeline.createprojecttest
 
 #reload(DPSPipeline.ganttTest)
@@ -35,7 +35,7 @@ class Application():
         try:
             self.app.loginWidget
         except:
-            self.app.loginWidget = LoginWidget()
+            self.app.loginWidget = loginwidget.LoginWidget()
             
         self.app.loginWidget.show()
         self.app.loginWidget.activateWindow()
@@ -53,7 +53,7 @@ class Application():
         try:
             self.app.CreateProjectWidget
         except:
-            self.app.CreateProjectWidget = CreateProjectWidget()
+            self.app.CreateProjectWidget = createprojectwidget.CreateProjectWidget()
         
         self.app.CreateProjectWidget.show()
     
