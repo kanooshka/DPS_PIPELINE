@@ -304,8 +304,7 @@ class XGanttWidget(QWidget):
     def CreateProject(self):
         #self._myCreateProjectWidget = CreateProjectWidget()
 	#self._myCreateProjectWidget.show()
-        QtCore.QCoreApplication.instance().myCreateProjectTest._myCreateProjectWidget.show()
-        QtCore.QCoreApplication.instance().myCreateProjectTest._myCreateProjectWidget.activateWindow()    
+        sharedDB.app.CreateProjectWidget() 
     
     def dateEnd( self ):
         """
@@ -342,8 +341,9 @@ class XGanttWidget(QWidget):
     
     def expandAllTrees(self):
 	self.uiGanttTREE.blockSignals(True)
-	for x in range(0,self.treeWidget().topLevelItemCount()):
-	    self.treeWidget().topLevelItem(x).setExpanded(True)
+	#for x in range(0,self.treeWidget().topLevelItemCount()):
+	    #self.treeWidget().topLevelItem(x).setExpanded(True)
+	self.treeWidget().expandAll()
 	self.uiGanttTREE.blockSignals(False)
 	self.syncView()
     

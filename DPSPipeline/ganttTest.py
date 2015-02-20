@@ -7,6 +7,7 @@ from projexui.widgets.xganttwidget.xganttwidgetitem import XGanttWidgetItem
 from PyQt4.QtCore import QDate
 
 import sharedDB
+import operator
 
 from PyQt4.QtGui import QColor
 
@@ -15,11 +16,26 @@ class GanttTest():
 	def __init__(self):
 		#global myXGanttWidget
 		
+		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
+		sharedDB.projectList = sharedDB.projects.GetActiveProjects()
+		
 		self._myXGanttWidget = XGanttWidget()
-		self._myXGanttWidget.hide()
+		self._myXGanttWidget.show()
 		#self.app=app
 		reload(projex)
 		reload(projexui)
+		
+		for project in sharedDB.projectList:
+			myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
+			myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
+			if (not project._hidden):
+			    self.AddProject(project,myPhaseAssignments)
+			    
+		
+		self._myXGanttWidget.emitDateRangeChanged()
+		self._myXGanttWidget.setCellWidth(15)
+		
+		self._myXGanttWidget.expandAllTrees()
 
 
 	def AddProject(self, project,phases = []):

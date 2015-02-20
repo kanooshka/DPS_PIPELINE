@@ -1,4 +1,5 @@
 import mysql.connector
+import sharedDB
 
 class Shots():
 

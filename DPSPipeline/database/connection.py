@@ -1,17 +1,27 @@
 import mysql.connector
+import sharedDB
 
 class Connection():
 
-	def __init__(self):
+	def __init__(self,_user = '', _password = ''):
 		
 		# define custom properties
+		sharedDB.mySQLConnection = self
 		self._cnx = mysql.connector.connect()
-		self._user = 'dan'
-		self._password = 'test'
-		self._host = '10.9.21.12'
+		self._user = _user
+		self._password = _password
+		self._host = '10.9.21.199'
 		self._database = 'dpstudio'
 		#print "connection initiated"
-
+	
+	def testConnection(self):
+		try:
+			self.openConnection()
+			return True
+		except:
+			"Print FAILED TO connect"
+		return False
+	
 	def openConnection(self):
 		self._cnx = mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
 	def closeConnection(self):

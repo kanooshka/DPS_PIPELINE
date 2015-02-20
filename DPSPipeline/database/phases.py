@@ -1,5 +1,7 @@
 import mysql.connector
+import sharedDB
 from DPSPipeline.database.connection import Connection
+
 
 class Phases():
 
@@ -15,7 +17,7 @@ class Phases():
 
 def GetPhaseNames():
 	phases = []
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
 	query = "SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio FROM phases"	

@@ -1,5 +1,6 @@
 from DPSPipeline.database.connection import Connection
 import socket
+import sharedDB
 
 class PhaseAssignments():
 
@@ -22,7 +23,7 @@ class PhaseAssignments():
 		
 	def Save(self,timestamp):		
 		if self._updated:
-			connection = Connection()
+			connection = sharedDB.mySQLConnection
 			connection.openConnection()
 			cnx = connection._cnx
 			cursor = connection._cnx.cursor()
@@ -50,7 +51,7 @@ class PhaseAssignments():
 	
 def GetPhaseAssignmentsFromProject(idprojects):
 	activePhaseAssignments = []
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
 	query = ("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp") % idprojects

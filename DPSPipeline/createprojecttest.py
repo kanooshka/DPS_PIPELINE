@@ -9,8 +9,5 @@ class CreateProjectTest():
 		#global myXGanttWidget
 		
 		self._myCreateProjectWidget = CreateProjectWidget()
-		#self._myCreateProjectWidget.show()
 		
-	def open(self):
-		self._myCreateProjectWidget.show()
-		self._myCreateProjectWidget.activateWindow()
+	

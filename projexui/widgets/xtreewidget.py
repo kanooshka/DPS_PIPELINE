@@ -2377,6 +2377,7 @@ class XTreeWidget(QTreeWidget):
         column = self.columnAt(event.pos().x())
         
         if item and column != -1:
+            #print "Extending"
             self._downItem   = weakref.ref(item)
             self._downColumn = column
             self._downState  = item.checkState(column)

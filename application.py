@@ -7,8 +7,10 @@ import sharedDB
 #import projexui.pyi_hook
 
 from DPSPipeline.ganttTest import GanttTest
+from DPSPipeline.widgets.loginwidget.loginwidget import LoginWidget
+from DPSPipeline.widgets.createprojectwidget.createprojectwidget import CreateProjectWidget
 import DPSPipeline.createprojecttest
-import operator
+
 #reload(DPSPipeline.ganttTest)
 
 class Application():
@@ -20,49 +22,41 @@ class Application():
     
         # We instantiate a QApplication passing the arguments of the script to it:
         self.app = Qt.QApplication(sys.argv)
+        sharedDB.app = self
     
         
-    
-        try:
-            self.app.GTEST
-        except:
-            self.app.GTEST = GanttTest()
-    
-        self.app.GTEST._myXGanttWidget.activateWindow()
-    
-        try:
-            self.app.myCreateProjectTest
-        except:
-            self.app.myCreateProjectTest = DPSPipeline.createprojecttest.CreateProjectTest()
+        self.CreateLoginWidget()
         
-        self.app.myCreateProjectTest._myCreateProjectWidget.hide()
-    
-        sharedDB.GanttTest = self.app.GTEST
-        for project in sharedDB.projectList:            
-            
-            myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
-            myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
-            if (not project._hidden):
-                self.app.GTEST.AddProject(project,myPhaseAssignments)
-        
-        self.app.GTEST._myXGanttWidget.show()
-        self.app.GTEST._myXGanttWidget.emitDateRangeChanged()
-        self.app.GTEST._myXGanttWidget.setCellWidth(15)
-        
-        #self.CreateProjectWidget(self.app)
-        
-        self.app.GTEST._myXGanttWidget.expandAllTrees()
         
         self.app.exec_()
 
         
-
-    #def CreateProjectWidget(self,a):
-        
-        
-        #self.ShowProjectWidget()
+    def CreateLoginWidget(self):
+        try:
+            self.app.loginWidget
+        except:
+            self.app.loginWidget = LoginWidget()
+            
+        self.app.loginWidget.show()
+        self.app.loginWidget.activateWindow()
     
-    #def ShowProjectWidget(self):
-        #self._myCreateProjectWidget.activateWindow()
+    def CreateGanttWidget(self):
+        try:
+            self.app.GTEST
+        except:
+            self.app.GTEST = GanttTest()
+            
+        sharedDB.GanttTest = self.app.GTEST
+    
+        self.app.GTEST._myXGanttWidget.activateWindow()
+    def CreateProjectWidget(self):
+        try:
+            self.app.CreateProjectWidget
+        except:
+            self.app.CreateProjectWidget = CreateProjectWidget()
+        
+        self.app.CreateProjectWidget.show()
+    
+
     
 newApplication = Application()

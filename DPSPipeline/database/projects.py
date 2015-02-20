@@ -37,7 +37,7 @@ class Projects():
 		
 def GetActiveProjects():
 	activeProjects = []
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
 	query = ("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")            
@@ -56,7 +56,7 @@ def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_rende
 	#print (_name+" Updated!")
 	maxidprojects = QueryLatestID()
 	
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cnx = connection._cnx
 	cursor = connection._cnx.cursor()
@@ -82,7 +82,7 @@ def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_rende
 	sharedDB.GanttTest.AddProject(project=newProj,phases=phases)	
 		
 def QueryLatestID():
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cnx = connection._cnx
 	cursor = connection._cnx.cursor()

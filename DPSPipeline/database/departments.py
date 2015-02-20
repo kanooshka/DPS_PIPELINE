@@ -1,4 +1,5 @@
 import mysql.connector
+import sharedDB
 from DPSPipeline.database.connection import Connection
 
 class Departments():
@@ -12,7 +13,7 @@ class Departments():
 		
 def GetDepartments():
 	departments = []
-	connection = Connection()
+	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
 	query = "SELECT iddepartments,name,ganttChartColor FROM departments"	

@@ -33,6 +33,7 @@ class CreateProjectWidget(QWidget):
         #connects buttons
         self.createButton.clicked.connect(self.CreateProject)
         self.setDefaults()
+	self.open()
 
     def setDefaults(self):
         #set initial values
@@ -52,6 +53,13 @@ class CreateProjectWidget(QWidget):
         self.projectNameQLineEdit.setText("Project Name")
         self.fps.setValue(25)
         
+    def open(self):
+	self.show()
+	self.activateWindow()
+	
+    def hide(self):
+	self._myCreateProjectWidget.hide()
+    	
     def CreateProject(self):        
         name = self.projectNameQLineEdit.text()
         folderLocation = ''
