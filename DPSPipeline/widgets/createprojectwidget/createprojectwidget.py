@@ -32,8 +32,12 @@ class CreateProjectWidget(QWidget):
         
         #connects buttons
         self.createButton.clicked.connect(self.CreateProject)
+        self.cancelButton.clicked.connect(self.cancel)
         self.setDefaults()
 	self.open()
+
+    def cancel(self):
+        self.close()
 
     def setDefaults(self):
         #set initial values
@@ -56,9 +60,6 @@ class CreateProjectWidget(QWidget):
     def open(self):
 	self.show()
 	self.activateWindow()
-	
-    def hide(self):
-	self._myCreateProjectWidget.hide()
     	
     def CreateProject(self):        
         name = self.projectNameQLineEdit.text()

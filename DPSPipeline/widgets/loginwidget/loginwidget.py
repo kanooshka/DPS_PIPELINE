@@ -35,9 +35,8 @@ class LoginWidget(QWidget):
         #print "Logging In"
 	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
 	if sharedDB.connection.testConnection():
-	    self.hide()
+	    self.close()
 	    sharedDB.app.CreateGanttWidget()
 	else:
 	    message = QtGui.QMessageBox.question(self, 'Message',
             "Incorrect Username or Password", QtGui.QMessageBox.Ok)
-        #self.close()

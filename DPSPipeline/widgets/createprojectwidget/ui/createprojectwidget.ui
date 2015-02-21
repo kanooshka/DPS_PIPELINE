@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0">
    <item row="1" column="0">
     <layout class="QFormLayout" name="formLayout">
      <property name="sizeConstraint">
@@ -84,7 +84,7 @@
         <bool>false</bool>
        </property>
        <property name="currentSection">
-        <enum>QDateTimeEdit::MinuteSection</enum>
+        <enum>QDateTimeEdit::HourSection</enum>
        </property>
        <property name="displayFormat">
         <string>hh:mm:ss</string>
@@ -189,7 +189,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="10" column="0">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="cancelButton">
        <property name="text">
         <string>Cancel</string>
        </property>
