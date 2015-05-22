@@ -31,6 +31,12 @@ class LoginWidget(QWidget):
 	self.user.returnPressed.connect(self.Login)
 	self.password.returnPressed.connect(self.Login)
 	
+	if (sharedDB.testing):
+	    self.user.setText("dan")
+	    self.password.setText("doodle")
+	    self.Login()
+	    self.close()
+	
     def Login(self):        
         #print "Logging In"
 	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
