@@ -49,6 +49,9 @@ class Application():
         sharedDB.GanttTest = self.app.GTEST
     
         self.app.GTEST._myXGanttWidget.activateWindow()
+        self.app.GTEST._myXGanttWidget.frameCurrentDate()
+        #self.app.GTEST._myXGanttWidget.setUserPrivelages()        
+        
     def CreateProjectWidget(self):
         try:
             self.app.CreateProjectWidget

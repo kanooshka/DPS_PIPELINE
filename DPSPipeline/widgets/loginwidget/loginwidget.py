@@ -32,15 +32,17 @@ class LoginWidget(QWidget):
 	self.password.returnPressed.connect(self.Login)
 	
 	if (sharedDB.testing):
-	    self.user.setText("dan")
+	    self.user.setText("dkonieczka")
 	    self.password.setText("doodle")
 	    self.Login()
 	    self.close()
 	
     def Login(self):        
-        #print "Logging In"
+        #print "Logging In"	
 	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
 	if sharedDB.connection.testConnection():
+	    sharedDB.users.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
+	    #print sharedDB.users.currentUser._name
 	    self.close()
 	    sharedDB.app.CreateGanttWidget()
 	else:

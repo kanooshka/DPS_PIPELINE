@@ -61,7 +61,8 @@ class GanttTest():
 
 		self._myXGanttWidget.SaveToDatabase()
 		sharedDB.freezeDBUpdates = 0;
-		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)
+		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
+		
 		#self.AddPhase(projectXGanttWidgetItem, 'Storyboard', project._story_board_start, project._story_board_end, QColor(220,0,0))
 				
 		#if project starts before view start date

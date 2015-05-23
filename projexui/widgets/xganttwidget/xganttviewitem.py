@@ -16,6 +16,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import weakref
+import sharedDB
 
 from projexui import qt          #import wrapVariant
 from PyQt4.QtCore   import Qt
@@ -51,9 +52,15 @@ class XGanttViewItem(QGraphicsRectItem):
         self._scrollBar                 = ''
         
         # setup standard properties
-        flags  = self.ItemIsMovable 
-        flags |= self.ItemIsSelectable 
-        flags |= self.ItemIsFocusable
+        
+        if (sharedDB.users.currentUser[0]._idPrivelages==3): 
+            flags = self.ItemIsSelectable 
+            flags |= self.ItemIsFocusable
+        else:
+            flags = self.ItemIsMovable
+            flags |= self.ItemIsSelectable 
+            flags |= self.ItemIsFocusable
+        self.setFlags( flags )
         
         effect = QGraphicsDropShadowEffect()
         effect.setXOffset(0)
@@ -61,7 +68,7 @@ class XGanttViewItem(QGraphicsRectItem):
         effect.setColor(QColor(40, 40, 40, 100))
         effect.setBlurRadius(10)
 
-        self.setFlags( flags )
+       
         self.setAcceptHoverEvents(True)
         self.setGraphicsEffect(effect)
 
@@ -135,6 +142,14 @@ class XGanttViewItem(QGraphicsRectItem):
         :return     <bool>
         """
         return self._syncing
+    
+    def disableMovement (self):
+        # setup standard properties
+        #flags  = self.ItemIsMovable 
+        #flags |= self.ItemIsSelectable 
+        #flags |= self.ItemIsFocusable
+       
+        self.setFlag( self.ItemIsMovable, False )
     
     def itemChange( self, change, value ):
         """

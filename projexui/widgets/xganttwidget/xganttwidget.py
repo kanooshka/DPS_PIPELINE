@@ -108,20 +108,26 @@ class XGanttWidget(QWidget):
 	
 	# initialize the tree widget
 	self.uiGanttTREE.setShowGrid(False)
+	
+	if (sharedDB.users.currentUser[0]._idPrivelages==3):
+	    self.uiGanttTREE.setEditable(False)
+	else:
+	    self.uiGanttTREE.setEditable(True)
+	    
 	self.uiGanttTREE.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 	self.uiGanttTREE.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 	self.uiGanttTREE.setVerticalScrollMode(self.uiGanttTREE.ScrollPerPixel)
-	self.uiGanttTREE.setEditable(True)
+
 	#left half size
 	self.uiGanttTREE.resize(400, 20)
 	
 	# initialize the view widget
-	self.uiGanttVIEW.setDragMode( self.uiGanttVIEW.RubberBandDrag )
+	#self.uiGanttVIEW.setDragMode( self.uiGanttVIEW.RubberBandDrag )
 	self.uiGanttVIEW.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 	self.uiGanttVIEW.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 	self.uiGanttVIEW.setScene(XGanttScene(self))
 	self.uiGanttVIEW.installEventFilter(self)
-	self.uiGanttVIEW.horizontalScrollBar().setValue(50)
+	#self.uiGanttVIEW.horizontalScrollBar().setValue(50)
 	
 	# create connections
 	self.uiGanttTREE.itemExpanded.connect(self.syncView)
@@ -139,12 +145,6 @@ class XGanttWidget(QWidget):
 	self.uiGanttTREE.itemSelectionChanged.connect(self.__selectView)
 	self.uiGanttVIEW.scene().selectionChanged.connect(self.__selectTree)
 	self.uiGanttTREE.itemChanged.connect(self.updateItemData)
-    
-	#connect Save button
-	#self.button = self.QPushButton('saveButton', self)
-	#self.saveButton.clicked.connect(self.SaveToDatabase)
-	
-	#self.createProjectButton.clicked.connect(self.CreateProject)
     
     def __del__(self):
 	self.uiGanttVIEW.scene().selectionChanged.disconnect(self.__selectTree)
@@ -352,6 +352,24 @@ class XGanttWidget(QWidget):
 	    self.__updateViewRect()
 	return False
     
+    def frameCurrentDate(self):
+	# Subtract start date from current date
+	prerollDays = self._dateStart.day() - QDate.currentDate().day()
+	#set scroll to multiply difference against cel width
+	
+	view_bar = self.uiGanttVIEW.horizontalScrollBar()
+	self._scrolling = True
+	view_bar.setMaximum(1)
+	view_bar.setMinimum(0)
+	#print view_bar.maximum()
+	view_bar.setValue(1)
+	#view_bar.update()
+	#self.update()
+	#self.uiGanttVIEW.update()
+	self._scrolling = False
+	
+	#self.__scrollView(self._cellWidth * prerollDays)
+    
     def fileMenuActions( self, action ):
 	"""
 	Handles file menu actions
@@ -497,12 +515,14 @@ class XGanttWidget(QWidget):
 	self._gridPen = QPen(pen)
     
     def setTimescale( self, timescale ):
+    
 	"""
 	Sets the timescale value for this widget to the inputed value.
 	
 	:param      timescale | <XGanttWidget.Timescale>
 	"""
 	self._timescale = timescale
+
     
     def setWeekendBrush( self, brush ):
 	"""
@@ -519,8 +539,6 @@ class XGanttWidget(QWidget):
 	for i in range(self.topLevelItemCount()):
 	    item = self.topLevelItem(i)
 	    item.syncView(recursive = True)
-	#if (self.topLevelItemCount()==0):
-	 #   self.viewWidget().clear()
     
     def takeTopLevelItem( self, index ):
 	"""
