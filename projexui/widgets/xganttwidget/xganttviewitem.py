@@ -53,7 +53,7 @@ class XGanttViewItem(QGraphicsRectItem):
         
         # setup standard properties
         
-        if (sharedDB.users.currentUser[0]._idPrivelages==3): 
+        if (sharedDB.users.currentUser[0]._idPrivileges==3): 
             flags = self.ItemIsSelectable 
             flags |= self.ItemIsFocusable
         else:

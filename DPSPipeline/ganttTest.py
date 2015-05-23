@@ -25,6 +25,9 @@ class GanttTest():
 		reload(projex)
 		reload(projexui)
 		
+		#depending on privileges / department hide all and then unhide appropriate department
+		#self._myXGanttWidget.setupUserView(sharedDB.users.currentUser[0]._idPrivelages,sharedDB.users.currentUser[0]._idDepartment)
+		
 		for project in sharedDB.projectList:
 			myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
 			myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
@@ -46,6 +49,7 @@ class GanttTest():
 		projectXGanttWidgetItem.phases = phases
 		
 		projectXGanttWidgetItem._dbEntry = project
+		projectXGanttWidgetItem.setHidden(True)
 		self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 		#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
 		#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
@@ -76,6 +80,7 @@ class GanttTest():
 		#self._myXGanttWidget.setDateStart(QDate(2014,11,1))	
 	
 	def AddPhase(self, parent, phase):	
+		department = 0
 		
 		for myPhase in sharedDB.myPhases:
 			if myPhase._idphases == phase._idphases:
@@ -88,7 +93,8 @@ class GanttTest():
 				textColor = myPhase._ganttChartTextColor.split(',')
 				#print textColor[0]
 				textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
-		
+				
+				department = myPhase._idDepartment
 		
 		startDate = phase._startdate
 		endDate = phase._enddate
@@ -102,7 +108,7 @@ class GanttTest():
 		childItem.setName(name)
 		childItem._dbEntry = phase
 		childItem._name = name
-		
+			
 		#if (qStartDate.isValid()):
 		childItem.setDateStart(QDate(startDate.year,startDate.month,startDate.day))
 		childItem.setDateEnd(QDate(endDate.year,endDate.month,endDate.day))
@@ -113,5 +119,11 @@ class GanttTest():
 		viewItem.setTextColor(textColor)
 		
 		parent.addChild(childItem)
+		
+		if (sharedDB.users.currentUser[0]._idDepartment == 0 or department == sharedDB.users.currentUser[0]._idDepartment):
+			childItem.setHidden(False)
+			parent.setHidden(False)
+		else:
+			childItem.setHidden(True)
 
 	

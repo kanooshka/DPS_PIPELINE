@@ -109,8 +109,12 @@ class XGanttWidget(QWidget):
 	# initialize the tree widget
 	self.uiGanttTREE.setShowGrid(False)
 	
-	if (sharedDB.users.currentUser[0]._idPrivelages==3):
+	if (sharedDB.users.currentUser[0]._idPrivileges==3):
 	    self.uiGanttTREE.setEditable(False)
+	    for act in fileMenu.actions():
+		if act.text() == "Save" or act.text() == "Create Project":
+		    act.setEnabled(False)
+	    
 	else:
 	    self.uiGanttTREE.setEditable(True)
 	    
@@ -278,7 +282,7 @@ class XGanttWidget(QWidget):
     
     def closeEvent(self, event):
 
-	if sharedDB.changesToBeSaved:
+	if sharedDB.changesToBeSaved and sharedDB.user.currentUser[0]._idPrivelages != 3:
 	    quit_msg = "Save before exit?"
 	    reply = QtGui.QMessageBox.question(self, 'Message', 
 			     quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No,QtGui.QMessageBox.Cancel)
@@ -523,6 +527,9 @@ class XGanttWidget(QWidget):
 	"""
 	self._timescale = timescale
 
+    #def setupUserView(self, privileges, department):
+	#sif department
+    
     
     def setWeekendBrush( self, brush ):
 	"""
@@ -536,9 +543,10 @@ class XGanttWidget(QWidget):
 	"""
 	Syncs all the items to the view.
 	"""
-	for i in range(self.topLevelItemCount()):
-	    item = self.topLevelItem(i)
-	    item.syncView(recursive = True)
+	if ( not self.signalsBlocked() ):	
+	    for i in range(self.topLevelItemCount()):
+		item = self.topLevelItem(i)
+		item.syncView(recursive = True)
     
     def takeTopLevelItem( self, index ):
 	"""

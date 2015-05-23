@@ -3,7 +3,7 @@ import sharedDB
 
 class Users():
 
-	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _idDepartment = 0, _idPrivelages = 3,_active = 0, _assignments = [],_updated = 0):
+	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _idDepartment = 0, _idPrivileges = 3,_active = 0, _assignments = [],_updated = 0):
 		
 		# define custom properties
 		self._idusers            = _idusers
@@ -11,7 +11,7 @@ class Users():
 		self._name                   = _name
 		self._password           = _password
 		self._idDepartment      = _idDepartment
-		self._idPrivelages           = _idPrivelages
+		self._idPrivileges           = _idPrivileges
 		self._active                    = _active
 
 		self._assignments                 = _assignments
@@ -33,13 +33,13 @@ def GetAllUsers():
 	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
-	query = ("SELECT idusers, name, password, idDepartment, idPrivelages, active FROM users")            
+	query = ("SELECT idusers, name, password, idDepartment, idPrivileges, active FROM users")            
 	cursor.execute(query)
 	rows = cursor.fetchall()
 	
 	for row in rows:
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivelages = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
 	cursor.close()
 	connection.closeConnection()
 	
@@ -51,13 +51,13 @@ def GetCurrentUser(username = ''):
 	connection = sharedDB.mySQLConnection
 	connection.openConnection()
 	cursor = connection._cnx.cursor()
-	query = ("SELECT idusers, username, name, password, idDepartment, idPrivelages, active FROM dpstudio.users WHERE username = \""+username+"\";")            
+	query = ("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")            
 	cursor.execute(query)
 	rows = cursor.fetchall()
 	
 	for row in rows:
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivelages = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
 	cursor.close()
 	connection.closeConnection()
 	
