@@ -109,6 +109,9 @@ class XGanttWidget(QWidget):
 	# initialize the tree widget
 	self.uiGanttTREE.setShowGrid(False)
 	
+	#enable drag and drop
+	self.uiGanttTREE.setDragDropFilter(self.uiGanttTREE.setDragDropFilter(XGanttWidget.handleDragDrop))
+	
 	if (sharedDB.users.currentUser[0]._idPrivileges==3):
 	    self.uiGanttTREE.setEditable(False)
 	    for act in fileMenu.actions():
@@ -282,7 +285,7 @@ class XGanttWidget(QWidget):
     
     def closeEvent(self, event):
 
-	if sharedDB.changesToBeSaved and sharedDB.users.currentUser[0]._idPrivelages != 3:
+	if sharedDB.changesToBeSaved and sharedDB.users.currentUser[0]._idPrivileges != 3:
 	    quit_msg = "Save before exit?"
 	    reply = QtGui.QMessageBox.question(self, 'Message', 
 			     quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No,QtGui.QMessageBox.Cancel)
@@ -334,7 +337,7 @@ class XGanttWidget(QWidget):
 	:return     <QDate>
 	"""
 	return self._dateStart
-    
+
     def emitDateRangeChanged( self ):
 	"""
 	Emits the date range changed signal provided signals aren't being
@@ -394,6 +397,14 @@ class XGanttWidget(QWidget):
 	:return     <QPen>
 	"""
 	return self._gridPen
+    
+    @staticmethod
+    def handleDragDrop(object, event):
+	if ( event.type() == QEvent.DragEnter ):
+	    event.acceptProposedActions()
+	elif ( event.type() == QEvent.Drop ):
+	    print 'dropping'
+    
     
     def indexOfTopLevelItem( self, item ):
 	"""

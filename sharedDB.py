@@ -5,7 +5,7 @@ from DPSPipeline.database import users
 
 from PyQt4.QtCore   import QDate
 
-testing = 0
+testing = 1
 #freezeDBUpdates = 1
 
 earliestDate = QDate.currentDate().toPyDate()
