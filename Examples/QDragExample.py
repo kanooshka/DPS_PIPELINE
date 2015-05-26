@@ -6,8 +6,9 @@ from PyQt4 import QtGui, QtCore
 
 
 class Button(QtGui.QPushButton):
+    
     def mouseMoveEvent(self, e):
-        if e.buttons() != QtCore.Qt.RightButton:
+        if e.buttons() != QtCore.Qt.LeftButton:
             return
 
         # write the relative cursor position to mime data
@@ -48,6 +49,18 @@ class Button(QtGui.QPushButton):
         if e.button() == QtCore.Qt.LeftButton:
             print 'press'
         #super(Button, self).mousePressEvent(e)
+
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.initUI()
+
+
+    def initUI(self):
+        #self.setAcceptDrops(True)
+
+        self.setWindowTitle('MainWindow')
+        self.setGeometry(300, 300, 280, 150)
 
 
 class DragFrom(QtGui.QWidget):
@@ -90,33 +103,48 @@ class DragTo(QtGui.QWidget):
 
     def dropEvent(self, e):
         # get the relative position from the mime data
-        mime = e.mimeData().text()
-        splitMime = mime.split(',')
-        name = splitMime[0]
-        x = int(splitMime[1])
-        y = int(splitMime[2])
-        
-        #if e.keyboardModifiers() & QtCore.Qt.ShiftModifier:
-        # copy
-        # so create a new button
-        button = Button(name, self)
-        # move it to the position adjusted with the cursor position at drag
-        button.move(e.pos()-QtCore.QPoint(x, y))
-        # show it
-        button.show()
-        # store it
-        self.buttons.append(button)
-        # set the drop action as Copy
-        e.setDropAction(QtCore.Qt.CopyAction)
-
-        # tell the QDrag we accepted it
-
-        e.accept()
+        source = e.source()
+        print e.source()
+        print self
+        if e.source() != e.target():
+            mime = e.mimeData().text()
+            splitMime = mime.split(',')
+            name = splitMime[0]
+            x = int(splitMime[1])
+            y = int(splitMime[2])
+            
+            #if e.keyboardModifiers() & QtCore.Qt.ShiftModifier:
+            # copy
+            # so create a new button
+            button = Button(name, self)
+            # move it to the position adjusted with the cursor position at drag
+            button.move(e.pos()-QtCore.QPoint(x, y))
+            # show it
+            button.show()
+            # store it
+            #self.buttons.append(button)
+            # set the drop action as Copy
+            #e.setDropAction(QtCore.Qt.CopyAction)
+    
+            # tell the QDrag we accepted it
+    
+            e.accept()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    dragFrom = DragFrom()
-    dragFrom.show()
-    dragTo = DragTo()
-    dragTo.show()
+    
+    mw = QtGui.QMainWindow() # mw = MainWindow
+    mw.setCentralWidget(None)
+    mw.showMaximized()
+    
+    #mw.dockWidgets.add(QtGui.QDockWidget(mw))
+    
+    mw.dockWdg1 = QtGui.QDockWidget(mw)
+    mw.dockWidgets = [mw.dockWdg1]
+    mw.dockWidgets[0].setWidget(DragFrom())
+    mw.addDockWidget(QtCore.Qt.DockWidgetArea(1), mw.dockWidgets[0])
+    
+    mw.dockWidgets.append(QtGui.QDockWidget(mw))
+    mw.dockWidgets[1].setWidget(DragTo())
+    mw.addDockWidget(QtCore.Qt.DockWidgetArea(2), mw.dockWidgets[1])
     app.exec_()  
