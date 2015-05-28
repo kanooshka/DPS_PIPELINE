@@ -48,19 +48,20 @@ def GetAllUsers():
 def GetCurrentUser(username = ''):
 
 	users = []
-	connection = sharedDB.mySQLConnection
-	connection.openConnection()
-	cursor = connection._cnx.cursor()
-	query = ("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")            
-	cursor.execute(query)
-	rows = cursor.fetchall()
-	
-	for row in rows:
-		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
-	cursor.close()
-	connection.closeConnection()
-	
-	
-	
+	if not sharedDB.testing:
+		connection = sharedDB.mySQLConnection
+		connection.openConnection()
+		cursor = connection._cnx.cursor()
+		query = ("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")            
+		cursor.execute(query)
+		rows = cursor.fetchall()
+		
+		for row in rows:
+			#print row[0]
+			users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
+		cursor.close()
+		connection.closeConnection()
+	else:
+		users.append(Users(_idusers = 13,_username = 'twotis',_name = 'Tim Otis',_idDepartment = 0,_idPrivileges = 1,_active = 1))
+
 	return users

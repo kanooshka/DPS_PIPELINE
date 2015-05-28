@@ -25,13 +25,17 @@ class MainWindow(QtGui.QMainWindow):
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
 
-        try:
-            self.app.loginWidget
-        except:
-            self.app.loginWidget = loginwidget.LoginWidget()
-            
-        self.app.loginWidget.show()
-        self.app.loginWidget.activateWindow()
+        if not sharedDB.testing:
+            try:
+                self.app.loginWidget
+            except:
+                self.app.loginWidget = loginwidget.LoginWidget()
+                
+            self.app.loginWidget.show()
+            self.app.loginWidget.activateWindow()
+        else:
+            sharedDB.users.currentUser = sharedDB.users.GetCurrentUser('twotis')
+            self.EnableMainWindow()
     
     def EnableMainWindow(self):
         #self.mw = QtGui.QMainWindow() # mw = MainWindow

@@ -37,19 +37,23 @@ class Projects():
 		
 def GetActiveProjects():
 	activeProjects = []
-	connection = sharedDB.mySQLConnection
-	connection.openConnection()
-	cursor = connection._cnx.cursor()
-	query = ("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")            
-	cursor.execute(query)
-	rows = cursor.fetchall()
 	
-	for row in rows:
-		#print row[0]
-		activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatus = row[3]))
-	cursor.close()
-	connection.closeConnection()
-	
+	if not sharedDB.testing:
+		connection = sharedDB.mySQLConnection
+		connection.openConnection()
+		cursor = connection._cnx.cursor()
+		query = ("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")            
+		cursor.execute(query)
+		rows = cursor.fetchall()
+		
+		for row in rows:
+			#print row[0]
+			activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatus = row[3]))
+		cursor.close()
+		connection.closeConnection()
+	else:
+		activeProjects.append(Projects(_idprojects = 6,_name = 'TW15-11  Rebel Raw Deal',_idstatus = 1))
+
 	return activeProjects
 
 def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, phases = []):
