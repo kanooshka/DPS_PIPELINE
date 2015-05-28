@@ -34,16 +34,16 @@ class XGanttViewItem(QGraphicsRectItem):
         super(XGanttViewItem, self).__init__()
         
         # define custom properties
-        self._color                     = QColor('white')
-        self._alternateColor            = QColor(230, 230, 230)
-        self._highlightColor            = QColor('yellow')
+        self._color                     = QColor(255, 255, 255, 200)
+        self._alternateColor            = QColor(230, 230, 230, 200)
+        self._highlightColor            = QColor(255,255,0,200)
         self._alternateHighlightColor   = self._highlightColor.darker(110)
         self._textColor                 = QColor('black')
         self._borderColor               = QColor(50, 50, 50)
         self._progressColor             = QColor(200, 200, 250)
         self._alternateProgressColor    = QColor(180, 180, 230)
         self._showProgress              = True
-        self._padding                   = 3
+        self._padding                   = 1
         self._borderRadius              = 5
         self._percentComplete           = 0
         self._text                      = ''
@@ -70,7 +70,7 @@ class XGanttViewItem(QGraphicsRectItem):
 
        
         self.setAcceptHoverEvents(True)
-        self.setGraphicsEffect(effect)
+        #self.setGraphicsEffect(effect)
 
         # need this flag for Qt 4.6+
         try:
@@ -238,7 +238,8 @@ class XGanttViewItem(QGraphicsRectItem):
         ItemStyle   = self.treeItem().ItemStyle
         
         if ( style == ItemStyle.Group ):
-            self.paintGroup( painter )
+            #self.paintGroup( painter )
+            self.paintNormal( painter )
         
         elif ( style == ItemStyle.Milestone ):
             self.paintMilestone( painter )
@@ -321,7 +322,7 @@ class XGanttViewItem(QGraphicsRectItem):
         # draw the text on this item
         if ( self.text() ):
             painter.setPen(self.textColor())
-            painter.drawText(x, y, w, h, Qt.AlignCenter, self.text())
+            painter.drawText(x, y, w, h, Qt.AlignTop, self.text())
     
     def paintMilestone( self, painter ):
         """
@@ -440,7 +441,8 @@ class XGanttViewItem(QGraphicsRectItem):
         # draw the text on this item
         if ( self.text() ):
             painter.setPen(self.textColor())
-            painter.drawText(x, y, w, h, Qt.AlignCenter, self.text())
+            painter.drawText(x, y, w, h, Qt.AlignTop|Qt.AlignHCenter, self.text())
+    
     
     def percentComplete( self ):
         """

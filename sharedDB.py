@@ -5,6 +5,7 @@ from DPSPipeline.database import users
 
 from PyQt4.QtCore   import QDate
 
+version = 0.10
 testing = 0
 #freezeDBUpdates = 1
 
@@ -18,3 +19,5 @@ changesToBeSaved = 0
 mySQLConnection = ''
 currentUser = ''
 app = ''
+mainWindow  = ''
+widgetList = []

@@ -697,7 +697,13 @@ class XGanttWidgetItem(XTreeWidgetItem):
        
         item.setSyncing(True)
         item.setPos(view_x, tree_y)
-        item.setRect(0, 0, view_w, tree_h)
+        
+        #if ()
+        if self.isExpanded():
+            viewHeight = self.visibleChildrenCount()+1
+        else:
+            viewHeight = 1
+        item.setRect(0, 0, view_w, tree_h*viewHeight)
         item.setSyncing(False)
         
         self.syncDependencies()
@@ -809,6 +815,13 @@ class XGanttWidgetItem(XTreeWidgetItem):
         if type(self._viewItem).__name__ == 'weakref':
             return self._viewItem()
         return self._viewItem
+    
+    def visibleChildrenCount(self):
+        count = 0
+        for i in range(self.childCount()):
+            if not self.child(i).isHidden():
+                count +=1
+        return count
     
     def weekdays(self):
         """

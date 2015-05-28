@@ -1691,8 +1691,8 @@ class XTreeWidget(QTreeWidget):
         :return     <QMenu>
         """
         menu = QMenu(self)
-        act = menu.addAction("Hide '%s'" % self.columnOf(index))
-        act.triggered.connect( self.headerHideColumn )
+        #act = menu.addAction("Hide '%s'" % self.columnOf(index))
+        #act.triggered.connect( self.headerHideColumn )
         
         '''menu.addSeparator()
         

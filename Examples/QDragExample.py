@@ -135,7 +135,9 @@ if __name__ == '__main__':
     
     mw = QtGui.QMainWindow() # mw = MainWindow
     mw.setCentralWidget(None)
-    mw.showMaximized()
+    #mw.showMaximized()
+    #mw.setFixedSize(500,500)
+    mw.show()
     
     #mw.dockWidgets.add(QtGui.QDockWidget(mw))
     

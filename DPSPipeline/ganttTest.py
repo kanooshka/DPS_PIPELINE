@@ -5,6 +5,7 @@ from projexui.widgets.xganttwidget.xganttwidget     import XGanttWidget
 from projexui.widgets.xganttwidget.xganttviewitem   import XGanttViewItem
 from projexui.widgets.xganttwidget.xganttwidgetitem import XGanttWidgetItem 
 from PyQt4.QtCore import QDate
+from PyQt4 import QtGui, QtCore
 
 import sharedDB
 import operator
@@ -19,9 +20,16 @@ class GanttTest():
 		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 		sharedDB.projectList = sharedDB.projects.GetActiveProjects()
 		
-		self._myXGanttWidget = XGanttWidget()
-		self._myXGanttWidget.show()
-		#self.app=app
+		dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
+		#sharedDB.widgetList.Append(dockWidget)
+		self._myXGanttWidget = XGanttWidget(sharedDB.mainWindow)
+		dockWidget.setWidget(self._myXGanttWidget)
+		dockWidget.setWindowTitle("Calendar View")
+		sharedDB.mainWindow.setCentralWidget(dockWidget)
+		
+		#self._myXGanttWidget = XGanttWidget()
+		#self._myXGanttWidget.show()
+		
 		reload(projex)
 		reload(projexui)
 		
@@ -46,6 +54,9 @@ class GanttTest():
 
 		projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
 		projectXGanttWidgetItem.setName(project._name)
+		viewItem = projectXGanttWidgetItem.viewItem()
+		viewItem.setText(project._name)
+		
 		projectXGanttWidgetItem.phases = phases
 		
 		projectXGanttWidgetItem._dbEntry = project

@@ -44,7 +44,7 @@ class LoginWidget(QWidget):
 	    sharedDB.users.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
 	    #print sharedDB.users.currentUser._name
 	    self.close()
-	    sharedDB.app.CreateGanttWidget()
+	    sharedDB.mainWindow.EnableMainWindow()
 	else:
 	    message = QtGui.QMessageBox.question(self, 'Message',
             "Incorrect Username or Password", QtGui.QMessageBox.Ok)

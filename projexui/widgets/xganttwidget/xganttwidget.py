@@ -52,6 +52,7 @@ class XGanttWidget(QWidget):
     def __init__( self, parent = None ):
 	super(XGanttWidget, self).__init__( parent )
 	
+	'''
 	menubar = QMenuBar(self)
 	#menubar.sizeHint(QSize.setHeight(10))
 	
@@ -63,6 +64,7 @@ class XGanttWidget(QWidget):
 	fileMenu.addSeparator()
 	fileMenu.addAction('Exit')
 	fileMenu.triggered.connect( self.fileMenuActions )
+	'''
 	
 	# load the user interface
 	if getattr(sys, 'frozen', None):
@@ -284,7 +286,6 @@ class XGanttWidget(QWidget):
 	self.uiGanttVIEW.scene().clear()
     
     def closeEvent(self, event):
-
 	if sharedDB.changesToBeSaved and sharedDB.users.currentUser[0]._idPrivileges != 3:
 	    quit_msg = "Save before exit?"
 	    reply = QtGui.QMessageBox.question(self, 'Message', 
@@ -308,11 +309,11 @@ class XGanttWidget(QWidget):
 	"""
 	return self.treeWidget().columns()
     
-    def CreateProject(self):
+    '''def CreateProject(self):
 	#self._myCreateProjectWidget = CreateProjectWidget()
 	#self._myCreateProjectWidget.show()
 	sharedDB.app.CreateProjectWidget() 
-    
+    '''
     def dateEnd( self ):
 	"""
 	Returns the date end for this date range of this gantt widget.
@@ -376,19 +377,6 @@ class XGanttWidget(QWidget):
 	self._scrolling = False
 	
 	#self.__scrollView(self._cellWidth * prerollDays)
-    
-    def fileMenuActions( self, action ):
-	"""
-	Handles file menu actions
-	`
-	:param      action | <QAction>
-	"""
-	if ( action.text() == 'Save' ):
-	    self.SaveToDatabase()
-	elif ( action.text() == 'Create Project' ):            
-	    self.CreateProject()
-	elif (action.text() == 'Exit'):
-	    self.close()
     
     def gridPen( self ):
 	"""
