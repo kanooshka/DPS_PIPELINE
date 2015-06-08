@@ -1,6 +1,6 @@
 from DPSPipeline.database.connection import Connection
 import sharedDB
-from DPSPipeline.ganttTest import GanttTest
+from DPSPipeline.projectview import ProjectView
 #from PyQt4 import Qt
 #import sys
 #timestamp
@@ -26,7 +26,7 @@ class Projects():
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		if self._idstatus == 3:
+		if self._idstatus == 3 or self._idstatus == 5:
 			self._hidden = True
 			
 	def Save(self,timestamp):
@@ -52,7 +52,7 @@ def GetActiveProjects():
 		cursor.close()
 		connection.closeConnection()
 	else:
-		activeProjects.append(Projects(_idprojects = 6,_name = 'TW15-11  Rebel Raw Deal',_idstatus = 1))
+		activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatus = 1))
 
 	return activeProjects
 
@@ -83,7 +83,7 @@ def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_rende
 	newProj = Projects(_idprojects = maxidprojects, _name = _name, _folderLocation = '', _idstatus = 1, _fps = _fps,_renderWidth = _renderWidth,_renderHeight = _renderHeight,_due_date = _due_date,_renderPriority = _renderPriority, phases = phases)
 	sharedDB.projectList.append(newProj)
 	
-	sharedDB.GanttTest.AddProject(project=newProj,phases=phases)	
+	sharedDB.projectView.AddProject(project=newProj,phases=phases)	
 		
 def QueryLatestID():
 	connection = sharedDB.mySQLConnection

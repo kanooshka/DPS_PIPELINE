@@ -70,7 +70,7 @@ class XGanttViewItem(QGraphicsRectItem):
 
        
         self.setAcceptHoverEvents(True)
-        #self.setGraphicsEffect(effect)
+        self.setGraphicsEffect(effect)
 
         # need this flag for Qt 4.6+
         try:

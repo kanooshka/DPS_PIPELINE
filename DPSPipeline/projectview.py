@@ -12,7 +12,7 @@ import operator
 
 from PyQt4.QtGui import QColor
 
-class GanttTest():
+class ProjectView():
 
 	def __init__(self):
 		#global myXGanttWidget
@@ -24,7 +24,7 @@ class GanttTest():
 		#sharedDB.widgetList.Append(dockWidget)
 		self._myXGanttWidget = XGanttWidget(sharedDB.mainWindow)
 		dockWidget.setWidget(self._myXGanttWidget)
-		dockWidget.setWindowTitle("Calendar View")
+		dockWidget.setWindowTitle("Project View")
 		sharedDB.mainWindow.setCentralWidget(dockWidget)
 		
 		#self._myXGanttWidget = XGanttWidget()

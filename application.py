@@ -7,12 +7,10 @@ from PyQt4 import QtGui, QtCore
 import sharedDB
 #import projexui.pyi_hook
 
-from DPSPipeline.ganttTest import GanttTest
+from DPSPipeline.projectview import ProjectView
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 import DPSPipeline.createprojecttest
-
-#reload(DPSPipeline.ganttTest)
 
 class MainWindow(QtGui.QMainWindow):
     
@@ -64,9 +62,8 @@ class MainWindow(QtGui.QMainWindow):
         self.setMenuBar(menubar)
         self.setCentralWidget(None)
         self.showMaximized()
-        #GanttTest()
             
-        sharedDB.GanttTest = GanttTest()
+        sharedDB.projectView = ProjectView()
     
         self.CreateProjectWidget()
         #self.CreateProjectWidget()
@@ -99,9 +96,8 @@ class MainWindow(QtGui.QMainWindow):
 	:param      action | <QAction>
 	"""
 	if ( action.text() == 'Save' ):
-	    sharedDB.GanttTest._myXGanttWidget.SaveToDatabase()
+	    sharedDB.projectView._myXGanttWidget.SaveToDatabase()
 	elif (action.text() == 'Exit'):
-	    #sharedDB.GanttTest._myXGanttWidget.onClose()
             self.app.closeAllWindows()
             
     def projectMenuActions( self, action ):

@@ -20,7 +20,7 @@ class CreateProjectWidget(QWidget):
         # load the user interface# load the user interface
         if getattr(sys, 'frozen', None):
 	    #print (sys._MEIPASS+"/ui/createprojectwidget.ui");
-	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/createprojectwidget.ui"))
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/userwidget.ui"))
 	    
 	else:
 	    projexui.loadUi(__file__, self)
