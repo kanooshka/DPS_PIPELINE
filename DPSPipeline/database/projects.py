@@ -9,7 +9,7 @@ source.date = datetime.now()
 '''
 class Projects():
 
-	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, phases = [],_updated = 0):
+	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, phases = [],_updated = 0,_new = 1):
 		
 		# define custom properties
 		self._idprojects             = _idprojects
@@ -26,33 +26,34 @@ class Projects():
 		self._type                   = "project"
 		self._hidden                 = False
 		
+		self._new		     = 1
+		
 		if self._idstatus == 3 or self._idstatus == 5:
 			self._hidden = True
 			
 	def Save(self,timestamp):
 		
 		if self._updated:
-			print self._name+" Updated!"
+			if self._new:
+				self._new = 0
+				
+				print self._name+" Added to Database!"
+			else:
+				print self._name+" Updated!"
 		
 		
 def GetActiveProjects():
 	activeProjects = []
 	
 	if not sharedDB.testing:
-		connection = sharedDB.mySQLConnection
-		connection.openConnection()
-		cursor = connection._cnx.cursor()
-		query = ("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")            
-		cursor.execute(query)
-		rows = cursor.fetchall()
+		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")
 		
 		for row in rows:
 			#print row[0]
-			activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatus = row[3]))
-		cursor.close()
-		connection.closeConnection()
+			activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatus = row[3],_new = 0))
+
 	else:
-		activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatus = 1))
+		activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatus = 1,_new = 0))
 
 	return activeProjects
 
@@ -60,20 +61,10 @@ def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_rende
 	#print (_name+" Updated!")
 	maxidprojects = QueryLatestID()
 	
-	connection = sharedDB.mySQLConnection
-	connection.openConnection()
-	cnx = connection._cnx
-	cursor = connection._cnx.cursor()
-	
-	query = "INSERT INTO projects (idprojects, name, idstatuses, due_date) VALUES ('"+str(maxidprojects)+"', '"+str(_name)+"', '"+str(1)+"', '"+str(_due_date)+"');"
+	sharedDB.mySQLConnection.query("INSERT INTO projects (idprojects, name, idstatuses, due_date) VALUES ('"+str(maxidprojects)+"', '"+str(_name)+"', '"+str(1)+"', '"+str(_due_date)+"');","commit")
+	#query = "INSERT INTO projects (idprojects, name, idstatuses, due_date) VALUES ('"+str(maxidprojects)+"', '"+str(_name)+"', '"+str(1)+"', '"+str(_due_date)+"');"
 	
 	#print query
-	
-	
-	cursor.execute(query)
-	cnx.commit()
-	connection.closeConnection()
-	cnx.close()
 
 	#connect phases to projectid
 	for phase in phases:
@@ -86,22 +77,13 @@ def AddProject(_name = '', _folderLocation = '', _idstatus = 0, _fps = 25,_rende
 	sharedDB.projectView.AddProject(project=newProj,phases=phases)	
 		
 def QueryLatestID():
-	connection = sharedDB.mySQLConnection
-	connection.openConnection()
-	cnx = connection._cnx
-	cursor = connection._cnx.cursor()
-	
-	query = "SELECT MAX(idprojects) FROM projects;"
-	cursor.execute(query)
-	rows = cursor.fetchall()
-	
+	rows = sharedDB.mySQLConnection.query("SELECT MAX(idprojects) FROM projects;")
+
 	for row in rows:
 		if (type(row[0])) is int:
 			maxidprojects = row[0]+1
 		else:
 			maxidprojects = 1;
-	connection.closeConnection()
-	cnx.close()
 	
 	return maxidprojects
 

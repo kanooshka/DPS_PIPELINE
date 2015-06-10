@@ -40,4 +40,17 @@ class Connection():
 		cursor.close()
 		self.closeConnection()
 	'''
+	def query(self, query = "", queryType = "fetchAll"):
+		rows = ""
+		self.openConnection()
+		cursor = self._cnx.cursor()
+		cursor.execute(query)
+		if queryType == "fetchAll":
+			rows = cursor.fetchall()
+		elif queryType == "commit":
+			self._cnx.commit()
+		cursor.close()
+		self.closeConnection()
+		
+		return rows
 

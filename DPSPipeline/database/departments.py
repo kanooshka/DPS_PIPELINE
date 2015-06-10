@@ -13,18 +13,10 @@ class Departments():
 		
 def GetDepartments():
 	departments = []
-	connection = sharedDB.mySQLConnection
-	connection.openConnection()
-	cursor = connection._cnx.cursor()
-	query = "SELECT iddepartments,name,ganttChartColor FROM departments"	
-	
-	cursor.execute(query)
-	rows = cursor.fetchall()
+	rows = sharedDB.mySQLConnection.query("SELECT iddepartments,name,ganttChartColor FROM departments")
 	
 	for row in rows:
 		#print row[0]
 		departments.append(Departments(_iddepartments = row[0],_name = row[1],_ganttChartColor = row[2]))
-	cursor.close()
-	connection.closeConnection()
 	
 	return departments

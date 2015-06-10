@@ -24,20 +24,12 @@ def GetPhaseNames():
 	phases = []
 	
 	if not sharedDB.testing:
-		connection = sharedDB.mySQLConnection
-		connection.openConnection()
-		cursor = connection._cnx.cursor()
-		query = "SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment FROM phases"	
-		
-		cursor.execute(query)
-		rows = cursor.fetchall()
+		rows = sharedDB.mySQLConnection.query("SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment FROM phases")
 		
 		for row in rows:
 			#print row[0]
 			phases.append(Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_idDepartment = row[5]))
-		cursor.close()
-		connection.closeConnection()
-	
+
 	else:
 		phases.append(Phases(_idphases = 1,_name = 'Storyboarding',_ganttChartBGColor = '255,255,255',_ganttChartTextColor = '0,0,0',_manHoursToMinuteRatio = 40,_idDepartment = 8))
 	

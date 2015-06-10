@@ -25,28 +25,11 @@ class PhaseAssignments():
 		
 	def Save(self,timestamp):		
 		if self._updated:
-			connection = sharedDB.mySQLConnection
-			connection.openConnection()
-			cnx = connection._cnx
-			cursor = connection._cnx.cursor()
-			
+		
 			updatedBy = socket.gethostbyname(socket.gethostname())
-			
-			#cnx = mysql.connector.connect(user='root', database='dpstudio', password='poop')
-			#cursor = cnx.cursor()
-			
-			#print (self._name+" Updated!")
-			query = "INSERT INTO phaseassignments (idphases, idprojects, startdate, enddate, ip, archived,  timestamp) VALUES ('"+str(self._idphases)+"', '"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0', '" + str(timestamp) + "');"
-			
-			#print query
-			
-			#connection._cnx.commit()
-			
-			cursor.execute(query)
-			cnx.commit()
-			cursor.close()
-			#connection.closeConnection()
-			cnx.close()
+
+			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idphases, idprojects, startdate, enddate, ip, archived,  timestamp) VALUES ('"+str(self._idphases)+"', '"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0', '" + str(timestamp) + "');","commit")
+
 			self._updated = 0
 			
 		
@@ -55,19 +38,12 @@ def GetPhaseAssignmentsFromProject(idprojects):
 	activePhaseAssignments = []
 	
 	if not sharedDB.testing:
-		connection = sharedDB.mySQLConnection
-		connection.openConnection()
-		cursor = connection._cnx.cursor()
-		query = ("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp") % idprojects
-		
-		cursor.execute(query)
-		rows = cursor.fetchall()
+		rows = sharedDB.mySQLConnection.query("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp" % idprojects)
 		
 		for row in rows:
 			#print row[0]
 			activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = row[0],_idphases = row[1],_idprojects = row[2],_startdate = row[3],_enddate = row[4],_progress = row[5],_archived = row[6],_idstatuses = row[7]))
-		cursor.close()
-		connection.closeConnection()
+
 	else:
 		activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = 1,_idphases = 2,_idprojects = 1,_startdate = datetime.strptime('2015-02-20', "%Y-%m-%d").date(),_enddate = datetime.strptime('2015-02-24', "%Y-%m-%d").date(),_archived = 0,))
 		activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = 2,_idphases = 3,_idprojects = 1,_startdate = datetime.strptime('2015-02-25', "%Y-%m-%d").date(),_enddate = datetime.strptime('2015-03-01', "%Y-%m-%d").date(),_archived = 0,))
