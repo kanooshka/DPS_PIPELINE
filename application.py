@@ -10,6 +10,8 @@ import sharedDB
 from DPSPipeline.projectview import ProjectView
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
+from DPSPipeline.widgets.projectviewwidget import projectviewwidget
+
 import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
@@ -79,15 +81,15 @@ class MainWindow(QtGui.QMainWindow):
         dockWidget1.setWidget(self._CreateProjectWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget1)
         
-        '''dockWidget2 = QtGui.QDockWidget(sharedDB.mainWindow)
-        self._CreateProjectWidget = createprojectwidget.CreateProjectWidget()
-        dockWidget2.setWindowTitle("Create Project")
-        dockWidget2.setWidget(self._CreateProjectWidget)
+        dockWidget2 = QtGui.QDockWidget(sharedDB.mainWindow)
+        self._ProjectViewWidget = projectviewwidget.ProjectViewWidget()
+        dockWidget2.setWindowTitle("ProjectView")
+        dockWidget2.setWidget(self._ProjectViewWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget2)
         
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
         sharedDB.mainWindow.tabifyDockWidget(dockWidget1,dockWidget2)
-        '''
+        
         
     def fileMenuActions( self, action ):
 	"""
