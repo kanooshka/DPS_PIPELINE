@@ -37,7 +37,7 @@ class PhaseAssignments():
 def GetPhaseAssignmentsFromProject(idprojects):
 	activePhaseAssignments = []
 	
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp" % idprojects)
 		
 		for row in rows:

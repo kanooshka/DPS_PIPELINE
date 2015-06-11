@@ -31,7 +31,7 @@ class LoginWidget(QWidget):
 	self.user.returnPressed.connect(self.Login)
 	self.password.returnPressed.connect(self.Login)
 	
-	if (sharedDB.testing):
+	if (sharedDB.autologin):
 	    self.user.setText("dkonieczka")
 	    self.password.setText("doodle")
 	    self.Login()

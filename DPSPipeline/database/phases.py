@@ -23,7 +23,7 @@ class Phases():
 def GetPhaseNames():
 	phases = []
 	
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment FROM phases")
 		
 		for row in rows:

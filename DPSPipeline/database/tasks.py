@@ -30,7 +30,7 @@ class Task():
 def GetTasks():
 	tasks = []
 	
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT idtasks, parentType, parentId, taskType, assignedUserId, statusId FROM tasks")
 		
 		for row in rows:

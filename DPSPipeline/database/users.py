@@ -30,7 +30,7 @@ class Users():
 		
 def GetAllUsers():
 	users = []
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT idusers, name, password, idDepartment, idPrivileges, active FROM users")
 		
 		for row in rows:
@@ -61,7 +61,7 @@ def GetAllUsers():
 def GetCurrentUser(username = ''):
 
 	users = []
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")
 		
 		for row in rows:

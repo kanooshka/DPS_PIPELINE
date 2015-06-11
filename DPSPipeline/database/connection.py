@@ -12,7 +12,10 @@ class Connection():
 		self._password = _password
 		self._host = '10.9.21.12'
 		#self._host = 'localhost'
-		self._database = 'dpstudio'
+		if sharedDB.testing:
+			self._database = 'testDB'
+		else:
+			self._database = 'dpstudio'
 		#print "connection initiated"
 	
 	def testConnection(self):

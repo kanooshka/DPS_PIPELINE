@@ -45,7 +45,7 @@ class Projects():
 def GetActiveProjects():
 	activeProjects = []
 	
-	if not sharedDB.testing:
+	if not sharedDB.noDB:
 		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses FROM projects WHERE idstatuses != 4")
 		
 		for row in rows:

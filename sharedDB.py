@@ -10,6 +10,7 @@ version = 0.11
 
 #TEST SETTINGS
 testing = 1
+noDB = 1
 autologin = 1
 #freezeDBUpdates = 1
 

@@ -25,7 +25,7 @@ class MainWindow(QtGui.QMainWindow):
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
 
-        if not sharedDB.testing:
+        if not sharedDB.noDB:
             try:
                 self.app.loginWidget
             except:
