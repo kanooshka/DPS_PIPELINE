@@ -11,8 +11,9 @@ class Connection():
 		self._user = _user
 		self._password = _password
 		self._host = '10.9.21.12'
-		#self._host = 'localhost'
-		if sharedDB.testing:
+		if sharedDB.localDB:
+			self._host = 'localhost'
+		if sharedDB.testing and not sharedDB.localDB:
 			self._database = 'testDB'
 		else:
 			self._database = 'dpstudio'
@@ -31,18 +32,6 @@ class Connection():
 	def closeConnection(self):
 		self._cnx.close()
 
-	'''
-	def executeQuery(self, query):
-		#cnx = mysql.connector.connect(user='root', password='poop',host='127.0.0.1',database='dpstudio')
-		self.openConnection()
-		cursor = self._cnx.cursor(buffered=True)
-		#query = ("SELECT startframe FROM shots")            
-		cursor.execute(query)
-		for (index) in cursor:
-			print(index)
-		cursor.close()
-		self.closeConnection()
-	'''
 	def query(self, query = "", queryType = "fetchAll"):
 		rows = ""
 		self.openConnection()
@@ -57,3 +46,7 @@ class Connection():
 		
 		return rows
 
+	def UpdateDatabaseClasses(self):
+		sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
+		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
+		sharedDB.projectList = sharedDB.projects.GetActiveProjects()

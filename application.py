@@ -7,7 +7,7 @@ from PyQt4 import QtGui, QtCore
 import sharedDB
 #import projexui.pyi_hook
 
-from DPSPipeline.projectview import ProjectView
+from DPSPipeline.calendarview import CalendarView
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
@@ -17,7 +17,7 @@ import DPSPipeline.createprojecttest
 class MainWindow(QtGui.QMainWindow):
     
     def __init__( self):
-	QtGui.QMainWindow.__init__(self)
+        QtGui.QMainWindow.__init__(self)
         
         self.setWindowTitle("Sludge v"+str(sharedDB.version))
     
@@ -65,13 +65,9 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(None)
         self.showMaximized()
             
-        sharedDB.projectView = ProjectView()
+        sharedDB.calendarview = CalendarView()
     
-        self.CreateProjectWidget()
-        #self.CreateProjectWidget()
-    
-        #self.app.GTEST._myXGanttWidget.activateWindow()
-        #self.app.GTEST._myXGanttWidget.frameCurrentDate()
+        self.CreateProjectWidget()        
         
     def CreateProjectWidget(self):
 
@@ -87,8 +83,8 @@ class MainWindow(QtGui.QMainWindow):
         dockWidget2.setWidget(self._ProjectViewWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget2)
         
-        sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
-        sharedDB.mainWindow.tabifyDockWidget(dockWidget1,dockWidget2)
+        sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
+        sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget2)
         
         
     def fileMenuActions( self, action ):
@@ -98,7 +94,7 @@ class MainWindow(QtGui.QMainWindow):
 	:param      action | <QAction>
 	"""
 	if ( action.text() == 'Save' ):
-	    sharedDB.projectView._myXGanttWidget.SaveToDatabase()
+	    sharedDB.calendarview._myXGanttWidget.SaveToDatabase()
 	elif (action.text() == 'Exit'):
             self.app.closeAllWindows()
             

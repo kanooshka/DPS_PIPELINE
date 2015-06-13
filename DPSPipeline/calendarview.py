@@ -12,20 +12,18 @@ import operator
 
 from PyQt4.QtGui import QColor
 
-class ProjectView():
+class CalendarView():
 
 	def __init__(self):
 		#global myXGanttWidget
-		
-		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-		sharedDB.projectList = sharedDB.projects.GetActiveProjects()
 		
 		dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
 		#sharedDB.widgetList.Append(dockWidget)
 		self._myXGanttWidget = XGanttWidget(sharedDB.mainWindow)
 		dockWidget.setWidget(self._myXGanttWidget)
-		dockWidget.setWindowTitle("Project View")
-		sharedDB.mainWindow.setCentralWidget(dockWidget)
+		dockWidget.setWindowTitle("Calendar View")
+		sharedDB.leftWidget = dockWidget
+		sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
 		
 		#self._myXGanttWidget = XGanttWidget()
 		#self._myXGanttWidget.show()

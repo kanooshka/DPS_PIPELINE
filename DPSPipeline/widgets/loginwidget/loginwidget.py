@@ -42,7 +42,7 @@ class LoginWidget(QWidget):
 	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
 	if sharedDB.connection.testConnection():
 	    sharedDB.users.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
-	    #print sharedDB.users.currentUser._name
+	    sharedDB.connection.UpdateDatabaseClasses()
 	    self.close()
 	    sharedDB.mainWindow.EnableMainWindow()
 	else:

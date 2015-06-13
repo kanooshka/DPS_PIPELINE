@@ -3152,16 +3152,16 @@ class XTreeWidget(QTreeWidget):
         """
         if ( action.text() == 'Show All' ):
             #print "Showing All Phases"
-            sharedDB.projectView._myXGanttWidget.updatePhaseVisibility(True)
+            sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(True)
 
             
         elif ( action.text() == 'Hide All' ):
-            sharedDB.projectView._myXGanttWidget.updatePhaseVisibility(False)
+            sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(False)
             #print "Hiding All Phases"    
         else:
             state   = action.isChecked()
             #print (action.text() + " = " + str(state))
-            sharedDB.projectView._myXGanttWidget.updatePhaseVisibility(state,action.text())
+            sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(state,action.text())
             
         
         self.resizeToContents()

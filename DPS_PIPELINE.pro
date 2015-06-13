@@ -43,4 +43,5 @@ FORMS    += mainwindow.ui \
     projexui/widgets/xrichtextedit/ui/xrichtextedit.ui \
     projexui/widgets/xviewwidget/ui/xviewprofiledialog.ui \
     projexui/windows/xdkwindow/ui/xdkwindow.ui \
-    DPSPipeline/widgets/userswidget/ui/userswidget.ui
+    DPSPipeline/widgets/userswidget/ui/userswidget.ui \
+    DPSPipeline/widgets/projectviewwidget/ui/projectviewwidget.ui
