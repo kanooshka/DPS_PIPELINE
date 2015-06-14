@@ -36,8 +36,8 @@ class ProjectViewWidget(QWidget):
 		#connects buttons
 		#self.createButton.clicked.connect(self.CreateProject)
 		#self.cancelButton.clicked.connect(self.cancel)
-		self.propogateProjectNames()
 		self.propogateStatuses()
+		self.propogateProjectNames()		
 		
 		#connect project settings
 		self.projectName.currentIndexChanged[QtCore.QString].connect(self.refreshProjectValues)
@@ -55,7 +55,7 @@ class ProjectViewWidget(QWidget):
 		self.sequenceNumber.currentRowChanged.connect(self.refreshSequenceValues)
 		self.sequenceDescription.textChanged.connect(self.updateSequenceDescription)
 		self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.updateSequenceStatus)
-		
+		self.addSequence.clicked.connect(self.AddSequence)
 		
 	def cancel(self):
 		self.close()
@@ -66,7 +66,7 @@ class ProjectViewWidget(QWidget):
 			self.projectName.addItem(project._name, QVariant(project))
 		
 		self.refreshProjectValues()
-		self.refreshSequenceNames()		
+		self.refreshSequenceNames()	
 		self.refreshSequenceValues()
 		
 	def propogateStatuses(self):
@@ -81,7 +81,7 @@ class ProjectViewWidget(QWidget):
 		self._currentProject._updated = 1
 	
 	def updateProjectStatus(self):
-		self._currentProject._idstatus = self.projectStatus.currentIndex()+1
+		self._currentProject._idstatuses = self.projectStatus.currentIndex()+1
 		self._currentProject._updated = 1
 		
 	def updateFPS(self):
@@ -111,12 +111,13 @@ class ProjectViewWidget(QWidget):
 	def refreshProjectValues(self):
 		self._currentProject = sharedDB.projectList[self.projectName.currentIndex()]		
 		
+		self.newSequenceName.setValue(10)
 		#set FPS
 		self.fps.setValue(self._currentProject._fps)
 		#set Path
 		self.projectPath.setText(self._currentProject._folderLocation)
 		#set Status
-		self.projectStatus.setCurrentIndex(self._currentProject._idstatus-1)
+		self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
 		#set res
 		self.renderWidth.setValue(self._currentProject._renderWidth)
 		self.renderHeight.setValue(self._currentProject._renderHeight)
@@ -129,19 +130,63 @@ class ProjectViewWidget(QWidget):
 		else:
 			self.projectDescription.setText('')
 	
+	def AddSequence(self):
+	    unique = 1
+	    
+	    #get sequence name
+	    newName = self.getSequenceName()
+	    
+	    #iterate through sequences
+	    for sequence in self._currentProject._sequences:	    
+		#if sequence matches name
+		if newName == sequence._number:
+		    unique = 0
+		    break
+		
+	    #if unique
+	    if unique:
+		#add sequence
+		self._currentProject.AddSequenceToProject(newName)
+		self.refreshSequenceNames()
+		self.selectSequenceByName(newName)
+		#self.newSequenceName.setValue(self.newSequenceName.value()+10)
+		
+	    else:
+		#warning message
+		message = QtGui.QMessageBox.question(self, 'Message',
+            "Sequence name already exists, choose a unique name (it is recommended to leave 10 between each sequence in case sequences need to be added in the middle)", QtGui.QMessageBox.Ok)
+	
+	    #select sequence by name
+	def selectSequenceByName(self, sName):
+	    for x in range(0,self.sequenceNumber.count()):
+		if self.sequenceNumber.item(x).text()==sName:
+		    self.sequenceNumber.setCurrentRow(x)
+		    break
+	    
+	
+	
+	def getSequenceName(self):
+	    sName = str(self.newSequenceName.value())
+	    while( len(sName)<3):
+		sName = "0"+sName
+	
+	    return sName
+	
 	def updateSequenceDescription(self):
 		if self._currentSequence is not None:
 			self._currentSequence._description = self.sequenceDescription.toPlainText()
 			self._currentSequence._updated = 1
 	
 	def updateSequenceStatus(self):
-		self._currentSequence._idstatus = self.sequenceStatus.currentIndex()+1
-		self._currentSequence._updated = 1
+		if self._currentSequence is not None:
+		    self._currentSequence._idstatuses = self.sequenceStatus.currentIndex()+1
+		    self._currentSequence._updated = 1
 		
 	def refreshSequenceNames(self):
 		self.sequenceNumber.clear()
 		self._currentSequence = None
 		self.sequenceDescription.setText('')
+		self.sequenceStatus.setCurrentIndex(0)
 		
 		for x in range(0,len(self._currentProject._sequences)):
 			sequence = self._currentProject._sequences[x]
@@ -160,20 +205,27 @@ class ProjectViewWidget(QWidget):
 				if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
 					self.sequenceNumber.setCurrentRow(x)
 					break
-				
+		
 	def refreshSequenceValues(self):				
 			
 		#make sure _currentSequence is current
 		self.setCurrentSequence()
 		
-		#set Status
-		self.sequenceStatus.setCurrentIndex(self._currentSequence._idstatus)
-		
-		#set Description
-		if self._currentSequence is not None and self._currentSequence._description is not None:
-				self.sequenceDescription.setText(self._currentSequence._description)				
+		if self._currentSequence is not None:
+		    #update editName
+		    if self.sequenceNumber.currentItem() is not None:
+			self.newSequenceName.setValue(int(self.sequenceNumber.currentItem().text())+10)
+		    
+		    #set Status
+		    
+		    self.sequenceStatus.setCurrentIndex(self._currentSequence._idstatuses-1)
+		    
+		    #set Description
+		    if self._currentSequence is not None and self._currentSequence._description is not None:
+				    self.sequenceDescription.setText(self._currentSequence._description)				
 		
 	def setCurrentSequence(self):
+		self.currentSequence = None
 		if len(self._currentProject._sequences) and self.sequenceNumber.currentItem() is not None:
 			self._currentProject._lastSelectedSequenceNumber = self.sequenceNumber.currentItem().text()
 			self._currentSequence = self._currentProject._sequences[int(self.sequenceNumber.currentItem().toolTip())]
