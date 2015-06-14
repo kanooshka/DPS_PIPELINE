@@ -12,7 +12,7 @@ from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
 
-import DPSPipeline.createprojecttest
+#import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
     
@@ -35,6 +35,9 @@ class MainWindow(QtGui.QMainWindow):
             self.app.loginWidget.activateWindow()
         else:
             sharedDB.users.currentUser = sharedDB.users.GetCurrentUser('twotis')
+            sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
+            sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
+            sharedDB.projectList = sharedDB.projects.GetActiveProjects()
             self.EnableMainWindow()
     
     def EnableMainWindow(self):
@@ -62,8 +65,10 @@ class MainWindow(QtGui.QMainWindow):
         userMenu.triggered.connect( self.userMenuActions )
         '''
         self.setMenuBar(menubar)
-        self.setCentralWidget(None)
-        self.showMaximized()
+        self.setCentralWidget(None)   
+        self.resize(1280,720)
+        self.show()
+        #self.showMaximized()
             
         sharedDB.calendarview = CalendarView()
     

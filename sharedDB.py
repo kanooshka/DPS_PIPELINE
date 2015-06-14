@@ -4,6 +4,7 @@ from DPSPipeline.database import phases
 from DPSPipeline.database import users
 from DPSPipeline.database import tasks
 from DPSPipeline.database import statuses
+from DPSPipeline.database import sequences
 
 from PyQt4.QtCore   import QDate
 

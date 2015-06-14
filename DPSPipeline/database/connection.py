@@ -11,6 +11,8 @@ class Connection():
 		self._user = _user
 		self._password = _password
 		self._host = '10.9.21.12'
+		
+		self._lastInsertId = ''
 		if sharedDB.localDB:
 			self._host = 'localhost'
 		if sharedDB.testing and not sharedDB.localDB:
@@ -37,12 +39,17 @@ class Connection():
 		self.openConnection()
 		cursor = self._cnx.cursor()
 		cursor.execute(query)
+		self._lastInsertId = cursor.lastrowid
 		if queryType == "fetchAll":
 			rows = cursor.fetchall()
 		elif queryType == "commit":
 			self._cnx.commit()
+		
+		
 		cursor.close()
+		
 		self.closeConnection()
+		
 		
 		return rows
 
