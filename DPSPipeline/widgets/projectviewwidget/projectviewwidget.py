@@ -20,6 +20,7 @@ class ProjectViewWidget(QWidget):
 		
 		self._currentProject = None
 		self._currentSequence = None
+		self._currentShot = None
 		
 		# load the user interface# load the user interface
 		if getattr(sys, 'frozen', None):
@@ -42,6 +43,7 @@ class ProjectViewWidget(QWidget):
 		#connect project settings
 		self.projectName.currentIndexChanged[QtCore.QString].connect(self.refreshProjectValues)
 		self.projectName.currentIndexChanged[QtCore.QString].connect(self.refreshSequenceNames)
+		self.projectName.currentIndexChanged[QtCore.QString].connect(self.refreshShotNames)
 		self.projectName.editTextChanged[QtCore.QString].connect(self.updateProjectName)
 		self.projectStatus.currentIndexChanged[QtCore.QString].connect(self.updateProjectStatus)
 		self.fps.valueChanged.connect(self.updateFPS)
@@ -50,12 +52,21 @@ class ProjectViewWidget(QWidget):
 		self.renderHeight.valueChanged.connect(self.updateRenderHeight)
 		self.projectDescription.textChanged.connect(self.updateProjectDescription)
 		self.projectPath.textChanged.connect(self.updateProjectPath)		
+		self.projectPathButton.clicked.connect(self.changeProjectPath)
 		
 		#connect sequence settings		
 		self.sequenceNumber.currentRowChanged.connect(self.refreshSequenceValues)
 		self.sequenceDescription.textChanged.connect(self.updateSequenceDescription)
 		self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.updateSequenceStatus)
 		self.addSequence.clicked.connect(self.AddSequence)
+		
+		#connect shot settings
+		self.shotNumber.currentRowChanged.connect(self.refreshShotValues)
+		self.shotDescription.textChanged.connect(self.updateShotDescription)
+		self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.updateShotStatus)
+		self.addShot.clicked.connect(self.AddShot)
+		self.startFrame.valueChanged.connect(self.updateStartFrame)
+		self.endFrame.valueChanged.connect(self.updateEndFrame)
 		
 	def cancel(self):
 		self.close()
@@ -69,12 +80,31 @@ class ProjectViewWidget(QWidget):
 		self.refreshSequenceNames()	
 		self.refreshSequenceValues()
 		
+		self.refreshShotNames()
+		#self.refreshShotValues()
+		
 	def propogateStatuses(self):
 		for status in sharedDB.myStatuses:
 			#item = QtGui.QListWidgetItem(project._name)
 			self.projectStatus.addItem(status._name, QVariant(status))
 			self.sequenceStatus.addItem(status._name, QVariant(status))
+			self.shotStatus.addItem(status._name, QVariant(status))
 		#print sharedDB.projectList[self.projectName.currentIndex()]._name
+	
+	def changeProjectPath(self):
+	    startingPath = ''
+	    if len(self._currentProject._folderLocation):
+		startingPath = self._currentProject._folderLocation
+	    
+	    fname = QtGui.QFileDialog.getExistingDirectory (self, 'Select Folder', startingPath)
+	    
+	    if len(fname):		
+		if self._currentProject._folderLocation is not fname:
+		    self.projectPath.setText(fname)
+		    self._currentProject._updated=1
+		    self._currentProject._folderLocation=fname
+		
+		
 
 	def updateProjectName(self):
 		self._currentProject._name = self.projectName.currentText()
@@ -111,7 +141,7 @@ class ProjectViewWidget(QWidget):
 	def refreshProjectValues(self):
 		self._currentProject = sharedDB.projectList[self.projectName.currentIndex()]		
 		
-		self.newSequenceName.setValue(10)
+		self.newSequenceNumber.setValue(10)
 		#set FPS
 		self.fps.setValue(self._currentProject._fps)
 		#set Path
@@ -149,7 +179,7 @@ class ProjectViewWidget(QWidget):
 		self._currentProject.AddSequenceToProject(newName)
 		self.refreshSequenceNames()
 		self.selectSequenceByName(newName)
-		#self.newSequenceName.setValue(self.newSequenceName.value()+10)
+		#self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
 		
 	    else:
 		#warning message
@@ -162,11 +192,9 @@ class ProjectViewWidget(QWidget):
 		if self.sequenceNumber.item(x).text()==sName:
 		    self.sequenceNumber.setCurrentRow(x)
 		    break
-	    
-	
-	
+		
 	def getSequenceName(self):
-	    sName = str(self.newSequenceName.value())
+	    sName = str(self.newSequenceNumber.value())
 	    while( len(sName)<3):
 		sName = "0"+sName
 	
@@ -188,41 +216,53 @@ class ProjectViewWidget(QWidget):
 		self.sequenceDescription.setText('')
 		self.sequenceStatus.setCurrentIndex(0)
 		
-		for x in range(0,len(self._currentProject._sequences)):
-			sequence = self._currentProject._sequences[x]
-			newWidgetItem = QtGui.QListWidgetItem()
-			newWidgetItem.setText(sequence._number)
-			newWidgetItem.setToolTip(str(x))
-			#newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
-			#newWidgetItem.setData(sequence._number)
-			self.sequenceNumber.addItem(newWidgetItem)
-			
-			
-		if self._currentProject._lastSelectedSequenceNumber == '-1':
-			self.sequenceNumber.setCurrentRow(0)
+		if (self._currentProject._sequences):
+		    self.setSequenceSettingsEnabled(1)
+		    for x in range(0,len(self._currentProject._sequences)):
+			    sequence = self._currentProject._sequences[x]
+			    newWidgetItem = QtGui.QListWidgetItem()
+			    newWidgetItem.setText(sequence._number)
+			    newWidgetItem.setToolTip(str(x))
+			    #newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
+			    #newWidgetItem.setData(sequence._number)
+			    self.sequenceNumber.addItem(newWidgetItem)
+			    
+			    
+		    if self._currentProject._lastSelectedSequenceNumber == '-1':
+			    self.sequenceNumber.setCurrentRow(0)
+		    else:
+			    for x in range(0,self.sequenceNumber.count()):
+				    if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
+					    self.sequenceNumber.setCurrentRow(x)
+					    break
 		else:
-			for x in range(0,self.sequenceNumber.count()):
-				if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
-					self.sequenceNumber.setCurrentRow(x)
-					break
+		    self.setSequenceSettingsEnabled(0)
+		    
+	def setSequenceSettingsEnabled(self, v):
+	    self.sequenceNumber.setEnabled(v)
+	    self.sequenceStatus.setEnabled(v)
+	    self.sequenceDescription.setEnabled(v)
+	    
+	def refreshSequenceValues(self):			
+	    #make sure _currentSequence is current
+	    self.setCurrentSequence()
+	    
+	    if self._currentSequence is not None:
+		#self.setCurrentShot()
 		
-	def refreshSequenceValues(self):				
-			
-		#make sure _currentSequence is current
-		self.setCurrentSequence()
+		#update editName
+		if self.sequenceNumber.currentItem() is not None:
+		    self.newSequenceNumber.setValue(int(self.sequenceNumber.currentItem().text())+10)
 		
-		if self._currentSequence is not None:
-		    #update editName
-		    if self.sequenceNumber.currentItem() is not None:
-			self.newSequenceName.setValue(int(self.sequenceNumber.currentItem().text())+10)
-		    
-		    #set Status
-		    
-		    self.sequenceStatus.setCurrentIndex(self._currentSequence._idstatuses-1)
-		    
-		    #set Description
-		    if self._currentSequence is not None and self._currentSequence._description is not None:
-				    self.sequenceDescription.setText(self._currentSequence._description)				
+		#set Status
+		
+		self.sequenceStatus.setCurrentIndex(self._currentSequence._idstatuses-1)
+		
+		#set Description
+		if self._currentSequence is not None and self._currentSequence._description is not None:
+				self.sequenceDescription.setText(self._currentSequence._description)
+	    
+	    self.refreshShotNames()
 		
 	def setCurrentSequence(self):
 		self.currentSequence = None
@@ -230,5 +270,131 @@ class ProjectViewWidget(QWidget):
 			self._currentProject._lastSelectedSequenceNumber = self.sequenceNumber.currentItem().text()
 			self._currentSequence = self._currentProject._sequences[int(self.sequenceNumber.currentItem().toolTip())]
 	
-	#def currentIndexChanged(self):
+	def setCurrentShot(self):
+		self.currentShot = None
+		if len(self._currentSequence._shots) and self.shotNumber.currentItem() is not None:
+			self._currentSequence._lastSelectedShotNumber = self.shotNumber.currentItem().text()
+			self._currentShot = self._currentSequence._shots[int(self.shotNumber.currentItem().toolTip())]
+	
+	def refreshShotNames(self):
+		self.shotNumber.clear()
+		self._currentShot = None
+		self.shotDescription.setText('')
+		self.shotStatus.setCurrentIndex(0)
 		
+		if self._currentSequence is not None:
+		    if (self._currentSequence._shots):		    
+			self.setShotSettingsEnabled(1)
+			
+			for x in range(0,len(self._currentSequence._shots)):
+				shot = self._currentSequence._shots[x]
+				newWidgetItem = QtGui.QListWidgetItem()
+				newWidgetItem.setText(shot._number)
+				newWidgetItem.setToolTip(str(x))
+				#newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
+				#newWidgetItem.setData(sequence._number)
+				self.shotNumber.addItem(newWidgetItem)
+				
+			
+			#select last selected on switching sequences
+			if self._currentSequence._lastSelectedShotNumber == '-1':
+				self.shotNumber.setCurrentRow(0)
+			else:
+				for x in range(0,self.shotNumber.count()):
+					if self.shotNumber.item(x).text() == self._currentSequence._lastSelectedShotNumber:
+						self.shotNumber.setCurrentRow(x)
+						break
+		    else:
+			self.setShotSettingsEnabled(0)
+		else:
+		    self.setShotSettingsEnabled(0)
+	
+	def setShotSettingsEnabled(self, v):
+	    self.shotNumber.setEnabled(v)
+	    self.shotStatus.setEnabled(v)
+	    self.startFrame.setEnabled(v)
+	    self.endFrame.setEnabled(v)
+	    self.shotImage.setEnabled(v)
+	    self.shotDescription.setEnabled(v)
+	
+	def refreshShotValues(self):				
+			
+	    #make sure _currentSequence is current
+	    if self._currentSequence is not None:
+		self.setCurrentShot()
+		
+		if self._currentShot is not None:
+		    
+		    #update editName
+		    if self.shotNumber.currentItem() is not None:
+			self.newShotNumber.setValue(int(self.shotNumber.currentItem().text())+10)
+		    
+		    #set Status
+		    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+		    
+		    #set frame range
+		    self.startFrame.setValue(self._currentShot._startframe)
+		    self.endFrame.setValue(self._currentShot._endframe)
+		    
+		    #set Description
+		    if self._currentShot is not None and self._currentShot._description is not None:
+				    self.shotDescription.setText(self._currentShot._description)
+		
+	def AddShot(self):
+	    unique = 1
+	    
+	    #get sequence name
+	    newName = self.getShotName()
+	    
+	    #iterate through sequences
+	    for shot in self._currentSequence._shots:	    
+		#if sequence matches name
+		if newName == shot._number:
+		    unique = 0
+		    break
+		
+	    #if unique
+	    if unique:
+		#add sequence
+		self._currentSequence.AddShotToSequence(newName)
+		self.refreshShotNames()
+		self.selectShotByName(newName)
+		#self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
+		
+	    else:
+		#warning message
+		message = QtGui.QMessageBox.question(self, 'Message',
+            "Shot name already exists, choose a unique name (it is recommended to leave 10 between each shot in case shots need to be added in the middle)", QtGui.QMessageBox.Ok)
+	
+	    #select sequence by name
+	def selectShotByName(self, sName):
+	    for x in range(0,self.shotNumber.count()):
+		if self.shotNumber.item(x).text()==sName:
+		    self.shotNumber.setCurrentRow(x)
+		    break	
+	
+	def getShotName(self):
+	    sName = str(self.newShotNumber.value())
+	    while( len(sName)<4):
+		sName = "0"+sName
+	
+	    return sName
+	
+	def updateShotDescription(self):
+		if self._currentShot is not None:
+			self._currentShot._description = self.shotDescription.toPlainText()
+			self._currentShot._updated = 1
+	
+	def updateShotStatus(self):
+		if self._currentShot is not None:
+		    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
+		    self._currentShot._updated = 1
+	
+	def updateStartFrame(self):
+		self._currentShot._startframe = self.startFrame.value()
+		self._currentShot._updated = 1
+	
+	def updateEndFrame(self):
+		self._currentShot._endframe = self.endFrame.value()
+		self._currentShot._updated = 1	
+	

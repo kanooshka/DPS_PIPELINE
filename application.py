@@ -39,6 +39,7 @@ class MainWindow(QtGui.QMainWindow):
             sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
             sharedDB.projectList = sharedDB.projects.GetActiveProjects()
             self.EnableMainWindow()
+	    sharedDB.mySQLConnection.closeConnection()
     
     def EnableMainWindow(self):
         #self.mw = QtGui.QMainWindow() # mw = MainWindow
@@ -71,26 +72,29 @@ class MainWindow(QtGui.QMainWindow):
         #self.showMaximized()
             
         sharedDB.calendarview = CalendarView()
-    
-        self.CreateProjectWidget()        
+        sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
+        sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
+        #self.CreateProjectWidget()
+	self.CreateProjectViewWidget()
         
     def CreateProjectWidget(self):
-
+	
         dockWidget1 = QtGui.QDockWidget(sharedDB.mainWindow)
         self._CreateProjectWidget = createprojectwidget.CreateProjectWidget()
         dockWidget1.setWindowTitle("Create Project")
         dockWidget1.setWidget(self._CreateProjectWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget1)
-        
-        dockWidget2 = QtGui.QDockWidget(sharedDB.mainWindow)
+        dockWidget1.setFloating(1)
+        #sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
+        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget2)
+    
+    def CreateProjectViewWidget(self):
+	
+        dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
         self._ProjectViewWidget = projectviewwidget.ProjectViewWidget()
-        dockWidget2.setWindowTitle("ProjectView")
-        dockWidget2.setWidget(self._ProjectViewWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget2)
-        
-        sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
-        sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget2)
-        
+        dockWidget.setWindowTitle("ProjectView")
+        dockWidget.setWidget(self._ProjectViewWidget)
+        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget)
         
     def fileMenuActions( self, action ):
 	"""

@@ -209,7 +209,7 @@
                <item row="0" column="0">
                 <widget class="QComboBox" name="projectName">
                  <property name="editable">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="insertPolicy">
                   <enum>QComboBox::InsertAtCurrent</enum>
@@ -506,7 +506,7 @@ p, li { white-space: pre-wrap; }
                </size>
               </property>
               <property name="title">
-               <string>Number</string>
+               <string>Seq Number</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_9">
                <property name="leftMargin">
@@ -529,6 +529,65 @@ p, li { white-space: pre-wrap; }
                  <property name="sortingEnabled">
                   <bool>true</bool>
                  </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QGroupBox" name="groupBox_9">
+                 <property name="maximumSize">
+                  <size>
+                   <width>90</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="title">
+                  <string>Add Sequence</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_20">
+                  <property name="leftMargin">
+                   <number>1</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>1</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>1</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>1</number>
+                  </property>
+                  <property name="spacing">
+                   <number>1</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QSpinBox" name="newSequenceNumber">
+                    <property name="maximum">
+                     <number>99999</number>
+                    </property>
+                    <property name="value">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="addSequence">
+                    <property name="minimumSize">
+                     <size>
+                      <width>25</width>
+                      <height>25</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>25</width>
+                      <height>25</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>+</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
               </layout>
@@ -625,65 +684,6 @@ p, li { white-space: pre-wrap; }
                   </property>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="sequenceStatus"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QGroupBox" name="groupBox_9">
-                 <property name="maximumSize">
-                  <size>
-                   <width>90</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Add Sequence</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_20">
-                  <property name="leftMargin">
-                   <number>1</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>1</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>1</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>1</number>
-                  </property>
-                  <property name="spacing">
-                   <number>1</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QSpinBox" name="newSequenceName">
-                    <property name="maximum">
-                     <number>99999</number>
-                    </property>
-                    <property name="value">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="addSequence">
-                    <property name="minimumSize">
-                     <size>
-                      <width>25</width>
-                      <height>25</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>25</width>
-                      <height>25</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>+</string>
-                    </property>
-                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -872,6 +872,65 @@ p, li { white-space: pre-wrap; }
                       </property>
                      </widget>
                     </item>
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_12">
+                      <property name="maximumSize">
+                       <size>
+                        <width>90</width>
+                        <height>50</height>
+                       </size>
+                      </property>
+                      <property name="title">
+                       <string>Add Shot</string>
+                      </property>
+                      <layout class="QGridLayout" name="gridLayout_24">
+                       <property name="leftMargin">
+                        <number>1</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>1</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>1</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>1</number>
+                       </property>
+                       <property name="spacing">
+                        <number>1</number>
+                       </property>
+                       <item row="0" column="0">
+                        <widget class="QSpinBox" name="newShotNumber">
+                         <property name="maximum">
+                          <number>99999</number>
+                         </property>
+                         <property name="value">
+                          <number>10</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QPushButton" name="addShot">
+                         <property name="minimumSize">
+                          <size>
+                           <width>25</width>
+                           <height>25</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>25</width>
+                           <height>25</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
                    </layout>
                   </item>
                  </layout>
@@ -895,39 +954,21 @@ p, li { white-space: pre-wrap; }
                   <property name="spacing">
                    <number>3</number>
                   </property>
-                  <item row="0" column="0" rowspan="2">
-                   <widget class="QGroupBox" name="groupBox_12">
-                    <property name="title">
-                     <string>Status</string>
-                    </property>
+                  <item row="0" column="1" rowspan="2">
+                   <widget class="QFrame" name="frame_12">
                     <layout class="QGridLayout" name="gridLayout_18">
-                     <property name="leftMargin">
-                      <number>1</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>1</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>1</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>1</number>
-                     </property>
-                     <property name="spacing">
-                      <number>1</number>
-                     </property>
-                     <item row="1" column="0">
-                      <widget class="QGroupBox" name="groupBox_6">
+                     <item row="0" column="0">
+                      <widget class="QGroupBox" name="groupBox_14">
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>70</height>
+                         <height>60</height>
                         </size>
                        </property>
                        <property name="title">
-                        <string>Start Frame</string>
+                        <string>Status</string>
                        </property>
-                       <layout class="QGridLayout" name="gridLayout_16">
+                       <layout class="QGridLayout" name="gridLayout_22">
                         <property name="leftMargin">
                          <number>1</number>
                         </property>
@@ -943,44 +984,27 @@ p, li { white-space: pre-wrap; }
                         <property name="spacing">
                          <number>1</number>
                         </property>
-                        <item row="0" column="0">
-                         <widget class="QSpinBox" name="startFrame">
-                          <property name="maximum">
-                           <number>999999</number>
-                          </property>
-                          <property name="value">
-                           <number>101</number>
-                          </property>
-                         </widget>
+                        <item row="0" column="1">
+                         <widget class="QComboBox" name="shotStatus"/>
                         </item>
                        </layout>
                       </widget>
                      </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="shotStatus">
-                       <property name="styleSheet">
-                        <string notr="true">color: rgb(0,0,0);background: rgb(4, 255, 4)</string>
-                       </property>
-                       <property name="text">
-                        <string>DONE!</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QGroupBox" name="groupBox_11">
+                     <item row="1" column="0">
+                      <widget class="QFrame" name="frame_3">
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
-                         <height>70</height>
+                         <height>60</height>
                         </size>
                        </property>
-                       <property name="title">
-                        <string>End Frame</string>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
                        </property>
-                       <layout class="QGridLayout" name="gridLayout_17">
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QGridLayout" name="gridLayout_23">
                         <property name="leftMargin">
                          <number>1</number>
                         </property>
@@ -997,13 +1021,63 @@ p, li { white-space: pre-wrap; }
                          <number>1</number>
                         </property>
                         <item row="0" column="0">
-                         <widget class="QSpinBox" name="endFrame">
-                          <property name="maximum">
-                           <number>999999</number>
+                         <widget class="QGroupBox" name="groupBox_6">
+                          <property name="maximumSize">
+                           <size>
+                            <width>16777215</width>
+                            <height>70</height>
+                           </size>
                           </property>
-                          <property name="value">
-                           <number>201</number>
+                          <property name="title">
+                           <string>Frame Range</string>
                           </property>
+                          <layout class="QGridLayout" name="gridLayout_16">
+                           <property name="leftMargin">
+                            <number>1</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>1</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>1</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>1</number>
+                           </property>
+                           <property name="spacing">
+                            <number>1</number>
+                           </property>
+                           <item row="0" column="0">
+                            <widget class="QSpinBox" name="startFrame">
+                             <property name="maximum">
+                              <number>999999</number>
+                             </property>
+                             <property name="value">
+                              <number>101</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="2">
+                            <widget class="QSpinBox" name="endFrame">
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>999999</number>
+                             </property>
+                             <property name="value">
+                              <number>201</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLabel" name="label">
+                             <property name="text">
+                              <string>-</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
                          </widget>
                         </item>
                        </layout>
@@ -1011,6 +1085,19 @@ p, li { white-space: pre-wrap; }
                      </item>
                     </layout>
                    </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <spacer name="verticalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </widget>

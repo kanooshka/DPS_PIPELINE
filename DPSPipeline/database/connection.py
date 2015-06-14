@@ -30,7 +30,8 @@ class Connection():
 		return False
 	
 	def openConnection(self):
-		self._cnx = mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
+		if not self._cnx.is_connected():
+			self._cnx = mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
 	def closeConnection(self):
 		self._cnx.close()
 
@@ -48,9 +49,8 @@ class Connection():
 		
 		cursor.close()
 		
-		self.closeConnection()
-		
-		
+		#self.closeConnection()
+
 		return rows
 
 	def UpdateDatabaseClasses(self):
