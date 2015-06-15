@@ -3,6 +3,8 @@ import projexui
 import sharedDB
 import math
 import sys
+import os
+import glob
 
 from datetime import timedelta,datetime
 #from projexui import qt import Signal
@@ -21,6 +23,8 @@ class ProjectViewWidget(QWidget):
 		self._currentProject = None
 		self._currentSequence = None
 		self._currentShot = None
+		
+		self._noImage = projexui.resources.find('img/DP/noImage.png')
 		
 		# load the user interface# load the user interface
 		if getattr(sys, 'frozen', None):
@@ -59,6 +63,7 @@ class ProjectViewWidget(QWidget):
 		self.sequenceDescription.textChanged.connect(self.updateSequenceDescription)
 		self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.updateSequenceStatus)
 		self.addSequence.clicked.connect(self.AddSequence)
+		self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 		
 		#connect shot settings
 		self.shotNumber.currentRowChanged.connect(self.refreshShotValues)
@@ -71,6 +76,31 @@ class ProjectViewWidget(QWidget):
 	def cancel(self):
 		self.close()
 
+	def CreateFolderStructure(self):
+	    paths = []
+	    if os.path.isdir(str(self.projectPath.text())):
+		for seq in self._currentProject._sequences:
+		    for shot in seq._shots:
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
+    
+		for path in paths:
+		    self.ensure_dir(path)
+	    else:
+		message = QtGui.QMessageBox.question(self, 'Message',
+            "Project Directory is not valid. Please select a directory.", QtGui.QMessageBox.Ok)
+	
+	    
+	def ensure_dir(self,f):  
+	    #print f.replace("\\", "\\\\")
+	    d = os.path.dirname(f)
+	    #print d
+	    if not os.path.exists(d):
+		os.makedirs(d)
+	
+
 	def propogateProjectNames(self):
 		for project in sharedDB.projectList:
 			#item = QtGui.QListWidgetItem(project._name)
@@ -81,7 +111,7 @@ class ProjectViewWidget(QWidget):
 		self.refreshSequenceValues()
 		
 		self.refreshShotNames()
-		#self.refreshShotValues()
+		self.refreshShotValues()
 		
 	def propogateStatuses(self):
 		for status in sharedDB.myStatuses:
@@ -93,7 +123,8 @@ class ProjectViewWidget(QWidget):
 	
 	def changeProjectPath(self):
 	    startingPath = ''
-	    if len(self._currentProject._folderLocation):
+	    
+	    if self._currentProject._folderLocation is not None and len(self._currentProject._folderLocation):
 		startingPath = self._currentProject._folderLocation
 	    
 	    fname = QtGui.QFileDialog.getExistingDirectory (self, 'Select Folder', startingPath)
@@ -145,7 +176,10 @@ class ProjectViewWidget(QWidget):
 		#set FPS
 		self.fps.setValue(self._currentProject._fps)
 		#set Path
-		self.projectPath.setText(self._currentProject._folderLocation)
+		if self._currentProject._folderLocation is not None:
+		    self.projectPath.setText(self._currentProject._folderLocation)
+		else:
+		    self.projectPath.setText('')
 		#set Status
 		self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
 		#set res
@@ -260,7 +294,7 @@ class ProjectViewWidget(QWidget):
 		
 		#set Description
 		if self._currentSequence is not None and self._currentSequence._description is not None:
-				self.sequenceDescription.setText(self._currentSequence._description)
+		    self.sequenceDescription.setText(self._currentSequence._description)
 	    
 	    self.refreshShotNames()
 		
@@ -306,8 +340,33 @@ class ProjectViewWidget(QWidget):
 						break
 		    else:
 			self.setShotSettingsEnabled(0)
+			myPixmap = QtGui.QPixmap(self._noImage)
+			#myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+			self.shotImage.setPixmap(myPixmap)
+			
 		else:
 		    self.setShotSettingsEnabled(0)
+		    myPixmap = QtGui.QPixmap(self._noImage)
+		    #myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		    self.shotImage.setPixmap(myPixmap)
+	
+	def checkForShotImage(self):
+	    seq = self._currentSequence
+	    shot= self._currentShot
+	    d = str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
+	    
+	    if os.path.exists(d):
+		newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		
+		print len(newImage)
+		if len(newImage)>3:
+		    myPixmap = QtGui.QPixmap(newImage)		    
+		else:
+		    myPixmap = QtGui.QPixmap(self._noImage)		
+	    else:
+		myPixmap = QtGui.QPixmap(self._noImage)
+		
+	    self.shotImage.setPixmap(myPixmap)
 	
 	def setShotSettingsEnabled(self, v):
 	    self.shotNumber.setEnabled(v)
@@ -320,6 +379,8 @@ class ProjectViewWidget(QWidget):
 	def refreshShotValues(self):				
 			
 	    #make sure _currentSequence is current
+	    self.newShotNumber.setValue(10)
+	    
 	    if self._currentSequence is not None:
 		self.setCurrentShot()
 		
@@ -328,6 +389,13 @@ class ProjectViewWidget(QWidget):
 		    #update editName
 		    if self.shotNumber.currentItem() is not None:
 			self.newShotNumber.setValue(int(self.shotNumber.currentItem().text())+10)
+		    
+		    #update shotImage
+		    #myPixmap = QtGui.QPixmap("C:\\Users\\Dan\\Desktop\\5543ce94806f4.jpg")
+		    #myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		    #self.shotImage.setPixmap(myPixmap)
+		    self.checkForShotImage()
+		    
 		    
 		    #set Status
 		    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
@@ -338,7 +406,7 @@ class ProjectViewWidget(QWidget):
 		    
 		    #set Description
 		    if self._currentShot is not None and self._currentShot._description is not None:
-				    self.shotDescription.setText(self._currentShot._description)
+		    	self.shotDescription.setText(self._currentShot._description)
 		
 	def AddShot(self):
 	    unique = 1
