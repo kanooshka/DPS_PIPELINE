@@ -11,9 +11,9 @@ from PyQt4.QtCore   import QDate
 version = 0.11
 
 #TEST SETTINGS
-testing = 1
+testing = 0
 noDB = 0
-autologin = 1
+autologin = 0
 localDB = 0
 #freezeDBUpdates = 1
 

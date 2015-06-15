@@ -66,7 +66,7 @@ class MainWindow(QtGui.QMainWindow):
         userMenu.triggered.connect( self.userMenuActions )
         '''
         self.setMenuBar(menubar)
-        self.setCentralWidget(None)   
+        #self.setCentralWidget(None)   
         self.resize(1280,720)
         self.show()
         #self.showMaximized()

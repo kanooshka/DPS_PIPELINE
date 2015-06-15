@@ -22,17 +22,18 @@ class ProjectViewWidget(QWidget):
 		
 		self._currentProject = None
 		self._currentSequence = None
-		self._currentShot = None
-		
-		self._noImage = projexui.resources.find('img/DP/noImage.png')
+		self._currentShot = None		
 		
 		# load the user interface# load the user interface
 		if getattr(sys, 'frozen', None):
-		    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/projectviewwidget.ui"))
-		    
+		    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/projectviewwidget.ui"))		    
 		else:
 		    projexui.loadUi(__file__, self)
 		#projexui.loadUi(__file__, self)
+		
+		self._noImage = projexui.resources.find('img/DP/noImage.png')
+		myPixmap = QtGui.QPixmap(projexui.resources.find('img/DP/folder.png'))
+		self.projectPathButton.setIcon(QtGui.QIcon(QtGui.QPixmap(myPixmap)))
 		
 		# define custom properties
 		
@@ -81,10 +82,13 @@ class ProjectViewWidget(QWidget):
 	    if os.path.isdir(str(self.projectPath.text())):
 		for seq in self._currentProject._sequences:
 		    for shot in seq._shots:
-			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\FaceRenders\\"))
 			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\caches\\capeCache\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\shotExtras\\"))
 			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
+			paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\"))
     
 		for path in paths:
 		    self.ensure_dir(path)
@@ -357,9 +361,8 @@ class ProjectViewWidget(QWidget):
 	    
 	    if os.path.exists(d):
 		newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-		
-		print len(newImage)
-		if len(newImage)>3:
+
+		if len(newImage):
 		    myPixmap = QtGui.QPixmap(newImage)		    
 		else:
 		    myPixmap = QtGui.QPixmap(self._noImage)		
