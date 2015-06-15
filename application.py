@@ -58,7 +58,10 @@ class MainWindow(QtGui.QMainWindow):
         
         projectMenu = menubar.addMenu('&Project')
         projectMenu.addAction('Create Project')
+        projectMenu.addAction('Project View')
         projectMenu.triggered.connect( self.projectMenuActions )
+        
+        
         
         '''userMenu = menubar.addMenu('&Users')
         #userMenu.addAction('Create User')
@@ -75,7 +78,7 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
         #self.CreateProjectWidget()
-	self.CreateProjectViewWidget()
+	#self.CreateProjectViewWidget()
         
     def CreateProjectWidget(self):
 	
@@ -115,6 +118,8 @@ class MainWindow(QtGui.QMainWindow):
 	"""
 	if ( action.text() == 'Create Project' ):            
 	    self.CreateProjectWidget()
+        elif ( action.text() == 'Project View' ):            
+	    self.CreateProjectViewWidget()
     
 def main():
     app = QtGui.QApplication(sys.argv)
