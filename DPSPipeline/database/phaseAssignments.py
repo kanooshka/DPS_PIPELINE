@@ -28,10 +28,11 @@ class PhaseAssignments():
 		
 			updatedBy = socket.gethostbyname(socket.gethostname())
 
-			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idphases, idprojects, startdate, enddate, ip, archived,  timestamp) VALUES ('"+str(self._idphases)+"', '"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0', '" + str(timestamp) + "');","commit")
+			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, startdate, enddate, ip, archived,  timestamp) VALUES ('"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0', '" + str(timestamp) + "');","commit")
 
-			self._updated = 0
-			
+			self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
+
+			self._updated = 0			
 		
 	
 def GetPhaseAssignmentsFromProject(idprojects):

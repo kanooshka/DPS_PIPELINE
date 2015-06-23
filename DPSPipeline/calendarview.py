@@ -20,11 +20,11 @@ class CalendarView():
 		dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
 		#sharedDB.widgetList.Append(dockWidget)
 		self._myXGanttWidget = XGanttWidget(sharedDB.mainWindow)
-		sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
-		#dockWidget.setWidget(self._myXGanttWidget)
-		#dockWidget.setWindowTitle("Calendar View")
-		#sharedDB.leftWidget = dockWidget
-		#sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
+		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
+		dockWidget.setWidget(self._myXGanttWidget)
+		dockWidget.setWindowTitle("Calendar View")
+		sharedDB.leftWidget = dockWidget
+		sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
 		
 		#self._myXGanttWidget = XGanttWidget()
 		#self._myXGanttWidget.show()
@@ -46,6 +46,8 @@ class CalendarView():
 		self._myXGanttWidget.setCellWidth(15)
 		
 		self._myXGanttWidget.expandAllTrees()
+		
+		sharedDB.myTasks = sharedDB.tasks.GetTasks()
 
 
 	def AddProject(self, project,phases = []):

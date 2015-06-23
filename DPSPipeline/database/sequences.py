@@ -27,8 +27,8 @@ class Sequences():
 		self.GetShotsFromSequence()
 		
 		
-		if self._idstatuses == 3 or self._idstatuses == 5:
-			self._hidden = True
+		#if self._idstatuses == 3 or self._idstatuses == 5:
+			#self._hidden = True
 			
 	def Save(self,timestamp):
 		
@@ -56,7 +56,7 @@ class Sequences():
 	def UpdateSequenceInDB (self):
 
 		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"', timestamp = '"+str(self._timestamp)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
-
+		print ("Updating sequence in DB: "+str(self._idsequences))
 	
 		
 	def GetShotsFromSequence(self):

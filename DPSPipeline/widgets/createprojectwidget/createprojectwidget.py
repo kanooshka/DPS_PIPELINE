@@ -93,6 +93,7 @@ class CreateProjectWidget(QWidget):
         
         sharedDB.projects.AddProject(_name = name, _folderLocation = folderLocation, _fps = fps,_renderWidth = renderWidth,_renderHeight = renderHeight,_due_date = due_date,_renderPriority = renderPriority, phases = phases)
         self.close();
+	sharedDB.mySQLConnection.closeConnection()
         
 def InitializeDates(phases,due_date,duration):
     currentDate = due_date

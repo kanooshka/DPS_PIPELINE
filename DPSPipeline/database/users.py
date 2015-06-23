@@ -31,7 +31,7 @@ class Users():
 def GetAllUsers():
 	users = []
 	if not sharedDB.noDB:
-		rows = sharedDB.mySQLConnection.query("SELECT idusers, name, password, idDepartment, idPrivileges, active FROM users")
+		rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM users")
 		
 		for row in rows:
 			#print row[0]

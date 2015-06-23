@@ -1,10 +1,10 @@
 import sys
-
 from PyQt4 import Qt
 from PyQt4.QtCore import QDate
 from PyQt4 import QtGui, QtCore
 
 import sharedDB
+from datetime import datetime
 #import projexui.pyi_hook
 
 from DPSPipeline.calendarview import CalendarView
@@ -24,6 +24,8 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow = self
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
+
+        sharedDB.lastUpdate = datetime.now()
 
         if not sharedDB.noDB:
             try:
@@ -58,10 +60,7 @@ class MainWindow(QtGui.QMainWindow):
         
         projectMenu = menubar.addMenu('&Project')
         projectMenu.addAction('Create Project')
-        projectMenu.addAction('Project View')
         projectMenu.triggered.connect( self.projectMenuActions )
-        
-        
         
         '''userMenu = menubar.addMenu('&Users')
         #userMenu.addAction('Create User')
@@ -69,7 +68,7 @@ class MainWindow(QtGui.QMainWindow):
         userMenu.triggered.connect( self.userMenuActions )
         '''
         self.setMenuBar(menubar)
-        #self.setCentralWidget(None)   
+        self.setCentralWidget(None)   
         self.resize(1280,720)
         self.show()
         #self.showMaximized()
@@ -78,7 +77,8 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
         #self.CreateProjectWidget()
-	#self.CreateProjectViewWidget()
+	self.CreateProjectViewWidget()
+        sharedDB.mySQLConnection.SaveToDatabase()
         
     def CreateProjectWidget(self):
 	
@@ -97,8 +97,10 @@ class MainWindow(QtGui.QMainWindow):
         self._ProjectViewWidget = projectviewwidget.ProjectViewWidget()
         dockWidget.setWindowTitle("ProjectView")
         dockWidget.setWidget(self._ProjectViewWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget)
-        
+        sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
+        sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
+        dockWidget.show()
+        dockWidget.raise_()
     def fileMenuActions( self, action ):
 	"""
 	Handles file menu actions
@@ -118,16 +120,20 @@ class MainWindow(QtGui.QMainWindow):
 	"""
 	if ( action.text() == 'Create Project' ):            
 	    self.CreateProjectWidget()
-        elif ( action.text() == 'Project View' ):            
-	    self.CreateProjectViewWidget()
     
 def main():
+    #printit()
     app = QtGui.QApplication(sys.argv)
     sharedDB.app = app
     win = MainWindow()
     #sharedDB.mainWindow.show()
     sys.exit(app.exec_())
+    
 
+def printit():
+  threading.Timer(5.0, printit).start()
+  print "Hello, World!"
 
 if __name__ == "__main__":
     main()
+    

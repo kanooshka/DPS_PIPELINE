@@ -49,7 +49,7 @@ class Projects():
 				print self._name+" Added to Database!"
 			else:
 				#print self._name+" Updated!"
-				self.UpdateProject()
+				self.UpdateProjectInDB(timestamp)
 				
 			self._updated = 0
 			
@@ -78,20 +78,53 @@ class Projects():
 			sharedDB.mySQLConnection.closeConnection()
 	
 	
-	def UpdateProject (self):
+	def UpdateProjectInDB (self,timestamp):
 
-		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(self._name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+str(self._description)+"' WHERE idprojects = "+str(self._idprojects)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(self._name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+str(self._description)+"', timestamp = '"+str(timestamp)+"' WHERE idprojects = "+str(self._idprojects)+";","commit")
+		print ("Updating project in DB: "+str(self._idprojects))
+	
+	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
+		self._idprojects             = _idprojects
+		self._name                   = _name
+		self._folderLocation         = _folderLocation
+		self._idstatuses               = _idstatuses
+		self._fps                    = _fps
+		self._renderWidth            = _renderWidth
+		self._renderHeight           = _renderHeight
+		self._due_date               =_due_date
+		self._description	     = _description
+		
+		print ("Updated "+str(self._idprojects))
+	
+def CheckForNewEntries (self):
 
+	rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4 AND timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+	
+	if len(rows):
+		print "Loading changes from DB"
+		
+	for row in rows:
+		#print row[0]
+		
+		#iterate through project list
+		for proj in sharedDB.projectList:
+			#if id exists
+			if str(proj._idprojects) == str(row[0]):
+				proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
+			
+				#update entry
+			#else create new entry
+	
 		
 def GetActiveProjects():
 	activeProjects = []
 	
 	if not sharedDB.noDB:
-		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation FROM projects WHERE idstatuses != 4")
+		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4")
 		
 		for row in rows:
 			#print row[0]
-			activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_new = 0))
+			activeProjects.append(Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
 
 	else:
 		activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatuses = 1,_new = 0,_fps = 400,_due_date = datetime.today(),_description = 'Blahty Blahty test test WEEEEEEE!!!'))
@@ -100,7 +133,7 @@ def GetActiveProjects():
 
 def AddProject(_name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50,_description = '', phases = []):
 	
-	sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description) VALUES ('"+str(_name)+"', '"+str(1)+"', '"+str(_due_date)+"', '"+str(_renderWidth)+"', '"+str(_renderHeight)+"', '"+str(_description)+"');","commit")
+	sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, fps) VALUES ('"+str(_name)+"', '"+str(1)+"', '"+str(_due_date)+"', '"+str(_renderWidth)+"', '"+str(_renderHeight)+"', '"+str(_description)+"', '"+str(_fps)+"');","commit")
 
 	projectid = sharedDB.mySQLConnection._lastInsertId
 	

@@ -1,5 +1,7 @@
 import mysql.connector
 import sharedDB
+import threading
+from datetime import datetime
 
 class Connection():
 
@@ -57,3 +59,35 @@ class Connection():
 		sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
 		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 		sharedDB.projectList = sharedDB.projects.GetActiveProjects()
+		sharedDB.myUsers = sharedDB.users.GetAllUsers()
+		
+	
+	def SaveToDatabase(self):
+	
+		"""
+		Saves the updated entries to the database
+		"""
+		
+		threading.Timer(5.0, self.SaveToDatabase).start()
+		
+		if not sharedDB.pauseSaving:
+		
+			timestamp = datetime.now()
+			
+			for proj in sharedDB.projectList :
+	
+			    proj.Save(timestamp)
+			    
+			sharedDB.changesToBeSaved = 0
+			
+			self.UpdateFromDatabase()
+		
+	def UpdateFromDatabase(self):
+	
+		"""
+		Checks the database for any updated entries
+		"""
+
+		newdatetime = datetime.now()
+		sharedDB.projects.CheckForNewEntries(sharedDB.lastUpdate)
+		sharedDB.lastUpdate = newdatetime

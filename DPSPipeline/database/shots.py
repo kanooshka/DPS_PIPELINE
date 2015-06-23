@@ -26,8 +26,8 @@ class Shots():
 		
 		self._new		     = _new
 		
-		if self._idstatuses == 3 or self._idstatuses == 5:
-			self._hidden = True
+		#if self._idstatuses == 3 or self._idstatuses == 5:
+			#self._hidden = True
 			
 	def Save(self,timestamp):
 		
