@@ -29,9 +29,8 @@ class Shots():
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
-	def Save(self,timestamp):
-		
-		self._timestamp = timestamp
+	def Save(self):
+
 		if self._new:	
 			self.AddShotToDB()
 		
@@ -44,12 +43,12 @@ class Shots():
 	
 	def AddShotToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, timestamp, idstatuses) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+str(self._description)+"', '"+str(self._timestamp)+"', '"+str(self._idstatuses)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+str(self._description)+"', '"+str(self._idstatuses)+"');","commit")	
 	
 		self._idshots = sharedDB.mySQLConnection._lastInsertId
 	
 	def UpdateShotInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE shots SET number = '"+str(self._number)+"', startframe = '"+str(self._startframe)+"', endframe = '"+str(self._endframe)+"', idsequences = '"+str(self._idsequences)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"', timestamp = '"+str(self._timestamp)+"' WHERE idshots = "+str(self._idshots)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE shots SET number = '"+str(self._number)+"', startframe = '"+str(self._startframe)+"', endframe = '"+str(self._endframe)+"', idsequences = '"+str(self._idsequences)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"' WHERE idshots = "+str(self._idshots)+";","commit")
 
 

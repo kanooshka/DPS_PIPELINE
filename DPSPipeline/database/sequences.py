@@ -30,9 +30,8 @@ class Sequences():
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
-	def Save(self,timestamp):
+	def Save(self):
 		
-		self._timestamp = timestamp
 		if self._new:	
 			self.AddSequenceToDB()
 			#print self._number+" Added to Database!"
@@ -45,17 +44,17 @@ class Sequences():
 		self._updated = 0
 	
 		for shot in self._shots:
-			shot.Save(timestamp)
+			shot.Save()
 	
 	def AddSequenceToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, timestamp, idstatuses) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+str(self._description)+"', '"+str(self._timestamp)+"', '"+str(self._idstatuses)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+str(self._description)+"', '"+str(self._idstatuses)+"');","commit")	
 	
 		self._idsequences = sharedDB.mySQLConnection._lastInsertId
 	
 	def UpdateSequenceInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"', timestamp = '"+str(self._timestamp)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
 		print ("Updating sequence in DB: "+str(self._idsequences))
 	
 		

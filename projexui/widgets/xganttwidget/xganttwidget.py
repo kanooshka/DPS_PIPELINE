@@ -421,11 +421,11 @@ class XGanttWidget(QWidget):
 	
 	for x in range(self.topLevelItemCount()):
 	    #save top level
-	    self.topLevelItem(x)._dbEntry.Save(timestamp)
+	    self.topLevelItem(x)._dbEntry.Save()
 	    #iterate through children
 	    topItem = self.topLevelItem(x)
 	    for i in range(topItem.childCount()):
-		topItem.child(i)._dbEntry.Save(timestamp)
+		topItem.child(i)._dbEntry.Save()
 	sharedDB.changesToBeSaved = 0
     
     def setAlternateBrush( self, brush ):

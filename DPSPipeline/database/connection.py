@@ -80,24 +80,39 @@ class Connection():
 			
 			if not sharedDB.pauseSaving:
 			
-				timestamp = datetime.now()
+				#timestamp = datetime.now()
 				
 				for proj in sharedDB.myProjects :
 		
-				    proj.Save(timestamp)
+				    proj.Save()
 				
 				
 				self.UpdateFromDatabase()
 		
+	def GetTimestamp(self):
+		rows = ""
+		self.openConnection()
+		cursor = self._cnx.cursor()
+		cursor.execute("SELECT NOW()")
+		rows = cursor.fetchall()		
+		
+		cursor.close()
+		
+		self.closeConnection()
+
+		return rows[0]
+	
 	def UpdateFromDatabase(self):
 	
 		"""
 		Checks the database for any updated entries
 		"""
 
-		newdatetime = datetime.now()
-		sharedDB.projects.CheckForNewEntries(sharedDB.lastUpdate)
+		newdatetime = self.GetTimestamp();
+		newdatetime = newdatetime[0]
+		sharedDB.projects.CheckForNewEntries()
 		sharedDB.lastUpdate = newdatetime
+		print sharedDB.lastUpdate
 		
 		#sharedDB.myProjectViewWidget.CheckForDBUpdates()
 		#for p in sharedDB.myProjects:

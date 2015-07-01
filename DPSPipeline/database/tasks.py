@@ -34,7 +34,7 @@ class Tasks():
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
-	def Save(self,timestamp):
+	def Save(self):
 		
 		self._timestamp = timestamp
 		if self._new:	
@@ -49,13 +49,13 @@ class Tasks():
 	
 	def AddTaskToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO tasks (idtasks, parenttasksid, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp) VALUES ('"+str(self._idtasks)+"', '"+str(self._parenttasksid)+"', '"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"', '"+str(self._timestamp)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO tasks (idtasks, parenttasksid, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done) VALUES ('"+str(self._idtasks)+"', '"+str(self._parenttasksid)+"', '"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"');","commit")	
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
 	
 	def UpdateShotInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE tasks SET parenttasksid = '"+str(self._parenttasksid)+"', idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', done = '"+str(self._done)+"', timestamp = '"+str(self._timestamp)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE tasks SET parenttasksid = '"+str(self._parenttasksid)+"', idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', done = '"+str(self._done)+"';","commit")
 
 def GetTasks():
 	tasks = []
