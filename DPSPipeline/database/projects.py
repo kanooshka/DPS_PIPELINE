@@ -109,6 +109,8 @@ class Projects(QObject):
 		
 	
 	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
+		print ("Updated "+str(self._name))
+		
 		self._idprojects             = _idprojects
 		self._name                   = _name
 		self._folderLocation         = _folderLocation
@@ -126,9 +128,8 @@ class Projects(QObject):
 		self.emitProjectChanged()
 		#self.UpdateProjectView()
 		##if current project changed, update values
-		##else just update project list
+		##else just update project list		
 		
-		print ("Updated "+str(self._idprojects))
 		
 	#def UpdateCalendarView(self):
 	#	self._calendarWidgetItem.setName(self._name)

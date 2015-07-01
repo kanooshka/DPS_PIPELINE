@@ -53,15 +53,22 @@ class MainWindow(QtGui.QMainWindow):
 	
 	
 	fileMenu.addSeparator()
-	fileMenu.addAction('Save')
+	autosaveAction = fileMenu.addAction('Autosave Enabled')
+        autosaveAction.setEnabled(0)
+        fileMenu.addAction('Save')
+        
 	fileMenu.addSeparator()
 	fileMenu.addAction('Exit')
 	fileMenu.triggered.connect( self.fileMenuActions )
         
+        
         projectMenu = menubar.addMenu('&Project')
-        projectMenu.addAction('Create Project')
+        createProjectMenuItem = projectMenu.addAction('Create Project')
         projectMenu.triggered.connect( self.projectMenuActions )
         
+        if sharedDB.currentUser[0]._idPrivileges > 1:
+            createProjectMenuItem.setEnabled(0)
+            
         '''userMenu = menubar.addMenu('&Users')
         #userMenu.addAction('Create User')
         userMenu.addAction('Assignment Window')
