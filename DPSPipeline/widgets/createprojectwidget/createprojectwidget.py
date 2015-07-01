@@ -67,11 +67,12 @@ class CreateProjectWidget(QWidget):
         name = self.projectNameQLineEdit.text()
         folderLocation = ''
         #idstatus = 0
-        fps = 25
-        renderWidth = 1280
-        renderHeight = 720
+        fps = self.fps.value()
+        renderWidth = self.xres_spinBox.value()
+        renderHeight = self.yres_spinBox.value()
         due_date = self.duedateEdit.date().toPyDate();
         renderPriority = 50
+        description = self.descriptionTextEdit.toPlainText()
         phases = []
         
         #for each list item
@@ -81,7 +82,7 @@ class CreateProjectWidget(QWidget):
                 #print sharedDB.myPhases[x]._name
                 #print item.text
                 if sharedDB.myPhases[x]._name == item.text():                    
-                    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = x+1, _startdate = due_date,_enddate = due_date,_updated = 1))
+                    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = x+1, _startdate = due_date,_enddate = due_date,_updated = 0))
                     continue
             #start from due date and work backwards
             #for 
@@ -91,9 +92,16 @@ class CreateProjectWidget(QWidget):
         #Add due date into phases
         phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = 16, _startdate = due_date,_enddate = due_date,_updated = 1))
         
-        sharedDB.projects.AddProject(_name = name, _folderLocation = folderLocation, _fps = fps,_renderWidth = renderWidth,_renderHeight = renderHeight,_due_date = due_date,_renderPriority = renderPriority, phases = phases)
+        #sharedDB.projects.AddProject(_name = name, _folderLocation = folderLocation, _fps = fps,_renderWidth = renderWidth,_renderHeight = renderHeight,_due_date = due_date,_renderPriority = renderPriority, phases = phases, _description = description)
+        newProj = sharedDB.projects.Projects(_name = name, _folderLocation = '', _idstatuses = 1, _fps = fps, _renderWidth = renderWidth, _renderHeight = renderHeight, _due_date = due_date, _renderPriority = renderPriority, _description = description,_phases = phases, _new = 1)
+	sharedDB.myProjects.append(newProj)
+	
+	sharedDB.calendarview.AddProject(project=newProj,phases=phases)        
+       
+       
         self.close();
-	sharedDB.mySQLConnection.closeConnection()
+	
+        #sharedDB.mySQLConnection.closeConnection()
         
 def InitializeDates(phases,due_date,duration):
     currentDate = due_date
