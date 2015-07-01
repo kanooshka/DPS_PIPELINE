@@ -3,14 +3,21 @@ from DPSPipeline.database.connection import Connection
 from DPSPipeline.database import sequences
 import sharedDB
 #from DPSPipeline.projectview import ProjectView
-#from PyQt4 import Qt
+
+from projexui import qt
+
+from PyQt4 import QtCore
+from PyQt4.QtCore import QObject
 #import sys
 #timestamp
 from datetime import datetime
 
-class Projects():
+class Projects(QObject):
 
+	projectChanged = QtCore.pyqtSignal(QtCore.QString)
+	
 	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _phases = [], _sequences = [],_updated = 0,_new = 1,_description = ''):
+		super(QObject, self).__init__()
 		
 		# define custom properties
 		self._idprojects             = _idprojects
@@ -25,6 +32,7 @@ class Projects():
 		self._description	     = _description
 		
 		self._updated                = _updated
+		#self._loadedChanges	     = 0
 		self._type                   = "project"
 		self._hidden                 = False
 		
@@ -34,6 +42,7 @@ class Projects():
 		self._new		     = _new
 		
 		self._lastSelectedSequenceNumber = '-1'
+		self._calendarWidgetItem = ''
 		
 		self.GetSequencesFromProject()
 		
@@ -48,13 +57,16 @@ class Projects():
 				
 				print self._name+" Added to Database!"
 			else:
-				#print self._name+" Updated!"
+				print self._name+" Updated in DB!"
 				self.UpdateProjectInDB(timestamp)
 				
 			self._updated = 0
 			
 		for seq in self._sequences:
 			seq.Save(timestamp)
+			
+		for phase in self._phases:
+			phase.Save(timestamp)
 		
 		sharedDB.mySQLConnection.closeConnection()
 		
@@ -93,8 +105,31 @@ class Projects():
 		self._renderHeight           = _renderHeight
 		self._due_date               =_due_date
 		self._description	     = _description
+		#self._loadedChanges	     = 1
+		
+		#update views containing project
+		#update calendar view
+		#self.UpdateCalendarView()
+		self.emitProjectChanged()
+		#self.UpdateProjectView()
+		##if current project changed, update values
+		##else just update project list
 		
 		print ("Updated "+str(self._idprojects))
+		
+	#def UpdateCalendarView(self):
+	#	self._calendarWidgetItem.setName(self._name)
+		
+	def setProperty(self,propertyname,value):
+		if (propertyname == "Name"):
+			if (value != self._name):
+				print ("Updating project name to "+value)
+				self._name = value
+				self._updated = 1
+					
+	def emitProjectChanged( self ):
+		if ( not self.signalsBlocked() ):
+		    self.projectChanged.emit(str(self._idprojects))
 	
 def CheckForNewEntries (self):
 
@@ -107,7 +142,7 @@ def CheckForNewEntries (self):
 		#print row[0]
 		
 		#iterate through project list
-		for proj in sharedDB.projectList:
+		for proj in sharedDB.myProjects:
 			#if id exists
 			if str(proj._idprojects) == str(row[0]):
 				proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
@@ -143,6 +178,6 @@ def AddProject(_name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_ren
 
 	#Add new project to list
 	newProj = Projects(_idprojects = projectid, _name = _name, _folderLocation = '', _idstatuses = 1, _fps = _fps,_renderWidth = _renderWidth,_renderHeight = _renderHeight,_due_date = _due_date,_renderPriority = _renderPriority, _description = _description,_phases = phases)
-	sharedDB.projectList.append(newProj)
+	sharedDB.myProjects.append(newProj)
 	
 	sharedDB.calendarview.AddProject(project=newProj,phases=phases)

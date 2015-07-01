@@ -15,11 +15,11 @@ class Phases():
 		self._manHoursToMinuteRatio    = _manHoursToMinuteRatio
 		self._idDepartment    = _idDepartment
 		
-		if (sharedDB.users.currentUser[0]._idDepartment == 0 or sharedDB.users.currentUser[0]._idDepartment == _idDepartment):
+		if (sharedDB.currentUser[0]._idDepartment == 0 or sharedDB.currentUser[0]._idDepartment == _idDepartment):
 			self._visible = 1
 		else:
 			self._visible = 0
-
+			
 def GetPhaseNames():
 	phases = []
 	

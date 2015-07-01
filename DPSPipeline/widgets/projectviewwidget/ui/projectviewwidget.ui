@@ -169,15 +169,21 @@
                  <item>
                   <widget class="QLineEdit" name="projectPath">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                    <property name="readOnly">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="projectPathButton">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>30</width>
@@ -189,7 +195,7 @@
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>../icons/folder.png</normaloff>../icons/folder.png</iconset>
+                     <normaloff>../../../../projexui/resources/default/img/DP/folder.png</normaloff>../../../../projexui/resources/default/img/DP/folder.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -835,7 +841,7 @@ p, li { white-space: pre-wrap; }
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>117</height>
                     </size>
                    </property>
                    <property name="frameShape">
@@ -986,87 +992,57 @@ p, li { white-space: pre-wrap; }
                       </property>
                      </spacer>
                     </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QFrame" name="frame_12">
-                   <layout class="QGridLayout" name="gridLayout_18">
-                    <item row="0" column="0">
-                     <widget class="QGroupBox" name="groupBox_14">
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>60</height>
-                       </size>
-                      </property>
-                      <property name="title">
-                       <string>Status</string>
-                      </property>
-                      <layout class="QGridLayout" name="gridLayout_22">
-                       <property name="leftMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="spacing">
-                        <number>1</number>
-                       </property>
-                       <item row="0" column="1">
-                        <widget class="QComboBox" name="shotStatus"/>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QFrame" name="frame_3">
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>60</height>
-                       </size>
-                      </property>
-                      <property name="frameShape">
-                       <enum>QFrame::StyledPanel</enum>
-                      </property>
-                      <property name="frameShadow">
-                       <enum>QFrame::Raised</enum>
-                      </property>
-                      <layout class="QGridLayout" name="gridLayout_23">
-                       <property name="leftMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>1</number>
-                       </property>
-                       <property name="spacing">
-                        <number>1</number>
-                       </property>
+                    <item row="0" column="1">
+                     <widget class="QFrame" name="frame_12">
+                      <layout class="QGridLayout" name="gridLayout_18">
                        <item row="0" column="0">
-                        <widget class="QGroupBox" name="groupBox_6">
+                        <widget class="QGroupBox" name="groupBox_14">
                          <property name="maximumSize">
                           <size>
                            <width>16777215</width>
-                           <height>70</height>
+                           <height>60</height>
                           </size>
                          </property>
                          <property name="title">
-                          <string>Frame Range</string>
+                          <string>Status</string>
                          </property>
-                         <layout class="QGridLayout" name="gridLayout_16">
+                         <layout class="QGridLayout" name="gridLayout_22">
+                          <property name="leftMargin">
+                           <number>1</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>1</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>1</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>1</number>
+                          </property>
+                          <property name="spacing">
+                           <number>1</number>
+                          </property>
+                          <item row="0" column="1">
+                           <widget class="QComboBox" name="shotStatus"/>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QFrame" name="frame_3">
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QGridLayout" name="gridLayout_23">
                           <property name="leftMargin">
                            <number>1</number>
                           </property>
@@ -1083,33 +1059,63 @@ p, li { white-space: pre-wrap; }
                            <number>1</number>
                           </property>
                           <item row="0" column="0">
-                           <widget class="QSpinBox" name="startFrame">
-                            <property name="maximum">
-                             <number>999999</number>
+                           <widget class="QGroupBox" name="groupBox_6">
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>70</height>
+                             </size>
                             </property>
-                            <property name="value">
-                             <number>101</number>
+                            <property name="title">
+                             <string>Frame Range</string>
                             </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="2">
-                           <widget class="QSpinBox" name="endFrame">
-                            <property name="minimum">
-                             <number>1</number>
-                            </property>
-                            <property name="maximum">
-                             <number>999999</number>
-                            </property>
-                            <property name="value">
-                             <number>201</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="1">
-                           <widget class="QLabel" name="label">
-                            <property name="text">
-                             <string>-</string>
-                            </property>
+                            <layout class="QGridLayout" name="gridLayout_16">
+                             <property name="leftMargin">
+                              <number>1</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>1</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>1</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>1</number>
+                             </property>
+                             <property name="spacing">
+                              <number>1</number>
+                             </property>
+                             <item row="0" column="0">
+                              <widget class="QSpinBox" name="startFrame">
+                               <property name="maximum">
+                                <number>999999</number>
+                               </property>
+                               <property name="value">
+                                <number>101</number>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="2">
+                              <widget class="QSpinBox" name="endFrame">
+                               <property name="minimum">
+                                <number>1</number>
+                               </property>
+                               <property name="maximum">
+                                <number>999999</number>
+                               </property>
+                               <property name="value">
+                                <number>201</number>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="1">
+                              <widget class="QLabel" name="label">
+                               <property name="text">
+                                <string>-</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
                            </widget>
                           </item>
                          </layout>

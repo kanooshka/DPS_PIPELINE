@@ -39,6 +39,10 @@ class ProjectViewWidget(QWidget):
 	self._backend               = None
 	self._blockUpdates = 0
 	
+	sharedDB.myProjectViewWidget = self
+	
+	self.setPrivelages()
+	
 	#connects buttons
 	#self.createButton.clicked.connect(self.CreateProject)
 	#self.cancelButton.clicked.connect(self.cancel)
@@ -85,10 +89,10 @@ class ProjectViewWidget(QWidget):
 	if os.path.isdir(str(self.projectPath.text())):
 	    for seq in self._currentProject._sequences:
 		for shot in seq._shots:
-		    paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
-		    paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
-		    paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
-		    paths.append(str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
 
 	    for path in paths:
 		self.ensure_dir(path)
@@ -96,6 +100,44 @@ class ProjectViewWidget(QWidget):
 	    message = QtGui.QMessageBox.question(self, 'Message',
 	"Project Directory is not valid. Please select a directory.", QtGui.QMessageBox.Ok)
     
+    '''def CheckForDBUpdates(self):
+	
+	#update projects
+	for project in sharedDB.myProjects:
+		if project._loadedChanges:			
+			for x in range(0,self.projectName.count()):
+				if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(project._idprojects):
+					print (project._name +" project has changed.")
+					self.projectName.setItemText(x,project._name)
+					if x == self.projectName.currentIndex():
+						self.LoadProjectValues()
+					break;
+	'''
+	
+    def setPrivelages(self):
+        
+        if sharedDB.currentUser[0]._idPrivileges > 1:
+            #Project privelages
+	    self.projectStatus.setEnabled(0)
+	    self.projectPathButton.setVisible(0)
+	    self.fps.setEnabled(0)
+	    self.dueDate.setEnabled(0)
+	    self.renderHeight.setEnabled(0)
+	    self.renderWidth.setEnabled(0)
+	    self.projectDescription.setReadOnly(1)
+        
+	
+    def projectChanged(self,projectId):
+        #set project name
+	for project in sharedDB.myProjects:	
+		if str(project._idprojects) == projectId:
+			for x in range(0,self.projectName.count()):
+				if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(project._idprojects):
+					print (project._name +" project has changed.")
+					self.projectName.setItemText(x,project._name)
+					if x == self.projectName.currentIndex():
+						self.LoadProjectValues()
+					break;
 	
     def ensure_dir(self,f):  
 	#print f.replace("\\", "\\\\")
@@ -105,9 +147,14 @@ class ProjectViewWidget(QWidget):
 	    os.makedirs(d)
     
     def propogateProjectNames(self):
-	for project in sharedDB.projectList:
+	#self.projectName.clear()
+	for p in range(0,len(sharedDB.myProjects)):
+	    project = sharedDB.myProjects[p]
 	    #item = QtGui.QListWidgetItem(project._name)
-	    self.projectName.addItem(project._name, QVariant(project))
+	    project.projectChanged.connect(self.projectChanged)
+	    self.projectName.addItem(project._name,QVariant(project))
+	    self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
+	    #self.projectName[p].setToolTip(p._idprojects)
 	
 	self.LoadProjectValues()
 	self.LoadSequenceNames()	
@@ -117,6 +164,10 @@ class ProjectViewWidget(QWidget):
 	self.LoadShotValues()
 	
 	self.refreshTasks()
+	
+	def getCurrentProjectID():
+		return self.projectName.itemData(p, Qt.ToolTipRole).toString()
+		
 	    
     def propogateStatuses(self):
 	for status in sharedDB.myStatuses:
@@ -154,7 +205,7 @@ class ProjectViewWidget(QWidget):
     def LoadProjectValues(self):
 	self._blockUpdates = 1
 	
-	self._currentProject = sharedDB.projectList[self.projectName.currentIndex()]		
+	self._currentProject = sharedDB.myProjects[self.projectName.currentIndex()]		
 	
 	self.newSequenceNumber.setValue(10)
 	#set FPS
@@ -453,7 +504,7 @@ class ProjectViewWidget(QWidget):
 	    
     def refreshTasks(self):
 	self.taskTable.clear()
-	for x in range(0, len(sharedDB.myTasks)):
+	'''for x in range(0, len(sharedDB.myTasks)):
 	    task = sharedDB.myTasks[x]
 	    if task._idshots == self._currentShot._idshots:
 		newRow = QtGui.QTreeWidgetItem()
@@ -484,10 +535,8 @@ class ProjectViewWidget(QWidget):
 		#
 		#self.taskTable.setItem(0,0,newWidgetItem)
 		
-		'''Table
-		self.taskTable.insertRow(0)
-		combobox = QtGui.QComboBox()
-		self.taskTable.setCellWidget(0,0,combobox)
+		#Table
+		#self.taskTable.insertRow(0)
+		#combobox = QtGui.QComboBox()
+		#self.taskTable.setCellWidget(0,0,combobox)
 		'''
-
-	

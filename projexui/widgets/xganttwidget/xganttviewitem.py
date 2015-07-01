@@ -52,15 +52,16 @@ class XGanttViewItem(QGraphicsRectItem):
         self._scrollBar                 = ''
         
         # setup standard properties
-        
-        if (sharedDB.users.currentUser[0]._idPrivileges==3): 
-            flags = self.ItemIsSelectable 
+        '''
+        if (sharedDB.currentUser[0]._idPrivileges>1):
+            self.setFlags( flags )
             flags |= self.ItemIsFocusable
         else:
             flags = self.ItemIsMovable
             flags |= self.ItemIsSelectable 
             flags |= self.ItemIsFocusable
-        self.setFlags( flags )
+        '''
+        self.setPrivelages()
         
         effect = QGraphicsDropShadowEffect()
         effect.setXOffset(0)
@@ -528,6 +529,17 @@ class XGanttViewItem(QGraphicsRectItem):
         :param      percent | <int>
         """
         self._percentComplete = percent
+    
+    def setPrivelages(self):
+        #iterate through fields and adjust edit flag
+        #print ("Privelages: "+str(sharedDB.currentUser[0]._idPrivileges))
+        if sharedDB.currentUser[0]._idPrivileges > 1:
+            self.setFlags( self.flags() ^ Qt.ItemIsEditable )
+        else:
+            flags = self.ItemIsMovable
+            flags |= self.ItemIsSelectable 
+            flags |= self.ItemIsFocusable
+            self.setFlags( flags )
     
     def setProgressColor( self, color ):
         """

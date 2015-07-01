@@ -13,6 +13,7 @@ class Connection():
 		self._user = _user
 		self._password = _password
 		self._host = '10.9.21.12'
+		#self._host = '174.79.161.184'
 		
 		self._lastInsertId = ''
 		if sharedDB.localDB:
@@ -28,7 +29,14 @@ class Connection():
 			self.openConnection()
 			return True
 		except:
-			"Print FAILED TO connect"
+			print "FAILED TO connect locally, attempting WAN connection"
+			try:
+				self._host = '174.79.161.184'
+				self.openConnection()
+				return True
+			except:
+				self._host = '10.9.21.12'
+				print "FAILED TO connect over WAN"
 		return False
 	
 	def openConnection(self):
@@ -58,7 +66,7 @@ class Connection():
 	def UpdateDatabaseClasses(self):
 		sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
 		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-		sharedDB.projectList = sharedDB.projects.GetActiveProjects()
+		sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
 		sharedDB.myUsers = sharedDB.users.GetAllUsers()
 		
 	
@@ -67,20 +75,19 @@ class Connection():
 		"""
 		Saves the updated entries to the database
 		"""
-		
-		threading.Timer(5.0, self.SaveToDatabase).start()
-		
-		if not sharedDB.pauseSaving:
-		
-			timestamp = datetime.now()
+		if (not sharedDB.noSaving):
+			threading.Timer(5.0, self.SaveToDatabase).start()
 			
-			for proj in sharedDB.projectList :
-	
-			    proj.Save(timestamp)
-			    
-			sharedDB.changesToBeSaved = 0
+			if not sharedDB.pauseSaving:
 			
-			self.UpdateFromDatabase()
+				timestamp = datetime.now()
+				
+				for proj in sharedDB.myProjects :
+		
+				    proj.Save(timestamp)
+				
+				
+				self.UpdateFromDatabase()
 		
 	def UpdateFromDatabase(self):
 	
@@ -91,3 +98,7 @@ class Connection():
 		newdatetime = datetime.now()
 		sharedDB.projects.CheckForNewEntries(sharedDB.lastUpdate)
 		sharedDB.lastUpdate = newdatetime
+		
+		#sharedDB.myProjectViewWidget.CheckForDBUpdates()
+		#for p in sharedDB.myProjects:
+		#	p.ChangesLoaded()

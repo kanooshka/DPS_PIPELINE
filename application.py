@@ -39,7 +39,7 @@ class MainWindow(QtGui.QMainWindow):
             sharedDB.users.currentUser = sharedDB.users.GetCurrentUser('twotis')
             sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
             sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-            sharedDB.projectList = sharedDB.projects.GetActiveProjects()
+            sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
             self.EnableMainWindow()
 	    sharedDB.mySQLConnection.closeConnection()
     
@@ -122,17 +122,11 @@ class MainWindow(QtGui.QMainWindow):
 	    self.CreateProjectWidget()
     
 def main():
-    #printit()
     app = QtGui.QApplication(sys.argv)
     sharedDB.app = app
     win = MainWindow()
     #sharedDB.mainWindow.show()
     sys.exit(app.exec_())
-    
-
-def printit():
-  threading.Timer(5.0, printit).start()
-  print "Hello, World!"
 
 if __name__ == "__main__":
     main()

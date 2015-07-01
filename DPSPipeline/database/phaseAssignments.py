@@ -34,6 +34,11 @@ class PhaseAssignments():
 
 			self._updated = 0			
 		
+	def setProperty(self,propertyname,value):
+		if (propertyname == "Name"):
+			if (value != self._name):
+				self._name = value
+				self._updated = 1
 	
 def GetPhaseAssignmentsFromProject(idprojects):
 	activePhaseAssignments = []

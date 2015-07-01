@@ -80,6 +80,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
         #self._calculateWeekdays         = 0
         #self._dbDepartmentAssignment    = ''
     
+        self.setPrivelages()
+        
 #    def __del__( self ):
 #        self.removeFromScene()
     
@@ -381,6 +383,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         
         :param      dateStart | <QDate>
         """
+        date = QDate(date)
         
         delta = self._dateEnd.daysTo(date)
         if ( not delta ):
@@ -426,6 +429,12 @@ class XGanttWidgetItem(XTreeWidgetItem):
         
         # udpate the tree widget
         self.sync()
+    
+    def projectChanged(self):
+        #set project name
+        self.setName(self._dbEntry._name)
+
+        
     
     def setDuration( self, duration ):
         """
@@ -474,6 +483,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
             col = tree.column('Name')
             if col != -1:
                 self.setData(col, Qt.EditRole, qt.wrapVariant(name))
+        
+        self.sync()
     
     def setProperty( self, key, value ):
         """
@@ -485,7 +496,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
                     value   | <variant>
         """
         if key == 'Name':
-            self.setName(value)
+            self.setName(value)            
+            self._dbEntry.setProperty(propertyname = key, value = value)
+            #self.sync()
         elif key == 'Start':
             self.setDateStart(value)
             self.dataUpdated(self.dateStart(),self.dateEnd())
@@ -545,6 +558,17 @@ class XGanttWidgetItem(XTreeWidgetItem):
         """
         self._useGroupStyleWithChildren = state
 
+    def setPrivelages (self):
+        #iterate through fields and adjust edit flag
+        #print ("Privelages: "+str(sharedDB.currentUser[0]._idPrivileges))
+        if sharedDB.currentUser[0]._idPrivileges > 1:
+            self.setFlags( self.flags() ^ Qt.ItemIsEditable )
+        #else:
+            #flags =  Qt.ItemIsEditable
+            #flags |= Qt.ItemIsSelectable 
+            #flags |= Qt.ItemIsFocusable
+            #self.setFlags( flags )
+    
     def setWorkdayDuration( self, duration ):
         
         """
@@ -645,6 +669,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
         
         tree        = self.treeWidget()
         viewItem    = self.viewItem()
+        
+        #sets name of viewitem
+        viewItem.setText(self._name)
         
         if ( not viewItem.scene() ):
             scene = gantt.viewWidget().scene()

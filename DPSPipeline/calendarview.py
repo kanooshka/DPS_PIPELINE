@@ -35,7 +35,7 @@ class CalendarView():
 		#depending on privileges / department hide all and then unhide appropriate department
 		#self._myXGanttWidget.setupUserView(sharedDB.users.currentUser[0]._idPrivelages,sharedDB.users.currentUser[0]._idDepartment)
 		
-		for project in sharedDB.projectList:
+		for project in sharedDB.myProjects:
 			myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
 			myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
 			if (not project._hidden):
@@ -54,18 +54,27 @@ class CalendarView():
 		#global myXGanttWidget
 
 		projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
+		projectXGanttWidgetItem._dbEntry = project
+		project.projectChanged.connect(projectXGanttWidgetItem.projectChanged)
+		
 		projectXGanttWidgetItem.setName(project._name)
+		
+		
+		project._calendarWidgetItem = projectXGanttWidgetItem
+		
 		viewItem = projectXGanttWidgetItem.viewItem()
-		viewItem.setText(project._name)
+		#viewItem.setText(project._name)
 		
 		projectXGanttWidgetItem.phases = phases
 		
-		projectXGanttWidgetItem._dbEntry = project
+		
 		projectXGanttWidgetItem.setHidden(True)
 		self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 		#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
 		#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
 
+		project._phases = phases
+		
 		#for phase in project
 		
 		for phase in phases:
@@ -117,8 +126,9 @@ class CalendarView():
 		
 		
 		childItem = XGanttWidgetItem(self._myXGanttWidget)
-		childItem.setName(name)
 		childItem._dbEntry = phase
+		
+		childItem.setName(name)		
 		childItem._name = name
 			
 		#if (qStartDate.isValid()):
@@ -132,7 +142,7 @@ class CalendarView():
 		
 		parent.addChild(childItem)
 		
-		if (sharedDB.users.currentUser[0]._idDepartment == 0 or department == sharedDB.users.currentUser[0]._idDepartment):
+		if (sharedDB.currentUser[0]._idDepartment == 0 or department == sharedDB.currentUser[0]._idDepartment):
 			childItem.setHidden(False)
 			parent.setHidden(False)
 		else:

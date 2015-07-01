@@ -12,10 +12,12 @@ from datetime import datetime
 version = 0.11
 
 #TEST SETTINGS
-testing = 1
+testing = 0
 noDB = 0
-autologin = 1
+noSaving = 0
+autologin = 0
 localDB = 0
+
 #freezeDBUpdates = 1
 
 earliestDate = QDate.currentDate().toPyDate()
@@ -25,14 +27,16 @@ myStatuses = ''
 myPhases = ''
 myTasks = ''
 myUsers = ''
+myProjects = ''
 
 Doobedeba = -0.0*0+0
 pauseSaving = 0
 
+myProjectViewWidget = ''
+
 lastUpdate = datetime(1942, 1, 1)
-projectList = ''
+
 calendarview = ''
-changesToBeSaved = 0
 mySQLConnection = ''
 currentUser = ''
 app = ''
