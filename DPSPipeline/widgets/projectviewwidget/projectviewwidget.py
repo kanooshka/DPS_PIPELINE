@@ -90,6 +90,7 @@ class ProjectViewWidget(QWidget):
 	    for seq in self._currentProject._sequences:
 		for shot in seq._shots:
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
@@ -394,16 +395,20 @@ class ProjectViewWidget(QWidget):
     def checkForShotImage(self):
 	seq = self._currentSequence
 	shot= self._currentShot
-	d = str(self.projectPath.text()+"\\Sequences\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
+	d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
 	
 	if os.path.exists(d):
-	    newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-	    
-	    #print len(newImage)
-	    if len(newImage)>3:
-		myPixmap = QtGui.QPixmap(newImage)		    
-	    else:
-		myPixmap = QtGui.QPixmap(self._noImage)		
+		#print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
+		if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
+			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		    
+			#print len(newImage)
+			if len(newImage)>3:
+			    myPixmap = QtGui.QPixmap(newImage)		    
+			else:
+			    myPixmap = QtGui.QPixmap(self._noImage)		    
+		else:
+		    myPixmap = QtGui.QPixmap(self._noImage)
 	else:
 	    myPixmap = QtGui.QPixmap(self._noImage)
 	    
