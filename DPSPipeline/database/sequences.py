@@ -41,11 +41,12 @@ class Sequences(QObject):
 		
 		if self._new:	
 			self.AddSequenceToDB()
-			#print self._number+" Added to Database!"
+			print "Sequence '"+self._number+"' Added to Database!"
 		
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateSequenceInDB()
+			print "Sequence '"+self._number+"' Updated in Database!"
 	
 		self._new = 0
 		self._updated = 0
@@ -82,11 +83,11 @@ class Sequences(QObject):
 	def AddShotToSequence(self, newName):
 		if not sharedDB.noDB:
 			self._shots.append(shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101))
-			self._shots[len(self._shots)-1].Save(datetime.now())
-			sharedDB.mySQLConnection.closeConnection()
+			#self._shots[len(self._shots)-1].Save(datetime.now())
+			#sharedDB.mySQLConnection.closeConnection()
 	
 	def SetValues(self,_idsequences = 0, _number = '', _idstatuses = 1, _description = '', _timestamp = ''):
-		#print ("Updated "+str(self._name))
+		print ("Downloaded updated for Sequence '"+str(self._number)+"'")
 		
 		self._idsequences             = _idsequences
 		self._number                   = _number

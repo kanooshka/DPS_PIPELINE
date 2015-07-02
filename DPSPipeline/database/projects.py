@@ -55,11 +55,12 @@ class Projects(QObject):
 			#print self._name+" Updated in DB!"
 			self._updated = 0
 			self.UpdateProjectInDB()
+			print "Project '"+self._name+"' Updated in Database!"
 		elif self._new:
 			self._new = 0
 			self.AddProjectToDB()
 			#print self._name+" Added to Database!"
-
+			print "Project '"+self._name+"' Added to Database!"
 		for seq in self._sequences:
 			seq.Save()
 			
@@ -87,18 +88,18 @@ class Projects(QObject):
 			seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
 			self._sequences.append(seq)
 			sharedDB.mySequences.append(seq)
-			self._sequences[len(self._sequences)-1].Save(datetime.now())
-			sharedDB.mySQLConnection.closeConnection()
+			#self._sequences[len(self._sequences)-1].Save(datetime.now())
+			#sharedDB.mySQLConnection.closeConnection()
 	
 	
 	def UpdateProjectInDB (self):
 
 		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(self._name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+str(self._description)+"' WHERE idprojects = "+str(self._idprojects)+";","commit")
-		print ("Updating project in DB: "+str(self._idprojects))
+		#print ("Updating project in DB: "+str(self._idprojects))
 	
 	def AddProjectToDB (self):
 		
-		print ("Adding project to DB: "+str(self._idprojects))
+		#print ("Adding project to DB: "+str(self._idprojects))
 
 		sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, fps) VALUES ('"+str(self._name)+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+str(self._description)+"', '"+str(self._fps)+"');","commit")
 		
@@ -112,7 +113,7 @@ class Projects(QObject):
 		
 	
 	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
-		print ("Updated "+str(self._name))
+		print ("Downloaded updated for Project '"+str(self._name)+"'")
 		
 		self._idprojects             = _idprojects
 		self._name                   = _name

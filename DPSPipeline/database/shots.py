@@ -33,10 +33,11 @@ class Shots():
 
 		if self._new:	
 			self.AddShotToDB()
-		
+			print "Shot '"+self._number+"' Added to Database!"
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateShotInDB()
+			print "Shot '"+self._number+"' Updated in Database!"
 	
 		self._new = 0
 		self._updated = 0
