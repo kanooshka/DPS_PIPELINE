@@ -134,7 +134,7 @@ class ProjectViewWidget(QWidget):
 		if str(project._idprojects) == projectId:
 			for x in range(0,self.projectName.count()):
 				if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(project._idprojects):
-					print (project._name +" project has changed.")
+					#print (project._name +" project has changed.")
 					self.projectName.setItemText(x,project._name)
 					if x == self.projectName.currentIndex():
 						self.LoadProjectValues()

@@ -76,7 +76,7 @@ class Connection():
 		Saves the updated entries to the database
 		"""
 		if (not sharedDB.noSaving):
-			threading.Timer(5.0, self.SaveToDatabase).start()
+			threading.Timer(3.0, self.SaveToDatabase).start()
 			
 			if not sharedDB.pauseSaving:
 			
@@ -112,7 +112,7 @@ class Connection():
 		newdatetime = newdatetime[0]
 		sharedDB.projects.CheckForNewEntries()
 		sharedDB.lastUpdate = newdatetime
-		print sharedDB.lastUpdate
+		#print sharedDB.lastUpdate
 		
 		#sharedDB.myProjectViewWidget.CheckForDBUpdates()
 		#for p in sharedDB.myProjects:
