@@ -58,16 +58,16 @@ class Connection(QObject):
 	def query(self, query = "", queryType = "fetchAll"):
 		rows = ""
 		self.openConnection()
-		self.cursor = self._cnx.cursor()
-		self.cursor.execute(query)
-		self._lastInsertId = cursor.lastrowid
+		self._cursor = self._cnx.cursor()
+		self._cursor.execute(query)
+		self._lastInsertId = self._cursor.lastrowid
 		if queryType == "fetchAll":
-			rows = self.cursor.fetchall()
+			rows = self._cursor.fetchall()
 		elif queryType == "commit":
 			self._cnx.commit()
 		
 		
-		self.cursor.close()
+		self._cursor.close()
 		
 		#self.closeConnection()
 
@@ -105,11 +105,11 @@ class Connection(QObject):
 	def GetTimestamp(self):
 		rows = ""
 		self.openConnection()
-		self.cursor = self._cnx.cursor()
-		self.cursor.execute("SELECT NOW()")
-		rows = self.cursor.fetchall()		
+		self._cursor = self._cnx.cursor()
+		self._cursor.execute("SELECT NOW()")
+		rows = self._cursor.fetchall()		
 		
-		self.cursor.close()
+		self._cursor.close()
 		
 		self.closeConnection()
 
