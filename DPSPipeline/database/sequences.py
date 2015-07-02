@@ -74,15 +74,18 @@ class Sequences(QObject):
 			
 			for row in rows:
 				#print row[0]
-				self._shots.append(shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_new = 0,_idprojects = self._idprojects,_idsequences = self._idsequences))
-	
+				shot = shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_new = 0,_idprojects = self._idprojects,_idsequences = self._idsequences)
+				self._shots.append(shot)
+				sharedDB.myShots.append(shot)
 		else:
 			self._shots.append(shots.Shots(_idshots = 1,_startframe = 10, _endframe= 230,_idsequences = self._idsequences,_idprojects = self._idprojects ,_number = '0010',_idstatuses = 1,_description = 'YES! THIS IS A SHOT!',_timestamp = datetime.now(),_new = 0))
 	
 	
 	def AddShotToSequence(self, newName):
 		if not sharedDB.noDB:
-			self._shots.append(shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101))
+			shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101)
+			self._shots.append(shot)
+			sharedDB.myShots.append(shot)
 			#self._shots[len(self._shots)-1].Save(datetime.now())
 			#sharedDB.mySQLConnection.closeConnection()
 	

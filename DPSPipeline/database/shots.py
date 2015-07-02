@@ -4,9 +4,16 @@ import sharedDB
 #timestamp
 from datetime import datetime
 
-class Shots():
+from PyQt4 import QtCore
+from PyQt4.QtCore import QObject
+
+class Shots(QObject):
+
+	shotChanged = QtCore.pyqtSignal(QtCore.QString)
 
 	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
+		
+		super(QObject, self).__init__()
 		
 		# define custom properties
 		self._idshots             = _idshots
@@ -52,4 +59,28 @@ class Shots():
 
 		sharedDB.mySQLConnection.query("UPDATE shots SET number = '"+str(self._number)+"', startframe = '"+str(self._startframe)+"', endframe = '"+str(self._endframe)+"', idsequences = '"+str(self._idsequences)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"' WHERE idshots = "+str(self._idshots)+";","commit")
 
+	def SetValues(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_description = '',_timestamp = datetime.now()):
+		print ("Downloaded updated for Shot '"+str(self._number)+"'")
+		
+		self._idshots                 = _idshots
+		self._idprojects	      = _idprojects
+		self._idsequences	      = _idsequences		
+		self._number                  = _number
+		self._startframe	      = _startframe
+		self._endframe		      = _endframe
+		self._idstatuses              = _idstatuses		
+		self._description	      = _description
+		self._timestamp		      = _timestamp
 
+		
+		#update views containing project
+		#update calendar view
+		#self.UpdateCalendarView()
+		self.emitShotChanged()
+		#self.UpdateProjectView()
+		##if current project changed, update values
+		##else just update project list
+	
+	def emitShotChanged( self ):
+		if ( not self.signalsBlocked() ):
+		    self.shotChanged.emit(str(self._idshots))

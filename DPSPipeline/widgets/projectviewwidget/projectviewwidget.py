@@ -43,6 +43,11 @@ class ProjectViewWidget(QWidget):
 	
 	self.setPrivelages()
 	
+	#connects signals
+	sharedDB.mySQLConnection.newProjectSignal.connect(self.propogateProjectNames)
+	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
+	sharedDB.mySQLConnection.newShotSignal.connect(self.LoadShotNames)
+	
 	#connects buttons
 	#self.createButton.clicked.connect(self.CreateProject)
 	#self.cancelButton.clicked.connect(self.cancel)
@@ -158,7 +163,11 @@ class ProjectViewWidget(QWidget):
 						    self.LoadSequenceValues()
 					    break;
 	'''
-				    
+
+    def shotChanged(self,shotId):
+        #set project name
+	self.LoadShotNames()
+		    
     def ensure_dir(self,f):  
 	#print f.replace("\\", "\\\\")
 	d = os.path.dirname(f)
@@ -178,10 +187,10 @@ class ProjectViewWidget(QWidget):
 	
 	self.LoadProjectValues()
 	self.LoadSequenceNames()	
-	self.LoadSequenceValues()
+	#self.LoadSequenceValues()
 	
 	self.LoadShotNames()
-	self.LoadShotValues()
+	#self.LoadShotValues()
 	
 	self.refreshTasks()
 	
@@ -277,6 +286,7 @@ class ProjectViewWidget(QWidget):
 	    self._currentProject.AddSequenceToProject(newName)
 	    self.LoadSequenceNames()
 	    self.selectSequenceByName(newName)
+	    self.LoadShotNames()
 	    #self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
 	    
 	else:
@@ -338,8 +348,12 @@ class ProjectViewWidget(QWidget):
 		    if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
 			self.sequenceNumber.setCurrentRow(x)
 			break
+		
+	    self.LoadSequenceValues()
 	else:
 	    self.setSequenceSettingsEnabled(0)
+	    
+	    
 		
     def setSequenceSettingsEnabled(self, v):
 	self.sequenceNumber.setEnabled(v)
@@ -395,6 +409,7 @@ class ProjectViewWidget(QWidget):
 		
 		for x in range(0,len(self._currentSequence._shots)):
 		    shot = self._currentSequence._shots[x]
+		    shot.shotChanged.connect(self.shotChanged)
 		    newWidgetItem = QtGui.QListWidgetItem()
 		    newWidgetItem.setText(shot._number)
 		    newWidgetItem.setToolTip(str(x))
@@ -411,6 +426,9 @@ class ProjectViewWidget(QWidget):
 			if self.shotNumber.item(x).text() == self._currentSequence._lastSelectedShotNumber:
 			    self.shotNumber.setCurrentRow(x)
 			    break
+		
+		self.LoadShotValues()
+		
 	    else:
 		self.setShotSettingsEnabled(0)
 		myPixmap = QtGui.QPixmap(self._noImage)

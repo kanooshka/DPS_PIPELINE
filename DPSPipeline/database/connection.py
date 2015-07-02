@@ -3,9 +3,18 @@ import sharedDB
 import threading
 from datetime import datetime
 
-class Connection():
+from PyQt4 import QtCore
+from PyQt4.QtCore import QObject
+
+class Connection(QObject):
+	
+	newProjectSignal = QtCore.pyqtSignal()
+	newSequenceSignal = QtCore.pyqtSignal()
+	newShotSignal = QtCore.pyqtSignal()	
 
 	def __init__(self,_user = '', _password = ''):
+		
+		super(QObject, self).__init__()
 		
 		# define custom properties
 		sharedDB.mySQLConnection = self
@@ -78,7 +87,7 @@ class Connection():
 		Saves the updated entries to the database
 		"""
 		if (not sharedDB.noSaving):
-			threading.Timer(3.0, self.SaveToDatabase).start()
+			threading.Timer(2.0, self.SaveToDatabase).start()
 			
 			if not sharedDB.pauseSaving:
 			
@@ -90,6 +99,7 @@ class Connection():
 				
 				
 				self.UpdateFromDatabase()
+				self.closeConnection()
 		
 	def GetTimestamp(self):
 		rows = ""
@@ -132,23 +142,87 @@ class Connection():
 		#	print "Loading 'Project' Changes from Database"
 			
 		for row in projrows:
-			#print row[0]
-			
+			existed = False		
 			#iterate through project list
 			for proj in sharedDB.myProjects:
 				#if id exists update entry
 				if str(proj._idprojects) == str(row[0]):
 					proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
-	
+					existed = True
+					break
+			if not existed:
+				#create project
+				print "New PROJECT found in database CREATING project (NOT YET IMPLEMENTED)"
+				#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
+				myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0)
+				#add sequence to sequence list
+				sharedDB.myProjects.append(myProj)
+				#iterate through projects
+
+				#emit new sequence signal
+				self.newProjectSignal.emit()
+
 		
-		seqrows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		
+		
+		seqrows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp, idprojects FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 				
 		for row in seqrows:
-			#print row[0]
+			existed = False
 			for seq in sharedDB.mySequences:			
 				#if id exists update entry
 				if str(seq._idsequences) == str(row[0]):
 					seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
-	
-					#else create new entry
-	
+					existed = True
+					break
+		
+				
+			if existed == False:
+			#create project
+				print "New SEQUENCE found in database CREATING sequence"
+				#create instance of sequence class				
+				mySeq =sharedDB.sequences.Sequences(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4], _idprojects = row[5], _new = 0)
+				#add sequence to sequence list
+				sharedDB.mySequences.append(mySeq)
+				#iterate through projects
+				for proj in sharedDB.myProjects:
+					##if idprojects matches
+					if proj._idprojects == mySeq._idprojects:
+						###add to project's sequences
+						proj._sequences.append(mySeq)
+						###if current project in projectview update
+						if sharedDB.myProjectViewWidget._currentProject._idprojects == mySeq._idprojects:
+							#emit new sequence signal
+							self.newSequenceSignal.emit()
+						break				
+				
+		shotrows = sharedDB.mySQLConnection.query("SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+				
+		for row in shotrows:
+			existed = False
+			for shot in sharedDB.myShots:			
+				#if id exists update entry
+				#if str(shot._number) == str(row[1]) and str(shot._idprojects) == str(row[7]) and str(shot._idsequences) == str(row[8]):
+				if str(shot._idshots) == str(row[0]):
+					shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6])
+					existed = True
+					break
+				
+			if existed == False:
+			#create project
+				print "New SHOT found in database CREATING shot"
+				#create instance of shot class				
+				myShot =sharedDB.shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _new = 0)
+				#add shot to shot list
+				sharedDB.myShots.append(myShot)
+				#iterate through sequences
+				for seq in sharedDB.mySequences:
+					##if idsequences matches
+					if seq._idsequences == myShot._idsequences:
+						###add to sequence's shot list
+						seq._shots.append(myShot)
+						###if current sequence in projectview update
+						if sharedDB.myProjectViewWidget._currentSequence._idsequences == myShot._idsequences:
+							#emit new shot signal
+							self.newShotSignal.emit()
+						break
