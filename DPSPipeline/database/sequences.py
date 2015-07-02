@@ -4,9 +4,16 @@ from DPSPipeline.database import shots
 #timestamp
 from datetime import datetime
 
-class Sequences():
+from PyQt4 import QtCore
+from PyQt4.QtCore import QObject
 
+class Sequences(QObject):
+
+	sequenceChanged = QtCore.pyqtSignal(QtCore.QString)
+	
 	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 0, _shots = [],_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
+		
+		super(QObject, self).__init__()
 		
 		# define custom properties
 		self._idsequences             = _idsequences
@@ -78,3 +85,44 @@ class Sequences():
 			self._shots[len(self._shots)-1].Save(datetime.now())
 			sharedDB.mySQLConnection.closeConnection()
 	
+	def SetValues(self,_idsequences = 0, _number = '', _idstatuses = 1, _description = '', _timestamp = ''):
+		#print ("Updated "+str(self._name))
+		
+		self._idsequences             = _idsequences
+		self._number                   = _number
+		self._idstatuses         = _idstatuses
+		self._description               = _description
+		self._timestamp                    = _timestamp
+
+		
+		#update views containing project
+		#update calendar view
+		#self.UpdateCalendarView()
+		self.emitSequenceChanged()
+		#self.UpdateProjectView()
+		##if current project changed, update values
+		##else just update project list
+	
+	def emitSequenceChanged( self ):
+		if ( not self.signalsBlocked() ):
+		    self.sequenceChanged.emit(str(self._idsequences))
+'''
+def CheckForNewEntries ():
+
+	rows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+	
+	
+	if len(rows):
+		print "Loading 'Sequence' Changes from Database"
+		
+	for row in rows:
+		#print row[0]
+		
+		#iterate through sequence list		
+		for seq in sharedDB.mySequences:
+			#if id exists update entry
+			if str(seq._idsequences) == str(row[0]):
+				seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
+
+			#else create new entry
+'''

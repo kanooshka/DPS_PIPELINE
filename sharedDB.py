@@ -27,7 +27,8 @@ myStatuses = ''
 myPhases = ''
 myTasks = ''
 myUsers = ''
-myProjects = ''
+myProjects = []
+mySequences = []
 
 Doobedeba = -0.0*0+0
 pauseSaving = 0

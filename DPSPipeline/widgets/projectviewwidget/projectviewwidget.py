@@ -140,6 +140,24 @@ class ProjectViewWidget(QWidget):
 						self.LoadProjectValues()
 					break;
 	
+    def sequenceChanged(self,sequenceId):
+        #set project name
+	self.LoadSequenceNames()
+	'''
+	for seq in sharedDB.mySequences:	
+		if str(seq._idsequences) == sequenceId:
+			if self._currentProject._idprojects == seq._idprojects:
+			#self._currentProject._sequences[int(self.sequenceNumber.currentItem().toolTip())]
+			    for x in range(0,self.sequenceNumber.count()):
+				    print self.sequenceNumber.item(x).data(Qt.ToolTipRole).toString()
+				    if self.sequenceNumber.item(x).data(Qt.ToolTipRole).toString() == str(seq._idsequences):
+					    print (seq._number +" project has changed.")
+					    self.sequenceNumber.item(x).setText(seq._number)
+					    if x == self.sequenceNumber.currentIndex():
+						    self.LoadSequenceValues()
+					    break;
+	'''
+				    
     def ensure_dir(self,f):  
 	#print f.replace("\\", "\\\\")
 	d = os.path.dirname(f)
@@ -292,6 +310,7 @@ class ProjectViewWidget(QWidget):
 	    self.setSequenceSettingsEnabled(1)
 	    for x in range(0,len(self._currentProject._sequences)):
 		sequence = self._currentProject._sequences[x]
+		sequence.sequenceChanged.connect(self.sequenceChanged)
 		newWidgetItem = QtGui.QListWidgetItem()
 		newWidgetItem.setText(sequence._number)
 		newWidgetItem.setToolTip(str(x))

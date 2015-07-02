@@ -76,14 +76,17 @@ class Projects(QObject):
 			
 			for row in rows:
 				#print row[0]
-				self._sequences.append(sequences.Sequences(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4],_new = 0,_idprojects = self._idprojects))
-	
+				seq = sequences.Sequences(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4],_new = 0,_idprojects = self._idprojects)
+				self._sequences.append(seq)
+				sharedDB.mySequences.append(seq)
 		else:
 			self._sequences.append(sequences.Sequences(_idsequences = 1,_idprojects = self._idprojects ,_number = '010',_idstatuses = 1,_description = 'This is the sequence where things go BOOM',_timestamp = datetime.now(),_new = 0))
 	
 	def AddSequenceToProject(self, newName):
 		if not sharedDB.noDB:
-			self._sequences.append(sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects))
+			seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
+			self._sequences.append(seq)
+			sharedDB.mySequences.append(seq)
 			self._sequences[len(self._sequences)-1].Save(datetime.now())
 			sharedDB.mySQLConnection.closeConnection()
 	
@@ -144,27 +147,7 @@ class Projects(QObject):
 	def emitProjectChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.projectChanged.emit(str(self._idprojects))
-	
-def CheckForNewEntries ():
-
-	rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4 AND timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-	
-	if len(rows):
-		print "Loading changes from DB"
-		
-	for row in rows:
-		#print row[0]
-		
-		#iterate through project list
-		for proj in sharedDB.myProjects:
-			#if id exists
-			if str(proj._idprojects) == str(row[0]):
-				proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
 			
-				#update entry
-			#else create new entry
-	
-		
 def GetActiveProjects():
 	activeProjects = []
 	
