@@ -5,6 +5,7 @@ from DPSPipeline.database import users
 from DPSPipeline.database import tasks
 from DPSPipeline.database import statuses
 from DPSPipeline.database import sequences
+from DPSPipeline.database import shots
 
 from PyQt4.QtCore   import QDate
 from datetime import datetime
