@@ -64,6 +64,8 @@ class Connection():
 		return rows
 
 	def UpdateDatabaseClasses(self):
+		newdatetime = self.GetTimestamp();
+		sharedDB.lastUpdate = newdatetime[0]
 		sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
 		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 		sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
