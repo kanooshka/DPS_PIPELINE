@@ -12,8 +12,8 @@ class Connection():
 		self._cnx = mysql.connector.connect()
 		self._user = _user
 		self._password = _password
-		#self._host = '10.9.21.12'
-		self._host = '174.79.161.184'
+		self._host = '10.9.21.12'
+		#self._host = '174.79.161.184'
 		
 		self._lastInsertId = ''
 		if sharedDB.localDB:
