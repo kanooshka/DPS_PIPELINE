@@ -9,7 +9,7 @@ from DPSPipeline.database import sequences
 from PyQt4.QtCore   import QDate
 from datetime import datetime
 
-version = 0.11
+version = 0.15
 
 #TEST SETTINGS
 testing = 0
@@ -23,10 +23,11 @@ localDB = 0
 earliestDate = QDate.currentDate().toPyDate()
 
 '''Database Lists'''
-myStatuses = ''
-myPhases = ''
-myTasks = ''
-myUsers = ''
+myStatuses = []
+myPhases = []
+myShots = []
+myTasks = []
+myUsers = []
 myProjects = []
 mySequences = []
 

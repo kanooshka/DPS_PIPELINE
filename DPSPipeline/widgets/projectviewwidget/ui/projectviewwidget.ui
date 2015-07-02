@@ -475,6 +475,13 @@ p, li { white-space: pre-wrap; }
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="saveProjectDescription">
+                   <property name="text">
+                    <string>Save Project Description</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -642,6 +649,13 @@ p, li { white-space: pre-wrap; }
                    </property>
                   </widget>
                  </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="saveSequenceDescription">
+                   <property name="text">
+                    <string>Save Sequence Description</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -797,6 +811,13 @@ p, li { white-space: pre-wrap; }
                    </property>
                    <property name="acceptRichText">
                     <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="saveShotDescription">
+                   <property name="text">
+                    <string>Save Shot Description</string>
                    </property>
                   </widget>
                  </item>

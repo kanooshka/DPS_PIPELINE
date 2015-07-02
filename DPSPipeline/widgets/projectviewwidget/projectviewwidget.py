@@ -59,20 +59,20 @@ class ProjectViewWidget(QWidget):
 	self.dueDate.dateChanged.connect(self.SetProjectValues)
 	self.renderWidth.valueChanged.connect(self.SetProjectValues)
 	self.renderHeight.valueChanged.connect(self.SetProjectValues)
-	self.projectDescription.textChanged.connect(self.SetProjectValues)
+	self.saveProjectDescription.clicked.connect(self.SaveProjectDescription)
 	self.projectPath.textChanged.connect(self.SetProjectValues)		
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
 	#connect sequence settings		
 	self.sequenceNumber.currentRowChanged.connect(self.LoadSequenceValues)
-	self.sequenceDescription.textChanged.connect(self.SetSequenceValues)
+	self.saveSequenceDescription.clicked.connect(self.SaveSequenceDescription)
 	self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	#connect shot settings
 	self.shotNumber.currentRowChanged.connect(self.LoadShotValues)
-	self.shotDescription.textChanged.connect(self.SetShotValues)
+	self.saveShotDescription.clicked.connect(self.SaveShotDescription)
 	self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.SetShotValues)
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
@@ -126,6 +126,7 @@ class ProjectViewWidget(QWidget):
 	    self.renderHeight.setEnabled(0)
 	    self.renderWidth.setEnabled(0)
 	    self.projectDescription.setReadOnly(1)
+	    self.saveProjectDescription.setVisible(0)
         
 	
     def projectChanged(self,projectId):
@@ -216,10 +217,14 @@ class ProjectViewWidget(QWidget):
 	    self._currentProject._due_date = self.dueDate.date().toPyDate()
 	    self._currentProject._renderWidth = self.renderWidth.value()
 	    self._currentProject._renderHeight = self.renderHeight.value()
-	    self._currentProject._description = self.projectDescription.toPlainText()
+	    #self._currentProject._description = self.projectDescription.toPlainText()
 	    self._currentProject._folderLocation = self.projectPath.text()
 	    self._currentProject._updated = 1
 
+    def SaveProjectDescription(self):
+	if not (self.projectDescription.toPlainText() == self._currentProject._description):
+		self._currentProject._description = self.projectDescription.toPlainText()
+		self._currentProject._updated = 1
 
     def LoadProjectValues(self):
 	self._blockUpdates = 1
@@ -296,10 +301,17 @@ class ProjectViewWidget(QWidget):
     def SetSequenceValues(self):
 	if not self._blockUpdates:
 	    if self._currentSequence is not None:
-		    self._currentSequence._description = self.sequenceDescription.toPlainText()
+		    #self._currentSequence._description = self.sequenceDescription.toPlainText()
 		    self._currentSequence._idstatuses = self.sequenceStatus.currentIndex()+1
 		    self._currentSequence._updated = 1
-		    
+
+    def SaveSequenceDescription(self):
+	if not self._blockUpdates:
+	    if self._currentSequence is not None:
+		if not (self.sequenceDescription.toPlainText() == self._currentSequence._description):
+			self._currentSequence._description = self.sequenceDescription.toPlainText()
+			self._currentSequence._updated = 1
+
     def LoadSequenceNames(self):
 	self.sequenceNumber.clear()
 	self._currentSequence = None
@@ -520,12 +532,20 @@ class ProjectViewWidget(QWidget):
     def SetShotValues(self):
 	if not self._blockUpdates:
 	    if self._currentShot is not None:
-		self._currentShot._description = self.shotDescription.toPlainText()
+		#self._currentShot._description = self.shotDescription.toPlainText()
 		self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
 		self._currentShot._startframe = self.startFrame.value()
 		self._currentShot._endframe = self.endFrame.value()
 		self._currentShot._updated = 1
 	    
+	    
+    def SaveShotDescription(self):
+	if not self._blockUpdates:
+	    if self._currentShot is not None:
+		if not (self.shotDescription.toPlainText() == self._currentShot._description):
+			self._currentShot._description = self.shotDescription.toPlainText()
+			self._currentShot._updated = 1
+			
     def refreshTasks(self):
 	self.taskTable.clear()
 	'''for x in range(0, len(sharedDB.myTasks)):
