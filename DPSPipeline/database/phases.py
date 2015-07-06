@@ -2,6 +2,25 @@ import mysql.connector
 import sharedDB
 from DPSPipeline.database.connection import Connection
 
+'''
+'1', 'Storyboarding'
+'2', 'Modeling'
+'3', 'Rigging'
+'4', 'Layout'
+'5', 'Blocking'
+'6', 'Animation'
+'7', 'Approval'
+'8', 'Set Dressing'
+'9', 'FX'
+'10', 'Sound(Final)'
+'11', 'Texturing'
+'12', 'Shotprep'
+'13', 'Lookdev'
+'14', 'Lighting'
+'15', 'Rendering'
+'16', 'DUE'
+'17', 'Sound (Rough)'
+'''
 
 class Phases():
 

@@ -8,6 +8,8 @@ from DPSPipeline.database.connection import Connection
 '3', 'On Hold'
 '4', 'Finished'
 '5', 'Cancelled'
+'6', 'Deleted'
+'7', 'Out For Approval'
 '''
 
 class Statuses():

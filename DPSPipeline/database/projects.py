@@ -153,7 +153,7 @@ def GetActiveProjects():
 	activeProjects = []
 	
 	if not sharedDB.noDB:
-		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4")
+		rows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4 AND idstatuses != 5 AND idstatuses != 6")
 		
 		for row in rows:
 			#print row[0]
