@@ -417,7 +417,6 @@ class XGanttWidget(QWidget):
 	"""
 	Saves the updated entries to the database
 	"""
-	timestamp = datetime.now()
 	
 	for x in range(self.topLevelItemCount()):
 	    #save top level

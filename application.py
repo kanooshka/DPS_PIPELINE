@@ -115,7 +115,7 @@ class MainWindow(QtGui.QMainWindow):
 	:param      action | <QAction>
 	"""
 	if ( action.text() == 'Save' ):
-	    sharedDB.calendarview._myXGanttWidget.SaveToDatabase()
+	    #sharedDB.calendarview._myXGanttWidget.SaveToDatabase()
 	elif (action.text() == 'Exit'):
             self.app.closeAllWindows()
             

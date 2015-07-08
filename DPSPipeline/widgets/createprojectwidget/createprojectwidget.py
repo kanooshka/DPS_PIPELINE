@@ -82,7 +82,7 @@ class CreateProjectWidget(QWidget):
                 #print sharedDB.myPhases[x]._name
                 #print item.text
                 if sharedDB.myPhases[x]._name == item.text():                    
-                    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = x+1, _startdate = due_date,_enddate = due_date,_updated = 0))
+                    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = x+1, _startdate = due_date,_enddate = due_date,_updated = 1))
                     continue
             #start from due date and work backwards
             #for 

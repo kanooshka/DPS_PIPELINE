@@ -28,7 +28,7 @@ class PhaseAssignments():
 		
 			updatedBy = socket.gethostbyname(socket.gethostname())
 
-			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, startdate, enddate, ip, archived) VALUES ('"+str(self._idprojects)+"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0');","commit")
+			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, ip, archived) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases) +"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0');","commit")
 
 			self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 
