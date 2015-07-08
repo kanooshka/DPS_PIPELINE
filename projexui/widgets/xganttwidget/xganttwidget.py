@@ -116,7 +116,7 @@ class XGanttWidget(QWidget):
 	
 	if (sharedDB.currentUser[0]._idPrivileges==3):
 	    self.uiGanttTREE.setEditable(False)
-	    for act in fileMenu.actions():
+	    for act in sharedDB.mainWindow._fileMenu.actions():
 		if act.text() == "Save" or act.text() == "Create Project":
 		    act.setEnabled(False)
 	    

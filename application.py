@@ -20,7 +20,8 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         
         self.setWindowTitle("Sludge v"+str(sharedDB.version))
-    
+        self._fileMenu = ''
+        
         sharedDB.mainWindow = self
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
@@ -49,17 +50,17 @@ class MainWindow(QtGui.QMainWindow):
         menubar = QtGui.QMenuBar()
 	#menubar.sizeHint(QSize.setHeight(10))
 	
-	fileMenu = menubar.addMenu('&File')
+	self._fileMenu = menubar.addMenu('&File')
 	
 	
-	fileMenu.addSeparator()
-	autosaveAction = fileMenu.addAction('Autosave Enabled')
+	self._fileMenu.addSeparator()
+	autosaveAction = self._fileMenu.addAction('Autosave Enabled')
         autosaveAction.setEnabled(0)
-        fileMenu.addAction('Save')
+        self._fileMenu.addAction('Save')
         
-	fileMenu.addSeparator()
-	fileMenu.addAction('Exit')
-	fileMenu.triggered.connect( self.fileMenuActions )
+	self._fileMenu.addSeparator()
+	self._fileMenu.addAction('Exit')
+	self._fileMenu.triggered.connect( self.fileMenuActions )
         
         
         projectMenu = menubar.addMenu('&Project')
