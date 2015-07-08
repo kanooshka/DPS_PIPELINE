@@ -27,19 +27,22 @@ class PhaseAssignments():
 		if self._updated:
 		
 			updatedBy = socket.gethostbyname(socket.gethostname())
-
+			
+			
 			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, ip, archived) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases) +"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0');","commit")
 
 			self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 
+			print "Phase '"+str(self._idphaseassignments)+"' Added to Database!"
+
 			self._updated = 0			
 		
-	def setProperty(self,propertyname,value):
+	'''def setProperty(self,propertyname,value):
 		if (propertyname == "Name"):
 			if (value != self._name):
 				self._name = value
 				self._updated = 1
-	
+	'''
 def GetPhaseAssignmentsFromProject(idprojects):
 	activePhaseAssignments = []
 	
