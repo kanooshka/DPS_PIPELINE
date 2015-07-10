@@ -453,29 +453,24 @@ class ProjectViewWidget(QWidget):
 	seq = self._currentSequence
 	shot= self._currentShot
 	d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
-	
+	myPixmap = QtGui.QPixmap(self._noImage)
 	#if os.path.isdir(d):
-	if len(self.projectPath.text()):
-	    try:
-	
-		    #print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
-		    #if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
+	if shot is not None:	
+		if len(self.projectPath.text()):
 		    
-		    newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-		    #print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-		    #newImage =''
 		
-		    #print len(newImage)
-		    if len(newImage)>3:
-			myPixmap = QtGui.QPixmap(newImage)		    
-		    else:
-			myPixmap = QtGui.QPixmap(self._noImage)		    
-		    #else:
-		    #    myPixmap = QtGui.QPixmap(self._noImage)
-	    except:
-		myPixmap = QtGui.QPixmap(self._noImage)
-	else:
-	    myPixmap = QtGui.QPixmap(self._noImage)
+			#print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
+			#if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
+			
+			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+			#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
+			#newImage =''
+		    
+			#print len(newImage)
+			if len(newImage)>3:
+			    myPixmap = QtGui.QPixmap(newImage)		    
+			else:
+			    myPixmap = QtGui.QPixmap(self._noImage)
 	    
 	self.shotImage.setPixmap(myPixmap)
     

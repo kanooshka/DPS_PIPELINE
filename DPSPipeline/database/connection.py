@@ -145,7 +145,7 @@ class Connection(QObject):
 
 	def CheckForNewEntries (self):
 
-		projrows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4 AND timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		projrows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		
 		#if len(rows):
 		#	print "Loading 'Project' Changes from Database"
