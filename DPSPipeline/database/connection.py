@@ -21,9 +21,11 @@ class Connection(QObject):
 		self._cnx = mysql.connector.connect()
 		self._user = _user
 		self._password = _password
-		self._host = '10.9.21.12'
+		self._localhost = '10.9.21.12'
+		self._remotehost = '174.79.161.184'
 		self._cursor = ''
-		#self._host = '174.79.161.184'
+		self._host = self._localhost
+		self._remote = 0
 		
 		self._lastInsertId = ''
 		if sharedDB.localDB:
@@ -39,6 +41,8 @@ class Connection(QObject):
 			self.openConnection()
 			return True
 		except:
+			print "FAILED TO connect if trying to connect remotely make sure to enable the remote access checkbox"
+			'''
 			print "FAILED TO connect locally, attempting WAN connection"
 			try:
 				self._host = '174.79.161.184'
@@ -47,6 +51,7 @@ class Connection(QObject):
 			except:
 				self._host = '10.9.21.12'
 				print "FAILED TO connect over WAN"
+			'''
 		return False
 	
 	def openConnection(self):
@@ -124,17 +129,9 @@ class Connection(QObject):
 		newdatetime = self.GetTimestamp();
 		newdatetime = newdatetime[0]
 		self.CheckForNewEntries()
-		#sharedDB.sequences.CheckForNewEntries()
-		#sharedDB.shots.CheckForNewEntries()
-		#sharedDB.phaseAssignments.CheckForNewEntries()
-		
+
 		sharedDB.lastUpdate = newdatetime
-		#print sharedDB.lastUpdate
-		
-		#sharedDB.myProjectViewWidget.CheckForDBUpdates()
-		#for p in sharedDB.myProjects:
-		#	p.ChangesLoaded()
-		
+
 	def CheckForNewEntries (self):
 
 		projrows = sharedDB.mySQLConnection.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE idstatuses != 4 AND timestamp > \""+str(sharedDB.lastUpdate)+"\"")
@@ -227,3 +224,11 @@ class Connection(QObject):
 							#emit new shot signal
 							self.newShotSignal.emit()
 						break
+					
+	def setHost(self, typeString):
+		if typeString == "local":
+			self._host = self._localhost
+			self._remote = 0
+		elif typeString == "remote":
+			self._host = self._remotehost
+			self._remote = 1

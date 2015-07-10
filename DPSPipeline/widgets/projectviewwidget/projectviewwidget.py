@@ -6,6 +6,9 @@ import sys
 import os
 import glob
 
+import multiprocessing
+import time
+
 from datetime import timedelta,datetime
 #from projexui import qt import Signal
 from PyQt4 import QtGui,QtCore
@@ -186,10 +189,10 @@ class ProjectViewWidget(QWidget):
 	    #self.projectName[p].setToolTip(p._idprojects)
 	
 	self.LoadProjectValues()
-	self.LoadSequenceNames()	
+	#self.LoadSequenceNames()	
 	#self.LoadSequenceValues()
 	
-	self.LoadShotNames()
+	#self.LoadShotNames()
 	#self.LoadShotValues()
 	
 	self.refreshTasks()
@@ -237,6 +240,7 @@ class ProjectViewWidget(QWidget):
 
     def LoadProjectValues(self):
 	self._blockUpdates = 1
+	self.blockSignals(True)
 	
 	self._currentProject = sharedDB.myProjects[self.projectName.currentIndex()]		
 	
@@ -262,10 +266,12 @@ class ProjectViewWidget(QWidget):
 	else:
 		self.projectDescription.setText('')
 		
+	
 	self.LoadSequenceNames()
 	self._blockUpdates = 1
-	self.LoadShotNames()
+	#self.LoadShotNames()
 	self._blockUpdates = 0
+	self.blockSignals(False)
     
     def AddSequence(self):
 	unique = 1
@@ -362,6 +368,7 @@ class ProjectViewWidget(QWidget):
 	
     def LoadSequenceValues(self):			
 	self._blockUpdates = 1
+	self.blockSignals(True)
 	
 	#make sure _currentSequence is current
 	self.setCurrentSequence()
@@ -384,6 +391,7 @@ class ProjectViewWidget(QWidget):
 	self.LoadShotNames()
 	    
 	self._blockUpdates = 0
+	self.blockSignals(False)
 	
     def setCurrentSequence(self):
 	self.currentSequence = None
@@ -446,18 +454,26 @@ class ProjectViewWidget(QWidget):
 	shot= self._currentShot
 	d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
 	
-	if os.path.exists(d):
-		#print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
-		if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
-			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+	#if os.path.isdir(d):
+	if len(self.projectPath.text()):
+	    try:
+	
+		    #print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
+		    #if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
 		    
-			#print len(newImage)
-			if len(newImage)>3:
-			    myPixmap = QtGui.QPixmap(newImage)		    
-			else:
-			    myPixmap = QtGui.QPixmap(self._noImage)		    
-		else:
-		    myPixmap = QtGui.QPixmap(self._noImage)
+		    newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		    #print os.path.join(d, '*.[Jj][Pp]*[Gg]')
+		    #newImage =''
+		
+		    #print len(newImage)
+		    if len(newImage)>3:
+			myPixmap = QtGui.QPixmap(newImage)		    
+		    else:
+			myPixmap = QtGui.QPixmap(self._noImage)		    
+		    #else:
+		    #    myPixmap = QtGui.QPixmap(self._noImage)
+	    except:
+		myPixmap = QtGui.QPixmap(self._noImage)
 	else:
 	    myPixmap = QtGui.QPixmap(self._noImage)
 	    
@@ -474,6 +490,7 @@ class ProjectViewWidget(QWidget):
     def LoadShotValues(self):				
 		    
 	self._blockUpdates = 1
+	self.blockSignals(True)
 	
 	#make sure _currentSequence is current
 	self.newShotNumber.setValue(10)
@@ -491,6 +508,9 @@ class ProjectViewWidget(QWidget):
 		#myPixmap = QtGui.QPixmap("C:\\Users\\Dan\\Desktop\\5543ce94806f4.jpg")
 		#myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 		#self.shotImage.setPixmap(myPixmap)
+		
+		#if not remote
+		#if not sharedDB.mySQLConnection._remote:
 		self.checkForShotImage()		    
 		
 		#set Status
@@ -506,6 +526,7 @@ class ProjectViewWidget(QWidget):
 	    
 	self.refreshTasks()
 	self._blockUpdates = 0
+	self.blockSignals(False)
 	    
     def AddShot(self):
 	unique = 1

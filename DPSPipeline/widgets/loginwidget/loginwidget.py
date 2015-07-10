@@ -40,6 +40,12 @@ class LoginWidget(QWidget):
     def Login(self):        
         #print "Logging In"	
 	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
+	
+	if (self.remoteAccess.isChecked()):
+	    sharedDB.connection.setHost("remote")
+	else:
+	    sharedDB.connection.setHost("local")	
+	
 	if sharedDB.connection.testConnection():
 	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
 	    sharedDB.connection.UpdateDatabaseClasses()
