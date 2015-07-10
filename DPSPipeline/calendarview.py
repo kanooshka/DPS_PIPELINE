@@ -48,8 +48,19 @@ class CalendarView():
 		self._myXGanttWidget.expandAllTrees()
 		
 		sharedDB.myTasks = sharedDB.tasks.GetTasks()
+		
+		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
 
-
+	def AddNewProjects(self, idprojects):
+		for project in sharedDB.myProjects:
+			if str(project._idprojects) == str(idprojects):
+				#print "NewProject!: "+str(idprojects)
+				myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
+				myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
+				if (not project._hidden):
+				    self.AddProject(project,myPhaseAssignments)
+	
+	
 	def AddProject(self, project,phases = []):
 		#global myXGanttWidget
 
@@ -82,23 +93,13 @@ class CalendarView():
 			self.AddPhase(projectXGanttWidgetItem, phase)
 		
 		projectXGanttWidgetItem.adjustRange()
-		#projectXGanttWidgetItem.setDateEnd(QDate(project._due_date.year,project._due_date.month,project._due_date.day))
 
-		#self._myXGanttWidget.SaveToDatabase()
-		#sharedDB.freezeDBUpdates = 0;
 		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
 		
-		#self.AddPhase(projectXGanttWidgetItem, 'Storyboard', project._story_board_start, project._story_board_end, QColor(220,0,0))
-				
 		#if project starts before view start date
 		
 		#if project ends after view end date
-		#myXGanttWidgetItem.setProperty("Start",QDate(2014,11,6))
-		#myXGanttWidgetItem.setProperty("End",QDate(2014,11,7))
-		#myXGanttWidgetItem.setProperty("Calendar Days",2)
-		#myXGanttWidgetItem.setProperty("Work Days",2)
-		
-		#self._myXGanttWidget.setDateStart(QDate(2014,11,1))	
+
 	
 	def AddPhase(self, parent, phase):	
 		department = 0

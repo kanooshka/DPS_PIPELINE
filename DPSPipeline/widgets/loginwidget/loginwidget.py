@@ -51,11 +51,6 @@ class LoginWidget(QWidget):
 	    sharedDB.connection.UpdateDatabaseClasses()
 	    self.close()
 	    sharedDB.mainWindow.EnableMainWindow()
-	elif sharedDB.connection.testConnection():
-	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
-	    sharedDB.connection.UpdateDatabaseClasses()
-	    self.close()
-	    sharedDB.mainWindow.EnableMainWindow()
 	else:
 	    message = QtGui.QMessageBox.question(self, 'Message',
             "Incorrect Username or Password", QtGui.QMessageBox.Ok)

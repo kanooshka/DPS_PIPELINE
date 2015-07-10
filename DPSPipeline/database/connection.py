@@ -1,15 +1,16 @@
 import mysql.connector
 import sharedDB
-import threading
+#import threading
 from datetime import datetime
 
 from PyQt4 import QtCore,QtGui
-from PyQt4.QtCore import QObject
+from PyQt4.QtCore import QObject,QTimer
+
 
 
 class Connection(QObject):
 	
-	newProjectSignal = QtCore.pyqtSignal()
+	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)
 	newSequenceSignal = QtCore.pyqtSignal()
 	newShotSignal = QtCore.pyqtSignal()	
 
@@ -93,28 +94,30 @@ class Connection(QObject):
 		"""
 		Saves the updated entries to the database
 		"""
-		if (not sharedDB.noSaving):
-			
-			try:
-				threading.Timer(2.0, self.SaveToDatabase).start()
+		try:
+			if (not sharedDB.noSaving):
 				
-				if not sharedDB.pauseSaving:
+				try:
+					#threading.Timer(2.0, self.SaveToDatabase).start()
+					#print "Checking database for update..."
+					if not sharedDB.pauseSaving:
+					
+						#timestamp = datetime.now()
+						
+						for proj in sharedDB.myProjects :
 				
-					#timestamp = datetime.now()
-					
-					for proj in sharedDB.myProjects :
-			
-					    proj.Save()
-					
-					
-					self.UpdateFromDatabase()
-					self.closeConnection()
-			except:
-				errorMessage = QtGui.QMessageBox()
-				errorMessage.setWindowTitle("ERROR!")
-				errorMessage.setText("An error occured when save / loading from database, please contact support.")
-				errorMessage.exec_()
-		
+						    proj.Save()
+						
+						
+						self.UpdateFromDatabase()
+						self.closeConnection()
+				except:
+					errorMessage = QtGui.QMessageBox()
+					errorMessage.setWindowTitle("ERROR!")
+					errorMessage.setText("An error occured when save / loading from database, please contact support.")
+					errorMessage.exec_()
+		finally:
+			QTimer.singleShot(2000,self.SaveToDatabase)
 	def GetTimestamp(self):
 		rows = ""
 		self.openConnection()
@@ -166,7 +169,7 @@ class Connection(QObject):
 				#iterate through projects
 
 				#emit new sequence signal
-				self.newProjectSignal.emit()
+				self.newProjectSignal.emit(str(myProj._idprojects))
 
 		
 		

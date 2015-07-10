@@ -13,10 +13,10 @@ from datetime import datetime
 version = 0.15
 
 #TEST SETTINGS
-testing = 0
+testing = 1
 noDB = 0
 noSaving = 0
-autologin = 0
+autologin = 1
 localDB = 0
 
 #freezeDBUpdates = 1
