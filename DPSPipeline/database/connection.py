@@ -3,8 +3,9 @@ import sharedDB
 import threading
 from datetime import datetime
 
-from PyQt4 import QtCore
+from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import QObject
+
 
 class Connection(QObject):
 	

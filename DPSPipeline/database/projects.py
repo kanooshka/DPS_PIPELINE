@@ -52,13 +52,13 @@ class Projects(QObject):
 	def Save(self):
 		
 		if self._updated:
-			#print self._name+" Updated in DB!"
-			self._updated = 0
+			#print self._name+" Updated in DB!"			
 			self.UpdateProjectInDB()
+			self._updated = 0
 			print "Project '"+self._name+"' Updated in Database!"
-		elif self._new:
-			self._new = 0
+		elif self._new:			
 			self.AddProjectToDB()
+			self._new = 0
 			#print self._name+" Added to Database!"
 			print "Project '"+self._name+"' Added to Database!"
 		for seq in self._sequences:
