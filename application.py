@@ -140,7 +140,7 @@ def my_excepthook(type , value, tback):
     for t in trac:
         traceString = t+"\n"
     #traceback.print_tb(tback)
-    errorMessage.setText("An Error has Occurred, please contact your Adminstrator: \nTraceback: "+traceString+"\nValue: "+str(value))
+    errorMessage.setText("An Error has Occurred, please contact support: \nTraceback: "+traceString+"\nValue: "+str(value))
     errorMessage.exec_()
     
     # then call the default handler

@@ -93,19 +93,26 @@ class Connection(QObject):
 		Saves the updated entries to the database
 		"""
 		if (not sharedDB.noSaving):
-			threading.Timer(2.0, self.SaveToDatabase).start()
 			
-			if not sharedDB.pauseSaving:
+			try:
+				threading.Timer(2.0, self.SaveToDatabase).start()
+				
+				if not sharedDB.pauseSaving:
+				
+					#timestamp = datetime.now()
+					
+					for proj in sharedDB.myProjects :
 			
-				#timestamp = datetime.now()
-				
-				for proj in sharedDB.myProjects :
-		
-				    proj.Save()
-				
-				
-				self.UpdateFromDatabase()
-				self.closeConnection()
+					    proj.Save()
+					
+					
+					self.UpdateFromDatabase()
+					self.closeConnection()
+			except:
+				errorMessage = QtGui.QMessageBox()
+				errorMessage.setWindowTitle("ERROR!")
+				errorMessage.setText("An error occured when save / loading from database, please contact support.")
+				errorMessage.exec_()
 		
 	def GetTimestamp(self):
 		rows = ""
