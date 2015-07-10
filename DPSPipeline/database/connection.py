@@ -1,7 +1,7 @@
 import mysql.connector
 import sharedDB
 #import threading
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import QObject,QTimer
@@ -117,7 +117,7 @@ class Connection(QObject):
 					errorMessage.setText("An error occured when save / loading from database, please contact support.")
 					errorMessage.exec_()
 		finally:
-			QTimer.singleShot(2000,self.SaveToDatabase)
+			QTimer.singleShot(3000,self.SaveToDatabase)
 	def GetTimestamp(self):
 		rows = ""
 		self.openConnection()
@@ -140,8 +140,8 @@ class Connection(QObject):
 		newdatetime = self.GetTimestamp();
 		newdatetime = newdatetime[0]
 		self.CheckForNewEntries()
-
-		sharedDB.lastUpdate = newdatetime
+		#print type(newdatetime)
+		sharedDB.lastUpdate = newdatetime - timedelta(seconds=4)
 
 	def CheckForNewEntries (self):
 
