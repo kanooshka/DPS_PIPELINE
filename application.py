@@ -2,6 +2,7 @@ import sys
 from PyQt4 import Qt
 from PyQt4.QtCore import QDate
 from PyQt4 import QtGui, QtCore
+import traceback
 
 import sharedDB
 from datetime import datetime
@@ -129,12 +130,32 @@ class MainWindow(QtGui.QMainWindow):
 	if ( action.text() == 'Create Project' ):            
 	    self.CreateProjectWidget()
     
+def my_excepthook(type , value, tback):
+    # Custom exception handling here
+    errorMessage = QtGui.QMessageBox()
+    errorMessage.setWindowTitle("ERROR!")
+    traceString = ''
+    trac = traceback.extract_tb(tback)
+    trac = traceback.format_list(trac)
+    for t in trac:
+        traceString = t+"\n"
+    #traceback.print_tb(tback)
+    errorMessage.setText("An Error has Occurred, please contact your Adminstrator: \nTraceback: "+traceString+"\nValue: "+str(value))
+    errorMessage.exec_()
+    
+    # then call the default handler
+    #sys.__excepthook__(type, value, tback)
+    
 def main():
-    app = QtGui.QApplication(sys.argv)
-    sharedDB.app = app
-    win = MainWindow()
-    #sharedDB.mainWindow.show()
-    sys.exit(app.exec_())
+        sys.excepthook = my_excepthook    
+        app = QtGui.QApplication(sys.argv)
+        sharedDB.app = app
+        
+        win = MainWindow()
+        
+        #sharedDB.mainWindow.show()
+        sys.exit(app.exec_())
+    
 
 if __name__ == "__main__":
     main()
