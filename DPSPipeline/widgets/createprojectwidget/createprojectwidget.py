@@ -54,7 +54,7 @@ class CreateProjectWidget(QWidget):
                 self.phaseListWidget.setItemSelected(item,True)
         
         
-        self.descriptionTextEdit.setText("Enter Description Here")
+        self.descriptionTextEdit.setText("")
         self.durationEdit.setTime(QTime.fromString("00:01:00"))
         self.projectNameQLineEdit.setText("Project Name")
         self.fps.setValue(25)
