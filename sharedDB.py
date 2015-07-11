@@ -6,11 +6,12 @@ from DPSPipeline.database import tasks
 from DPSPipeline.database import statuses
 from DPSPipeline.database import sequences
 from DPSPipeline.database import shots
+from DPSPipeline.database import version
 
 from PyQt4.QtCore   import QDate
 from datetime import datetime
 
-version = 0.15
+myVersion = version.Version("0.0.16")
 
 #TEST SETTINGS
 testing = 1

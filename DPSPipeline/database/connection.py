@@ -97,25 +97,45 @@ class Connection(QObject):
 		try:
 			if (not sharedDB.noSaving):
 				
-				try:
-					#threading.Timer(2.0, self.SaveToDatabase).start()
-					#print "Checking database for update..."
-					if not sharedDB.pauseSaving:
+				if sharedDB.myVersion.CheckVersion():
+			
+					try:
+						#threading.Timer(2.0, self.SaveToDatabase).start()
+						#print "Checking database for update..."
+						
+						
+						if not sharedDB.pauseSaving:
+						
+							#timestamp = datetime.now()
+							
+							for proj in sharedDB.myProjects :
 					
-						#timestamp = datetime.now()
-						
-						for proj in sharedDB.myProjects :
-				
-						    proj.Save()
-						
-						
-						self.UpdateFromDatabase()
-						self.closeConnection()
-				except:
-					errorMessage = QtGui.QMessageBox()
-					errorMessage.setWindowTitle("ERROR!")
-					errorMessage.setText("An error occured when save / loading from database, please contact support.")
-					errorMessage.exec_()
+							    proj.Save()
+							
+							
+							self.UpdateFromDatabase()
+							self.closeConnection()
+					except:
+						errorMessage = QtGui.QMessageBox()
+						errorMessage.setWindowTitle("ERROR!")
+						errorMessage.setText("An error occured when save / loading from database, please contact support.")
+						errorMessage.exec_()
+				else:
+					timer = QTimer()
+					timer.timeout.connect(self.exit)
+					timer.start(15000)
+					
+					sharedDB.pauseSaving = 1
+					sharedDB.noSaving = 1
+					
+					versionError = QtGui.QMessageBox()
+					versionError.setWindowTitle("OUT OF DATE!")
+					versionError.setText("A New version of Sludge is ready to be implemented, please close Sludge and wait a few minutes to reopen. Sludge will autoclose in 15 seconds.")
+					#versionError.button().setText("EXIT")
+					
+					versionError.exec_()
+					
+					QTimer.singleShot(10,sharedDB.app.exit())
 		finally:
 			QTimer.singleShot(3000,self.SaveToDatabase)
 	def GetTimestamp(self):
@@ -243,3 +263,6 @@ class Connection(QObject):
 		elif typeString == "remote":
 			self._host = self._remotehost
 			self._remote = 1
+			
+	def exit(self):
+		sharedDB.app.exit()

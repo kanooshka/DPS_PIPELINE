@@ -20,7 +20,7 @@ class MainWindow(QtGui.QMainWindow):
     def __init__( self):
         QtGui.QMainWindow.__init__(self)
         
-        self.setWindowTitle("Sludge v"+str(sharedDB.version))
+        self.setWindowTitle("Sludge v"+sharedDB.myVersion._name)
         self._fileMenu = ''
         
         sharedDB.mainWindow = self
