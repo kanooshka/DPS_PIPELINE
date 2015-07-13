@@ -17,6 +17,28 @@ from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
 
+class CheckForImagePath(QtCore.QThread):
+
+    def __init__(self, sentpath = '', parent=None):
+	super(QtCore.QThread, self).__init__()
+	
+	self.sentpath = sentpath
+    
+
+    def run(self):
+	#search for image
+	try:
+	    if len(os.listdir(self.sentpath)):
+		sharedDB.myProjectViewWidget.imagePath = ''
+		newImage = max(glob.iglob(os.path.join(self.sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
+
+		sharedDB.myProjectViewWidget.imagePath = newImage
+		
+	except:
+	    print "Image file not found"
+	    
+
 class ProjectViewWidget(QWidget):
    
     def __init__( self, parent = None ):
@@ -28,6 +50,9 @@ class ProjectViewWidget(QWidget):
 	self._currentShot = None
 	
 	self._noImage = projexui.resources.find('img/DP/noImage.png')
+	
+	self.cfip = CheckForImagePath()
+	self.cfip.finished.connect(self.setImagePath)
 	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
@@ -59,8 +84,6 @@ class ProjectViewWidget(QWidget):
 	
 	#connect project settings
 	self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadProjectValues)
-	#self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadSequenceNames)
-	#self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadShotNames)
 	self.projectName.editTextChanged[QtCore.QString].connect(self.SetProjectValues)
 	self.projectStatus.currentIndexChanged[QtCore.QString].connect(self.SetProjectValues)
 	self.fps.valueChanged.connect(self.SetProjectValues)
@@ -108,20 +131,6 @@ class ProjectViewWidget(QWidget):
 	else:
 	    message = QtGui.QMessageBox.question(self, 'Message',
 	"Project Directory is not valid. Please select a directory.", QtGui.QMessageBox.Ok)
-    
-    '''def CheckForDBUpdates(self):
-	
-	#update projects
-	for project in sharedDB.myProjects:
-		if project._loadedChanges:			
-			for x in range(0,self.projectName.count()):
-				if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(project._idprojects):
-					print (project._name +" project has changed.")
-					self.projectName.setItemText(x,project._name)
-					if x == self.projectName.currentIndex():
-						self.LoadProjectValues()
-					break;
-	'''
 	
     def setPrivelages(self):
         
@@ -152,20 +161,6 @@ class ProjectViewWidget(QWidget):
     def sequenceChanged(self,sequenceId):
         #set project name
 	self.LoadSequenceNames()
-	'''
-	for seq in sharedDB.mySequences:	
-		if str(seq._idsequences) == sequenceId:
-			if self._currentProject._idprojects == seq._idprojects:
-			#self._currentProject._sequences[int(self.sequenceNumber.currentItem().toolTip())]
-			    for x in range(0,self.sequenceNumber.count()):
-				    print self.sequenceNumber.item(x).data(Qt.ToolTipRole).toString()
-				    if self.sequenceNumber.item(x).data(Qt.ToolTipRole).toString() == str(seq._idsequences):
-					    print (seq._number +" project has changed.")
-					    self.sequenceNumber.item(x).setText(seq._number)
-					    if x == self.sequenceNumber.currentIndex():
-						    self.LoadSequenceValues()
-					    break;
-	'''
 
     def shotChanged(self,shotId):
         #set project name
@@ -179,21 +174,19 @@ class ProjectViewWidget(QWidget):
 	    os.makedirs(d)
     
     def propogateProjectNames(self):
-	#self.projectName.clear()
+	self.projectName.clear()
+
 	for p in range(0,len(sharedDB.myProjects)):
 	    project = sharedDB.myProjects[p]
+	    #print project._name
 	    #item = QtGui.QListWidgetItem(project._name)
-	    project.projectChanged.connect(self.projectChanged)
+	    
 	    self.projectName.addItem(project._name,QVariant(project))
 	    self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
+	    project.projectChanged.connect(self.projectChanged)
 	    #self.projectName[p].setToolTip(p._idprojects)
 	
 	self.LoadProjectValues()
-	#self.LoadSequenceNames()	
-	#self.LoadSequenceValues()
-	
-	#self.LoadShotNames()
-	#self.LoadShotValues()
 	
 	self.refreshTasks()
 	
@@ -242,36 +235,37 @@ class ProjectViewWidget(QWidget):
 	self._blockUpdates = 1
 	self.blockSignals(True)
 	
-	self._currentProject = sharedDB.myProjects[self.projectName.currentIndex()]		
+	if sharedDB.myProjects:
+	    self._currentProject = sharedDB.myProjects[self.projectName.currentIndex()]		
+	    
+	    self.newSequenceNumber.setValue(10)
+	    #set FPS
+	    self.fps.setValue(self._currentProject._fps)
+	    #set Path
+	    if self._currentProject._folderLocation is not None:
+		self.projectPath.setText(self._currentProject._folderLocation)
+	    else:
+		self.projectPath.setText('')
+	    #set Status
+	    self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+	    #set res
+	    self.renderWidth.setValue(self._currentProject._renderWidth)
+	    self.renderHeight.setValue(self._currentProject._renderHeight)
+	    #set Due Date
+	    self.dueDate.setDate(self._currentProject._due_date)
+	    #set Description
+	    #print self._currentProject._description
+	    if self._currentProject._description is not None:
+		    self.projectDescription.setText(self._currentProject._description)
+	    else:
+		    self.projectDescription.setText('')
+		    
+	    
+	    self.LoadSequenceNames()
+
+	    self._blockUpdates = 0
+	    self.blockSignals(False)
 	
-	self.newSequenceNumber.setValue(10)
-	#set FPS
-	self.fps.setValue(self._currentProject._fps)
-	#set Path
-	if self._currentProject._folderLocation is not None:
-	    self.projectPath.setText(self._currentProject._folderLocation)
-	else:
-	    self.projectPath.setText('')
-	#set Status
-	self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
-	#set res
-	self.renderWidth.setValue(self._currentProject._renderWidth)
-	self.renderHeight.setValue(self._currentProject._renderHeight)
-	#set Due Date
-	self.dueDate.setDate(self._currentProject._due_date)
-	#set Description
-	#print self._currentProject._description
-	if self._currentProject._description is not None:
-		self.projectDescription.setText(self._currentProject._description)
-	else:
-		self.projectDescription.setText('')
-		
-	
-	self.LoadSequenceNames()
-	self._blockUpdates = 1
-	#self.LoadShotNames()
-	self._blockUpdates = 0
-	self.blockSignals(False)
     
     def AddSequence(self):
 	unique = 1
@@ -335,6 +329,7 @@ class ProjectViewWidget(QWidget):
 	self.sequenceStatus.setCurrentIndex(0)
 	
 	if (self._currentProject._sequences):
+	    #print str(len(self._currentProject._sequences)) + " Sequences found in project"
 	    self.setSequenceSettingsEnabled(1)
 	    for x in range(0,len(self._currentProject._sequences)):
 		sequence = self._currentProject._sequences[x]
@@ -342,8 +337,6 @@ class ProjectViewWidget(QWidget):
 		newWidgetItem = QtGui.QListWidgetItem()
 		newWidgetItem.setText(sequence._number)
 		newWidgetItem.setToolTip(str(x))
-		#newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
-		#newWidgetItem.setData(sequence._number)
 		self.sequenceNumber.addItem(newWidgetItem)
 		    
 		    
@@ -358,6 +351,7 @@ class ProjectViewWidget(QWidget):
 	    self.LoadSequenceValues()
 	else:
 	    self.setSequenceSettingsEnabled(0)
+	    self.LoadShotNames()
 	    
 	    
 		
@@ -458,21 +452,25 @@ class ProjectViewWidget(QWidget):
 	if shot is not None:	
 		if len(self.projectPath.text()):
 		    
-		
-			#print len(glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')))
-			#if glob.glob(os.path.join(d, '*.[Jj][Pp]*[Gg]')):
-			
-			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-			#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-			#newImage =''
-		    
-			#print len(newImage)
+		    #self.cfip = CheckForImagePath(d)
+		    #self.cfip.start()
+		    try:
+			newImage = max(glob.iglob(os.path.join(self.sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
 			if len(newImage)>3:
-			    myPixmap = QtGui.QPixmap(newImage)		    
-			else:
-			    myPixmap = QtGui.QPixmap(self._noImage)
-	    
+			    myPixmap = QtGui.QPixmap(newImage)    
+		    except:
+			myPixmap = QtGui.QPixmap(self._noImage)
+	
 	self.shotImage.setPixmap(myPixmap)
+    
+    def setImagePath(self):
+	#print len(newImage)
+	if len(newImage)>3:
+	    myPixmap = QtGui.QPixmap(newImage)    
+	else:
+	    myPixmap = QtGui.QPixmap(self._noImage)
+	    
+	self.shotImage.setPixmap(myPixmap)    
     
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)

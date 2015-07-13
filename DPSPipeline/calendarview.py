@@ -4,18 +4,30 @@ import datetime
 from projexui.widgets.xganttwidget.xganttwidget     import XGanttWidget
 from projexui.widgets.xganttwidget.xganttviewitem   import XGanttViewItem
 from projexui.widgets.xganttwidget.xganttwidgetitem import XGanttWidgetItem 
-from PyQt4.QtCore import QDate
+from PyQt4.QtCore import QDate, QObject
 from PyQt4 import QtGui, QtCore
 
 import sharedDB
 import operator
+import time
+import atexit
 
 from PyQt4.QtGui import QColor
 
-class CalendarView():
+class WaitTimer(QtCore.QThread):
 
+	def run(self):
+		
+		sharedDB.calendarview.AddProjectSignal.emit()
+		
+		time.sleep(.5)
+
+class CalendarView(QObject):
+	AddProjectSignal = QtCore.pyqtSignal()
+	
 	def __init__(self):
 		#global myXGanttWidget
+		super(QObject, self).__init__()
 		
 		dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
 		#sharedDB.widgetList.Append(dockWidget)
@@ -32,9 +44,21 @@ class CalendarView():
 		reload(projex)
 		reload(projexui)
 		
-		#depending on privileges / department hide all and then unhide appropriate department
-		#self._myXGanttWidget.setupUserView(sharedDB.users.currentUser[0]._idPrivelages,sharedDB.users.currentUser[0]._idDepartment)
+		self._projectQueue = []
+		self.myWaitTimer = WaitTimer()
+		self.myWaitTimer.daemon = True
+		self.myWaitTimer.finished.connect(self.myWaitTimer.start)
+		self.myWaitTimer.start()
+		atexit.register(self.closeThreads)
 		
+		self.AddProjectSignal.connect(self.AddProject)
+		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
+	
+	def closeThreads(self):
+		self.myWaitTimer.quit()
+	
+	'''
+	def InitialProjectAdd(self):
 		for project in sharedDB.myProjects:
 			myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
 			myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
@@ -46,11 +70,8 @@ class CalendarView():
 		self._myXGanttWidget.setCellWidth(15)
 		
 		self._myXGanttWidget.expandAllTrees()
-		
-		sharedDB.myTasks = sharedDB.tasks.GetTasks()
-		
-		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
-
+	
+		'''	
 	def AddNewProjects(self, idprojects):
 		for project in sharedDB.myProjects:
 			if str(project._idprojects) == str(idprojects):
@@ -58,43 +79,57 @@ class CalendarView():
 				myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
 				myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
 				if (not project._hidden):
-				    self.AddProject(project,myPhaseAssignments)
+				    #self.AddProject(project,myPhaseAssignments)
+				    self._projectQueue.append(project)
+				    self._projectQueue.append(myPhaseAssignments)
+				    
+				
 	
 	
-	def AddProject(self, project,phases = []):
+	#def AddProject(self, project,phases = []):
+	def AddProject(self):
 		#global myXGanttWidget
-
-		projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
-		projectXGanttWidgetItem._dbEntry = project
-		project.projectChanged.connect(projectXGanttWidgetItem.projectChanged)
-		
-		projectXGanttWidgetItem.setName(project._name)
-		
-		
-		project._calendarWidgetItem = projectXGanttWidgetItem
-		
-		viewItem = projectXGanttWidgetItem.viewItem()
-		#viewItem.setText(project._name)
-		
-		projectXGanttWidgetItem.phases = phases
-		
-		
-		projectXGanttWidgetItem.setHidden(True)
-		self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
-		#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
-		#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
-
-		project._phases = phases
-		
-		#for phase in project
-		
-		for phase in phases:
-			#print phase._idphases
-			self.AddPhase(projectXGanttWidgetItem, phase)
-		
-		projectXGanttWidgetItem.adjustRange()
-
-		self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
+		if len(self._projectQueue)>0:
+			project = self._projectQueue[0]
+			phases = self._projectQueue[1]
+			projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
+			
+			projectXGanttWidgetItem._dbEntry = project
+			project.projectChanged.connect(projectXGanttWidgetItem.projectChanged)
+			
+			projectXGanttWidgetItem.setName(project._name)
+			
+			
+			project._calendarWidgetItem = projectXGanttWidgetItem
+			
+			viewItem = projectXGanttWidgetItem.viewItem()
+			#viewItem.setText(project._name)
+			
+			projectXGanttWidgetItem.phases = phases
+			
+			
+			projectXGanttWidgetItem.setHidden(True)
+			self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+			
+			
+			#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
+			#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
+	
+			project._phases = phases
+			
+			#for phase in project
+			
+			for phase in phases:
+				#print phase._idphases
+				self.AddPhase(projectXGanttWidgetItem, phase)
+			
+			projectXGanttWidgetItem.adjustRange()
+	
+			self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
+			projectXGanttWidgetItem.setExpanded(1)
+			
+			del self._projectQueue[1]
+			del self._projectQueue[0]
 		
 		#if project starts before view start date
 		

@@ -7,18 +7,21 @@ from DPSPipeline.database import statuses
 from DPSPipeline.database import sequences
 from DPSPipeline.database import shots
 from DPSPipeline.database import version
+from DPSPipeline.database import connection
 
 from PyQt4.QtCore   import QDate
-from datetime import datetime
+from datetime import datetime,timedelta
 
 myVersion = version.Version("0.0.16")
 
 #TEST SETTINGS
-testing = 1
+
+testing = 0
 noDB = 0
 noSaving = 0
 autologin = 1
 localDB = 0
+remote = 0
 
 #freezeDBUpdates = 1
 

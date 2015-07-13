@@ -27,7 +27,7 @@ class MainWindow(QtGui.QMainWindow):
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
 
-        sharedDB.lastUpdate = datetime.now()
+        #sharedDB.lastUpdate = datetime.now()
 
         if not sharedDB.noDB:
             try:
@@ -87,7 +87,7 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
         #self.CreateProjectWidget()
 	self.CreateProjectViewWidget()
-        sharedDB.mySQLConnection.SaveToDatabase()
+        #sharedDB.mySQLConnection.SaveToDatabase()
         
     def CreateProjectWidget(self):
 	
@@ -129,7 +129,7 @@ class MainWindow(QtGui.QMainWindow):
 	"""
 	if ( action.text() == 'Create Project' ):            
 	    self.CreateProjectWidget()
-    
+
 def my_excepthook(type , value, tback):
     # Custom exception handling here
     errorMessage = QtGui.QMessageBox()
@@ -144,10 +144,10 @@ def my_excepthook(type , value, tback):
     errorMessage.exec_()
     
     # then call the default handler
-    #sys.__excepthook__(type, value, tback)
+    sys.__excepthook__(type, value, tback)
     
 def main():
-        sys.excepthook = my_excepthook    
+        #sys.excepthook = my_excepthook    
         app = QtGui.QApplication(sys.argv)
         sharedDB.app = app
         

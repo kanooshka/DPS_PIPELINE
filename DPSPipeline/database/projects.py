@@ -12,11 +12,13 @@ from PyQt4.QtCore import QObject
 #timestamp
 from datetime import datetime
 
+
 class Projects(QObject):
 
 	projectChanged = QtCore.pyqtSignal(QtCore.QString)
+	projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _phases = [], _sequences = [],_updated = 0,_new = 1,_description = ''):
+	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50,_updated = 0,_new = 1,_description = ''):
 		super(QObject, self).__init__()
 		
 		# define custom properties
@@ -36,21 +38,24 @@ class Projects(QObject):
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		self._phases                 = _phases
-		self._sequences              = _sequences
+		self._phases                 = []
+		self._sequences              = []
 		
 		self._new		     = _new
 		
 		self._lastSelectedSequenceNumber = '-1'
 		self._calendarWidgetItem = ''
 		
-		self.GetSequencesFromProject()
+		#self.GetSequencesFromProject()
 		
 		if self._idstatuses == 3 or self._idstatuses == 5:
 			self._hidden = True
 			
+		self.projectAdded.emit(str(self._idprojects))
+			
 	def Save(self):
 		
+		#print self._name
 		if self._updated:
 			#print self._name+" Updated in DB!"			
 			self.UpdateProjectInDB()
@@ -69,7 +74,7 @@ class Projects(QObject):
 		
 		sharedDB.mySQLConnection.closeConnection()
 		
-	def GetSequencesFromProject(self):
+	'''def GetSequencesFromProject(self):
 		self._sequences = []
 		
 		if not sharedDB.noDB:
@@ -82,7 +87,7 @@ class Projects(QObject):
 				sharedDB.mySequences.append(seq)
 		else:
 			self._sequences.append(sequences.Sequences(_idsequences = 1,_idprojects = self._idprojects ,_number = '010',_idstatuses = 1,_description = 'This is the sequence where things go BOOM',_timestamp = datetime.now(),_new = 0))
-	
+	'''
 	def AddSequenceToProject(self, newName):
 		if not sharedDB.noDB:
 			seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
@@ -148,7 +153,7 @@ class Projects(QObject):
 	def emitProjectChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.projectChanged.emit(str(self._idprojects))
-			
+'''			
 def GetActiveProjects():
 	activeProjects = []
 	
@@ -163,3 +168,4 @@ def GetActiveProjects():
 		activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatuses = 1,_new = 0,_fps = 400,_due_date = datetime.today(),_description = 'Blahty Blahty test test WEEEEEEE!!!'))
 
 	return activeProjects
+'''

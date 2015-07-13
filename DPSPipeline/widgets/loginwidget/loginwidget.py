@@ -3,11 +3,19 @@ import sharedDB
 import projexui
 from DPSPipeline.database.connection import Connection
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
+'''
+class InitialLoadThread(QtCore.QThread):
 
+    def run(self):
+	#print sharedDB.mySQLConnection._user
+	#sharedDB.mySQLConnection.testConnection()
+	#sharedDB.mySQLConnection.UpdateDatabaseClasses()
+	#sharedDB.calendarview.InitialProjectAdd()
+'''	
 class LoginWidget(QWidget):
    
     def __init__( self, parent = None ):
@@ -25,7 +33,8 @@ class LoginWidget(QWidget):
         # define custom properties
         
         self._backend               = None
-        
+       # self._InitialLoadThread = InitialLoadThread()
+	
         #connects buttons
         self.loginButton.clicked.connect(self.Login)
 	self.user.returnPressed.connect(self.Login)
@@ -39,16 +48,19 @@ class LoginWidget(QWidget):
 	
     def Login(self):        
         #print "Logging In"	
-	sharedDB.connection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
+	sharedDB.mySQLConnection = Connection(_user = str(self.user.text()), _password = str(self.password.text()))
 	
-	if (self.remoteAccess.isChecked()):
-	    sharedDB.connection.setHost("remote")
+	if (self.remoteAccess.isChecked() or sharedDB.remote):
+	    sharedDB.mySQLConnection.setHost("remote")
 	else:
-	    sharedDB.connection.setHost("local")	
+	    sharedDB.mySQLConnection.setHost("local")	
 	
-	if sharedDB.connection.testConnection():
-	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))	    
-	    sharedDB.connection.UpdateDatabaseClasses()
+	if sharedDB.mySQLConnection.testConnection():
+	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))
+	    sharedDB.mySQLConnection.UpdateDatabaseClasses()
+	    sharedDB.mySQLConnection.SaveToDatabase()
+	    #self._InitialLoadThread.finished.connect(sharedDB.mySQLConnection.SaveToDatabase)
+	    #self._InitialLoadThread.start()	    
 	    self.close()
 	    sharedDB.mainWindow.EnableMainWindow()
 	else:

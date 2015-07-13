@@ -11,7 +11,7 @@ class Sequences(QObject):
 
 	sequenceChanged = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 0, _shots = [],_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
+	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		
@@ -23,7 +23,7 @@ class Sequences(QObject):
 		self._description	     = _description
 		self._timestamp		     = _timestamp
 		
-		self._shots                 = _shots
+		self._shots                 = []
 		self._updated                = _updated
 		self._type                   = "sequence"
 		self._hidden                 = False
@@ -31,7 +31,7 @@ class Sequences(QObject):
 		self._new		     = _new
 		self._lastSelectedShotNumber = '-1'
 		
-		self.GetShotsFromSequence()
+		#self.GetShotsFromSequence()
 		
 		
 		#if self._idstatuses == 3 or self._idstatuses == 5:
@@ -65,7 +65,7 @@ class Sequences(QObject):
 		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+str(self._description)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
 		print ("Updating sequence in DB: "+str(self._idsequences))
 	
-		
+	'''	
 	def GetShotsFromSequence(self):
 		self._shots = []
 		
@@ -79,15 +79,13 @@ class Sequences(QObject):
 				sharedDB.myShots.append(shot)
 		else:
 			self._shots.append(shots.Shots(_idshots = 1,_startframe = 10, _endframe= 230,_idsequences = self._idsequences,_idprojects = self._idprojects ,_number = '0010',_idstatuses = 1,_description = 'YES! THIS IS A SHOT!',_timestamp = datetime.now(),_new = 0))
-	
+	'''
 	
 	def AddShotToSequence(self, newName):
 		if not sharedDB.noDB:
 			shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101)
 			self._shots.append(shot)
 			sharedDB.myShots.append(shot)
-			#self._shots[len(self._shots)-1].Save(datetime.now())
-			#sharedDB.mySQLConnection.closeConnection()
 	
 	def SetValues(self,_idsequences = 0, _number = '', _idstatuses = 1, _description = '', _timestamp = ''):
 		print ("Downloaded updated for Sequence '"+str(self._number)+"'")
@@ -98,14 +96,7 @@ class Sequences(QObject):
 		self._description               = _description
 		self._timestamp                    = _timestamp
 
-		
-		#update views containing project
-		#update calendar view
-		#self.UpdateCalendarView()
 		self.emitSequenceChanged()
-		#self.UpdateProjectView()
-		##if current project changed, update values
-		##else just update project list
 	
 	def emitSequenceChanged( self ):
 		if ( not self.signalsBlocked() ):
