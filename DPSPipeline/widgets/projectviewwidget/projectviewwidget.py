@@ -72,7 +72,7 @@ class ProjectViewWidget(QWidget):
 	self.setPrivelages()
 	
 	#connects signals
-	sharedDB.mySQLConnection.newProjectSignal.connect(self.propogateProjectNames)
+	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.LoadShotNames)
 	
@@ -80,7 +80,7 @@ class ProjectViewWidget(QWidget):
 	#self.createButton.clicked.connect(self.CreateProject)
 	#self.cancelButton.clicked.connect(self.cancel)
 	self.propogateStatuses()
-	self.propogateProjectNames()		
+	#self.propogateProjectNames()		
 	
 	#connect project settings
 	self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadProjectValues)
@@ -178,22 +178,49 @@ class ProjectViewWidget(QWidget):
 
 	for p in range(0,len(sharedDB.myProjects)):
 	    project = sharedDB.myProjects[p]
-	    #print project._name
-	    #item = QtGui.QListWidgetItem(project._name)
-	    
-	    self.projectName.addItem(project._name,QVariant(project))
-	    self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
-	    project.projectChanged.connect(self.projectChanged)
-	    #self.projectName[p].setToolTip(p._idprojects)
+	    if not project._hidden:
+		#print project._name
+		#item = QtGui.QListWidgetItem(project._name)
+		
+		self.projectName.addItem(project._name,QVariant(project))
+		#print "setting project "+str(project._name)+"'s tooltip to "+str(project._idprojects)
+		self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
+		project.projectChanged.connect(self.projectChanged)
 	
 	self.LoadProjectValues()
 	
 	self.refreshTasks()
 	
-	def getCurrentProjectID():
+    def getCurrentProjectID():
 		return self.projectName.itemData(p, Qt.ToolTipRole).toString()
 		
-	    
+    def AddProjectNameToList(self,projectid):
+	
+	projectMatch = None
+	#find project with id
+	for proj in sharedDB.myProjects:
+		if str(proj._idprojects) == (projectid):
+			projectMatch = proj
+			break
+		
+	if projectMatch is not None and not projectMatch._hidden:
+		unique = 1
+		#iterate through projectname bar
+		for x in range(0,self.projectName.count()):
+		    
+		    if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(projectid):
+			unique = 0
+			break
+		    
+		    
+		if unique:		
+			self.projectName.addItem(projectMatch._name,QVariant(projectMatch))
+			#print "setting project "+str(projectMatch._name)+"'s tooltip to "+str(projectMatch._idprojects)
+			self.projectName.setItemData(self.projectName.count()-1,projectMatch._idprojects, Qt.ToolTipRole)
+			projectMatch.projectChanged.connect(self.projectChanged)
+
+    
+
     def propogateStatuses(self):
 	for status in sharedDB.myStatuses:
 	    self.projectStatus.addItem(status._name, QVariant(status))
@@ -236,35 +263,39 @@ class ProjectViewWidget(QWidget):
 	self.blockSignals(True)
 	
 	if sharedDB.myProjects:
-	    self._currentProject = sharedDB.myProjects[self.projectName.currentIndex()]		
 	    
-	    self.newSequenceNumber.setValue(10)
-	    #set FPS
-	    self.fps.setValue(self._currentProject._fps)
-	    #set Path
-	    if self._currentProject._folderLocation is not None:
-		self.projectPath.setText(self._currentProject._folderLocation)
-	    else:
-		self.projectPath.setText('')
-	    #set Status
-	    self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
-	    #set res
-	    self.renderWidth.setValue(self._currentProject._renderWidth)
-	    self.renderHeight.setValue(self._currentProject._renderHeight)
-	    #set Due Date
-	    self.dueDate.setDate(self._currentProject._due_date)
-	    #set Description
-	    #print self._currentProject._description
-	    if self._currentProject._description is not None:
-		    self.projectDescription.setText(self._currentProject._description)
-	    else:
-		    self.projectDescription.setText('')
-		    
+	    for project in sharedDB.myProjects:	
+		if str(project._idprojects) == self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString():
+			self._currentProject = project
 	    
-	    self.LoadSequenceNames()
-
-	    self._blockUpdates = 0
-	    self.blockSignals(False)
+	    if self._currentProject is not None:
+		self.newSequenceNumber.setValue(10)
+		#set FPS
+		self.fps.setValue(self._currentProject._fps)
+		#set Path
+		if self._currentProject._folderLocation is not None:
+		    self.projectPath.setText(self._currentProject._folderLocation)
+		else:
+		    self.projectPath.setText('')
+		#set Status
+		self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+		#set res
+		self.renderWidth.setValue(self._currentProject._renderWidth)
+		self.renderHeight.setValue(self._currentProject._renderHeight)
+		#set Due Date
+		self.dueDate.setDate(self._currentProject._due_date)
+		#set Description
+		#print self._currentProject._description
+		if self._currentProject._description is not None:
+			self.projectDescription.setText(self._currentProject._description)
+		else:
+			self.projectDescription.setText('')
+			
+		
+		self.LoadSequenceNames()
+    
+	self._blockUpdates = 0
+	self.blockSignals(False)
 	
     
     def AddSequence(self):

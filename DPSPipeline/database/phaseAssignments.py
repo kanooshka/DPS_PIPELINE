@@ -1,12 +1,16 @@
 from DPSPipeline.database.connection import Connection
 import socket
 import sharedDB
-from PyQt4.QtCore import QDate
+from PyQt4 import QtCore
+from PyQt4.QtCore import QDate, QObject
 from datetime import datetime
 
-class PhaseAssignments():
-
-	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = 0,_startdate = '',_enddate = '',_idstatuses = 0,_progress = 0.0,_archived = 0,_updated=0):
+class PhaseAssignments(QObject):
+	phaseAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
+	
+	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 0,_progress = 0.0,_archived = 0,_updated=0):
+		
+		super(QObject, self).__init__()
 		
 		# define custom properties
 		self._idphaseassignments           = _idphaseassignments
@@ -20,10 +24,11 @@ class PhaseAssignments():
 		self._updated                      = _updated
 		self._name                         = ''
 		self._type                         = "phaseassignment"
-		
-		#self.Save()
+
+		self.phaseAssignmentAdded.emit(str(self._idprojects))
 		
 	def Save(self):		
+
 		if self._updated:
 		
 			updatedBy = socket.gethostbyname(socket.gethostname())

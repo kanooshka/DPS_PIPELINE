@@ -147,7 +147,7 @@ def my_excepthook(type , value, tback):
     sys.__excepthook__(type, value, tback)
     
 def main():
-        #sys.excepthook = my_excepthook    
+        sys.excepthook = my_excepthook    
         app = QtGui.QApplication(sys.argv)
         sharedDB.app = app
         

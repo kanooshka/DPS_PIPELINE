@@ -18,7 +18,8 @@ class WaitTimer(QtCore.QThread):
 
 	def run(self):
 		
-		sharedDB.calendarview.AddProjectSignal.emit()
+		if sharedDB.calendarview is not None:
+			sharedDB.calendarview.AddProjectSignal.emit()
 		
 		time.sleep(.5)
 
@@ -76,7 +77,11 @@ class CalendarView(QObject):
 		for project in sharedDB.myProjects:
 			if str(project._idprojects) == str(idprojects):
 				#print "NewProject!: "+str(idprojects)
-				myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
+				if project._phases:
+					myPhaseAssignments = project._phases
+				else:
+					myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
+				
 				myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
 				if (not project._hidden):
 				    #self.AddProject(project,myPhaseAssignments)

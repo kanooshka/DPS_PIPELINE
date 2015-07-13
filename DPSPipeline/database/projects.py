@@ -16,9 +16,9 @@ from datetime import datetime
 class Projects(QObject):
 
 	projectChanged = QtCore.pyqtSignal(QtCore.QString)
-	projectAdded = QtCore.pyqtSignal(QtCore.QString)
+	#projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idprojects = 0, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50,_updated = 0,_new = 1,_description = ''):
+	def __init__(self,_idprojects = -1, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50,_phases = [], _updated = 0,_new = 1,_description = ''):
 		super(QObject, self).__init__()
 		
 		# define custom properties
@@ -38,7 +38,7 @@ class Projects(QObject):
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		self._phases                 = []
+		self._phases                 = _phases
 		self._sequences              = []
 		
 		self._new		     = _new
@@ -46,12 +46,19 @@ class Projects(QObject):
 		self._lastSelectedSequenceNumber = '-1'
 		self._calendarWidgetItem = ''
 		
+		if self._new:
+			self.AddProjectToDB()
+			self._new = 0
+			sharedDB.myProjects.append(self)
+			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
+			print "Project '"+self._name+"' Added to Database!"
+
 		#self.GetSequencesFromProject()
 		
-		if self._idstatuses == 3 or self._idstatuses == 5:
+		if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
 			self._hidden = True
 			
-		self.projectAdded.emit(str(self._idprojects))
+		#self.projectAdded.emit(str(self._idprojects))
 			
 	def Save(self):
 		
@@ -61,11 +68,10 @@ class Projects(QObject):
 			self.UpdateProjectInDB()
 			self._updated = 0
 			print "Project '"+self._name+"' Updated in Database!"
-		elif self._new:			
+		'''elif self._new:			
 			self.AddProjectToDB()
 			self._new = 0
-			#print self._name+" Added to Database!"
-			print "Project '"+self._name+"' Added to Database!"
+			print "Project '"+self._name+"' Added to Database!"'''
 		for seq in self._sequences:
 			seq.Save()
 			
@@ -130,6 +136,11 @@ class Projects(QObject):
 		self._due_date               =_due_date
 		self._description	     = _description
 		#self._loadedChanges	     = 1
+		
+		if self._idstatuses == 3 or self._idstatuses == 4 or self._idstatuses == 5:
+			self._hidden = True
+		else:
+			self._hidden = False
 		
 		#update views containing project
 		#update calendar view

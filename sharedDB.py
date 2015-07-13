@@ -19,7 +19,7 @@ myVersion = version.Version("0.0.16")
 testing = 0
 noDB = 0
 noSaving = 0
-autologin = 1
+autologin = 0
 localDB = 0
 remote = 0
 
@@ -43,8 +43,8 @@ myProjectViewWidget = ''
 
 lastUpdate = datetime(1942, 1, 1)
 
-calendarview = ''
-mySQLConnection = ''
+calendarview = None
+mySQLConnection = None
 currentUser = ''
 app = ''
 mainWindow  = ''
