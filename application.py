@@ -43,7 +43,7 @@ class MainWindow(QtGui.QMainWindow):
             sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
             sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
             self.EnableMainWindow()
-	    sharedDB.mySQLConnection.closeConnection()
+	    #sharedDB.mySQLConnection.closeConnection()
     
     def EnableMainWindow(self):
         #self.mw = QtGui.QMainWindow() # mw = MainWindow

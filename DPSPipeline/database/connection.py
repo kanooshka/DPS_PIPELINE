@@ -143,23 +143,23 @@ class AutoCheckDatabase(QtCore.QThread):
 				
 		if sharedDB.myVersion.CheckVersion():
 	
-			try:				
-				if not sharedDB.pauseSaving:
-				
-					#timestamp = datetime.now()
-					
-					for proj in sharedDB.myProjects :
+			#try:				
+			if not sharedDB.pauseSaving:
 			
-					    proj.Save()
-					
-					#print "Updating from Database!"
-					sharedDB.mySQLConnection.UpdateFromDatabase()
-					sharedDB.mySQLConnection.closeConnection()
-			except:
+				#timestamp = datetime.now()
+				
+				for proj in sharedDB.myProjects :
+		
+				    proj.Save()
+				
+				#print "Updating from Database!"
+				sharedDB.mySQLConnection.UpdateFromDatabase()
+				#sharedDB.mySQLConnection.closeConnection()
+			'''except:
 				errorMessage = QtGui.QMessageBox()
 				errorMessage.setWindowTitle("ERROR!")
 				errorMessage.setText("An error occured when save / loading from database, please contact support.")
-				errorMessage.exec_()
+				errorMessage.exec_()'''
 		else:
 			sharedDB.mySQLConnection.wrongVersionSignal.emit()
 			
@@ -263,7 +263,7 @@ class Connection(QObject):
 		
 		self._cursor.close()
 		
-		#self.closeConnection()
+		self.closeConnection()
 
 		return rows
 

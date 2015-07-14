@@ -86,7 +86,7 @@ class Projects(QObject):
 		for phase in self._phases:
 			phase.Save()
 		
-		sharedDB.mySQLConnection.closeConnection()
+		#sharedDB.mySQLConnection.closeConnection()
 		
 	'''def GetSequencesFromProject(self):
 		self._sequences = []
