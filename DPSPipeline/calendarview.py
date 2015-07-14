@@ -78,7 +78,7 @@ class CalendarView(QObject):
 			if str(project._idprojects) == str(idprojects):
 				#print "NewProject!: "+str(idprojects)
 				if project._phases:
-					print "PHASE EXISTS!"
+					#print "PHASE EXISTS!"
 					myPhaseAssignments = project._phases
 				else:
 					myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)

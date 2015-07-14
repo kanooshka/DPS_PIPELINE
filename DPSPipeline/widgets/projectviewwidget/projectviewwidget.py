@@ -19,28 +19,27 @@ from DPSPipeline.database import projects
 
 class CheckForImagePath(QtCore.QThread):
 
-    def __init__(self, sentpath = '', parent=None):
-	super(QtCore.QThread, self).__init__()
-	
-	self.sentpath = sentpath
-    
-
     def run(self):
 	#search for image
+	sentpath = sharedDB.myProjectViewWidget.shotImageDir
+	
 	try:
-	    if len(os.listdir(self.sentpath)):
-		sharedDB.myProjectViewWidget.imagePath = ''
-		newImage = max(glob.iglob(os.path.join(self.sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
 		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-
-		sharedDB.myProjectViewWidget.imagePath = newImage
+		print sentpath
+		print newImage
+		if len(newImage)>3:
+			sharedDB.myProjectViewWidget.shotImagePath = newImage
+			sharedDB.myProjectViewWidget.shotImageFound.emit()
 		
 	except:
 	    print "Image file not found"
 	    
 
 class ProjectViewWidget(QWidget):
-   
+    shotImageFound = QtCore.pyqtSignal()
+    refreshProjectValuesSignal = QtCore.pyqtSignal()
+    
     def __init__( self, parent = None ):
     
 	super(ProjectViewWidget, self).__init__( parent )
@@ -52,7 +51,10 @@ class ProjectViewWidget(QWidget):
 	self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
 	self.cfip = CheckForImagePath()
-	self.cfip.finished.connect(self.setImagePath)
+	#self.cfip.finished.connect(self.setImagePath)
+	self.shotImageFound.connect(self.setImagePath)
+	self.shotImagePath = projexui.resources.find('img/DP/noImage.png')
+	self.shotImageDir = ''
 	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
@@ -75,6 +77,7 @@ class ProjectViewWidget(QWidget):
 	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.LoadShotNames)
+	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
 	
 	#connects buttons
 	#self.createButton.clicked.connect(self.CreateProject)
@@ -108,7 +111,7 @@ class ProjectViewWidget(QWidget):
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
 	self.addShot.clicked.connect(self.AddShot)
-	
+	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
 	
 	#connect task settings
 	    
@@ -212,14 +215,16 @@ class ProjectViewWidget(QWidget):
 			unique = 0
 			break
 		    
-		    
+				    
 		if unique:		
+			
 			self.projectName.addItem(projectMatch._name,QVariant(projectMatch))
 			#print "setting project "+str(projectMatch._name)+"'s tooltip to "+str(projectMatch._idprojects)
 			self.projectName.setItemData(self.projectName.count()-1,projectMatch._idprojects, Qt.ToolTipRole)
 			projectMatch.projectChanged.connect(self.projectChanged)
-
-    
+		
+		if self.projectName.count() == 1:
+			self.refreshProjectValuesSignal.emit()
 
     def propogateStatuses(self):
 	for status in sharedDB.myStatuses:
@@ -434,6 +439,7 @@ class ProjectViewWidget(QWidget):
 	self.shotNumber.clear()
 	self._currentShot = None
 	self.shotDescription.setText('')
+	self.shotNotes.setText('')
 	self.shotStatus.setCurrentIndex(0)
 	
 	if self._currentSequence is not None:
@@ -478,28 +484,29 @@ class ProjectViewWidget(QWidget):
 	seq = self._currentSequence
 	shot= self._currentShot
 	d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
+	
 	myPixmap = QtGui.QPixmap(self._noImage)
+	self.shotImage.setPixmap(myPixmap)
 	#if os.path.isdir(d):
 	if shot is not None:	
 		if len(self.projectPath.text()):
-		    
-		    #self.cfip = CheckForImagePath(d)
-		    #self.cfip.start()
-		    try:
-			newImage = max(glob.iglob(os.path.join(self.sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		    self.shotImageDir = d
+		    self.cfip.start()
+		    '''try:
+			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
 			if len(newImage)>3:
 			    myPixmap = QtGui.QPixmap(newImage)    
 		    except:
-			myPixmap = QtGui.QPixmap(self._noImage)
+			myPixmap = QtGui.QPixmap(self._noImage)'''
 	
-	self.shotImage.setPixmap(myPixmap)
+	
     
     def setImagePath(self):
 	#print len(newImage)
-	if len(newImage)>3:
-	    myPixmap = QtGui.QPixmap(newImage)    
-	else:
-	    myPixmap = QtGui.QPixmap(self._noImage)
+	#if len(newImage)>3:
+	myPixmap = QtGui.QPixmap(self.shotImagePath)    
+	#else:
+	    #myPixmap = QtGui.QPixmap(self._noImage)
 	    
 	self.shotImage.setPixmap(myPixmap)    
     
@@ -510,6 +517,7 @@ class ProjectViewWidget(QWidget):
 	self.endFrame.setEnabled(v)
 	self.shotImage.setEnabled(v)
 	self.shotDescription.setEnabled(v)
+	self.shotNotes.setEnabled(v)
     
     def LoadShotValues(self):				
 		    
@@ -547,6 +555,17 @@ class ProjectViewWidget(QWidget):
 		#set Description
 		if self._currentShot is not None and self._currentShot._description is not None:
 		    self.shotDescription.setText(self._currentShot._description)
+		
+		
+		if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
+			#print "Setting shot Note text to default"
+			self.shotNotes.setText('Anim-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-')
+		else:
+			#print self._currentShot._shotnotes
+			#print "Loading shot note text"
+			self.shotNotes.setText(self._currentShot._shotnotes)
+		    
+		    
 	    
 	self.refreshTasks()
 	self._blockUpdates = 0
@@ -608,7 +627,14 @@ class ProjectViewWidget(QWidget):
 		if not (self.shotDescription.toPlainText() == self._currentShot._description):
 			self._currentShot._description = self.shotDescription.toPlainText()
 			self._currentShot._updated = 1
-			
+
+    def SaveShotNotes(self):
+	#if not self._blockUpdates:
+	if self._currentShot is not None:
+	    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
+		    self._currentShot._shotnotes = self.shotNotes.toPlainText()
+		    self._currentShot._updated = 1
+	
     def refreshTasks(self):
 	self.taskTable.clear()
 	'''for x in range(0, len(sharedDB.myTasks)):

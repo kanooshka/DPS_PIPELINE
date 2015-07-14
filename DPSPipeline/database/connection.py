@@ -3,6 +3,7 @@ import sharedDB
 #import threading
 from datetime import datetime,timedelta
 import time
+import socket
 
 import atexit
 
@@ -29,6 +30,9 @@ class AutoParseProjectsThread(QtCore.QThread):
 				#iterate through project list
 				for proj in sharedDB.myProjects:
 					#if id exists update entry
+					if str(sharedDB.mySQLConnection.myIP) == str(row[10]):
+						existed = True
+						break
 					if str(proj._idprojects) == str(row[0]):
 						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
 						existed = True
@@ -58,6 +62,9 @@ class AutoParseProjectsThread(QtCore.QThread):
 				existed = False
 				for seq in sharedDB.mySequences:			
 					#if id exists update entry
+					if str(sharedDB.mySQLConnection.myIP) == str(row[7]):
+						existed = True
+						break
 					if str(seq._idsequences) == str(row[0]):
 						seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
 						existed = True
@@ -102,8 +109,11 @@ class AutoParseProjectsThread(QtCore.QThread):
 				for shot in sharedDB.myShots:			
 					#if id exists update entry
 					#if str(shot._number) == str(row[1]) and str(shot._idprojects) == str(row[7]) and str(shot._idsequences) == str(row[8]):
-					if str(shot._idshots) == str(row[0]):
-						shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6])
+					if str(sharedDB.mySQLConnection.myIP) == str(row[10]):
+						existed = True
+						break
+					if str(shot._idshots) == str(row[0]):						
+						shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6], _shotnotes = row[11])
 						existed = True
 						break
 					
@@ -111,7 +121,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 				#create project
 					print "New SHOT found in database CREATING shot: "+str(row[0])
 					#create instance of shot class				
-					myShot =sharedDB.shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _new = 0)
+					myShot =sharedDB.shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _new = 0, _shotnotes = row[11])
 					#add shot to shot list
 					sharedDB.myShots.append(myShot)
 					#iterate through sequences
@@ -190,6 +200,8 @@ class Connection(QObject):
 		self._remote = 0
 		self._autoUpdateFrequency = 2
 	
+		self.myIP = socket.gethostbyname(socket.gethostname())
+		
 		self._lastInsertId = ''
 		
 		self._projectsToBeParsed = []
@@ -358,15 +370,15 @@ class Connection(QObject):
 
 	def CheckForNewEntries (self):
 
-		projrows = self.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		projrows = self.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		projrows.sort(key=lambda x: x[2])
 		self._projectsToBeParsed.extend(projrows)		
 			
-		seqrows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp, idprojects FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		seqrows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		self._sequencesToBeParsed.extend(seqrows)		
 						
 				
-		shotrows = sharedDB.mySQLConnection.query("SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		shotrows = sharedDB.mySQLConnection.query("SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		self._shotsToBeParsed.extend(shotrows)
 		
 		

@@ -1,5 +1,5 @@
 from DPSPipeline.database.connection import Connection
-import socket
+#import socket
 import sharedDB
 from PyQt4 import QtCore
 from PyQt4.QtCore import QDate, QObject
@@ -30,12 +30,9 @@ class PhaseAssignments(QObject):
 		
 	def Save(self):		
 
-		if self._updated:
-		
-			updatedBy = socket.gethostbyname(socket.gethostname())
+		if self._updated:			
 			
-			
-			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, ip, archived) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases) +"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(updatedBy) +"', '0');","commit")
+			sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, ip, archived) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases) +"', '"+str(self._startdate) +"', '"+str(self._enddate) +"', '"+str(sharedDB.mySQLConnection.myIP) +"', '0');","commit")
 
 			self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 

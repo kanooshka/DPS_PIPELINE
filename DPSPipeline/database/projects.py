@@ -87,21 +87,7 @@ class Projects(QObject):
 			phase.Save()
 		
 		#sharedDB.mySQLConnection.closeConnection()
-		
-	'''def GetSequencesFromProject(self):
-		self._sequences = []
-		
-		if not sharedDB.noDB:
-			rows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp FROM sequences WHERE idprojects = '"+str(self._idprojects)+"'")
-			
-			for row in rows:
-				#print row[0]
-				seq = sequences.Sequences(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4],_new = 0,_idprojects = self._idprojects)
-				self._sequences.append(seq)
-				sharedDB.mySequences.append(seq)
-		else:
-			self._sequences.append(sequences.Sequences(_idsequences = 1,_idprojects = self._idprojects ,_number = '010',_idstatuses = 1,_description = 'This is the sequence where things go BOOM',_timestamp = datetime.now(),_new = 0))
-	'''
+
 	def AddSequenceToProject(self, newName):
 		if not sharedDB.noDB:
 			seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
@@ -113,14 +99,14 @@ class Projects(QObject):
 	
 	def UpdateProjectInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(self._name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+str(self._description)+"' WHERE idprojects = "+str(self._idprojects)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(self._name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+str(self._description)+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idprojects = "+str(self._idprojects)+";","commit")
 		#print ("Updating project in DB: "+str(self._idprojects))
 	
 	def AddProjectToDB (self):
 		
 		#print ("Adding project to DB: "+str(self._idprojects))
 
-		sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, fps) VALUES ('"+str(self._name)+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+str(self._description)+"', '"+str(self._fps)+"');","commit")
+		sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, fps, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._name)+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+str(self._description)+"', '"+str(self._fps)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
 		
 		self._idprojects = sharedDB.mySQLConnection._lastInsertId
 	
