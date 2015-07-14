@@ -78,16 +78,21 @@ class CalendarView(QObject):
 			if str(project._idprojects) == str(idprojects):
 				#print "NewProject!: "+str(idprojects)
 				if project._phases:
+					print "PHASE EXISTS!"
 					myPhaseAssignments = project._phases
 				else:
 					myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
 				
-				myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
+				
 				if (not project._hidden):
 				    #self.AddProject(project,myPhaseAssignments)
+				    #tmp = []
+				   # tmp.append(project)
+				    #tmp.append(myPhaseAssignments)
+				    #self._projectQueue.append(project)
+				    #self._projectQueue.append(myPhaseAssignments)
 				    self._projectQueue.append(project)
-				    self._projectQueue.append(myPhaseAssignments)
-				    
+				    self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
 				
 	
 	
@@ -96,7 +101,8 @@ class CalendarView(QObject):
 		#global myXGanttWidget
 		if len(self._projectQueue)>0:
 			project = self._projectQueue[0]
-			phases = self._projectQueue[1]
+			phases = project._phases
+			
 			projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
 			
 			projectXGanttWidgetItem._dbEntry = project
@@ -113,9 +119,30 @@ class CalendarView(QObject):
 			projectXGanttWidgetItem.phases = phases
 			
 			
-			projectXGanttWidgetItem.setHidden(True)
-			self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+			#projectXGanttWidgetItem.setHidden(True)
 			
+			#find where to insert item
+			index = 0
+			'''duedate = QDate(project._due_date)
+			#print phases
+			for p in phases:
+				#print p._idphases
+				if str(p._idphases) == "16":
+					#print duedate
+					duedate = QDate(p._enddate)
+					#print duedate
+					break
+			'''
+			#print self._myXGanttWidget.topLevelItemCount()
+			for x in range(0,self._myXGanttWidget.topLevelItemCount()):
+				index = x
+				if self._myXGanttWidget.topLevelItem(x)._dateEnd >= project._due_date:
+					#print  duedate.toString("MM.dd.yyyy") + " less than " + self._myXGanttWidget.topLevelItem(x)._dateEnd.toString("MM.dd.yyyy")					
+					break				
+				
+			#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
+			self._myXGanttWidget.insertTopLevelItem(index,projectXGanttWidgetItem)
+			#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 			
 			#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
 			#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
@@ -125,7 +152,7 @@ class CalendarView(QObject):
 			#for phase in project
 			
 			for phase in phases:
-				#print phase._idphases
+				#if str(phase._idphases) == "16":
 				self.AddPhase(projectXGanttWidgetItem, phase)
 			
 			projectXGanttWidgetItem.adjustRange()
@@ -133,7 +160,6 @@ class CalendarView(QObject):
 			self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
 			projectXGanttWidgetItem.setExpanded(1)
 			
-			del self._projectQueue[1]
 			del self._projectQueue[0]
 		
 		#if project starts before view start date
@@ -183,7 +209,7 @@ class CalendarView(QObject):
 		
 		parent.addChild(childItem)
 		
-		if (sharedDB.currentUser[0]._idDepartment == 0 or department == sharedDB.currentUser[0]._idDepartment):
+		if (department == 0 or department == sharedDB.currentUser[0]._idDepartment):
 			childItem.setHidden(False)
 			parent.setHidden(False)
 		else:

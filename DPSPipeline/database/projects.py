@@ -39,6 +39,7 @@ class Projects(QObject):
 		self._hidden                 = False
 		
 		self._phases                 = _phases
+		#self._duePhase 		= []
 		self._sequences              = []
 		
 		self._new		     = _new
@@ -50,6 +51,13 @@ class Projects(QObject):
 			self.AddProjectToDB()
 			self._new = 0
 			sharedDB.myProjects.append(self)
+			
+			for phase in self._phases:
+				print phase._idphases
+				if str(phase._idphases) == "16":
+					self._due_date = phase._enddate
+					print self._due_date
+					break
 			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
 			print "Project '"+self._name+"' Added to Database!"
 
@@ -120,6 +128,7 @@ class Projects(QObject):
 		for phase in self._phases:
 			phase._idprojects = self._idprojects
 			phase._updated = 1
+			
 		
 		
 	

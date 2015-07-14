@@ -216,7 +216,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         """
         #if (sharedDB.freezeDBUpdates == 0):
         self._dbEntry._updated = 1
-        sharedDB.changesToBeSaved = 1
+        #sharedDB.changesToBeSaved = 1
         self._dbEntry._startdate = startdate.toPyDate()
         self._dbEntry._enddate = enddate.toPyDate()
         return 1

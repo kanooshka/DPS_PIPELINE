@@ -4,6 +4,7 @@ import sharedDB
 from PyQt4 import QtCore
 from PyQt4.QtCore import QDate, QObject
 from datetime import datetime
+import operator
 
 class PhaseAssignments(QObject):
 	phaseAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
@@ -58,6 +59,17 @@ def GetPhaseAssignmentsFromProject(idprojects):
 			#print row[0]
 			activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = row[0],_idphases = row[1],_idprojects = row[2],_startdate = row[3],_enddate = row[4],_progress = row[5],_archived = row[6],_idstatuses = row[7]))
 
+		activePhaseAssignments.sort(key=operator.attrgetter('_startdate'))
+		
+		for proj in sharedDB.myProjects:
+			if proj._idprojects == idprojects:
+				proj._phases = activePhaseAssignments
+				
+				for ass in activePhaseAssignments:
+					if str(ass._idphases) == "16":
+						proj._due_date = ass._enddate
+				
+	
 	else:
 		activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = 1,_idphases = 2,_idprojects = 1,_startdate = datetime.strptime('2015-02-20', "%Y-%m-%d").date(),_enddate = datetime.strptime('2015-02-24', "%Y-%m-%d").date(),_archived = 0,))
 		activePhaseAssignments.append(PhaseAssignments(_idphaseassignments = 2,_idphases = 3,_idprojects = 1,_startdate = datetime.strptime('2015-02-25', "%Y-%m-%d").date(),_enddate = datetime.strptime('2015-03-01', "%Y-%m-%d").date(),_archived = 0,))
