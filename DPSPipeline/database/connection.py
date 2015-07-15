@@ -30,11 +30,9 @@ class AutoParseProjectsThread(QtCore.QThread):
 				#iterate through project list
 				for proj in sharedDB.myProjects:
 					#if id exists update entry
-					if str(sharedDB.mySQLConnection.myIP) == str(row[10]):
-						existed = True
-						break
 					if str(proj._idprojects) == str(row[0]):
-						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[10]):
+							proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
 						existed = True
 						break
 				if not existed:
@@ -62,11 +60,10 @@ class AutoParseProjectsThread(QtCore.QThread):
 				existed = False
 				for seq in sharedDB.mySequences:			
 					#if id exists update entry
-					if str(sharedDB.mySQLConnection.myIP) == str(row[7]):
-						existed = True
-						break
+
 					if str(seq._idsequences) == str(row[0]):
-						seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[7]):
+							seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
 						existed = True
 						break
 			
@@ -109,11 +106,10 @@ class AutoParseProjectsThread(QtCore.QThread):
 				for shot in sharedDB.myShots:			
 					#if id exists update entry
 					#if str(shot._number) == str(row[1]) and str(shot._idprojects) == str(row[7]) and str(shot._idsequences) == str(row[8]):
-					if str(sharedDB.mySQLConnection.myIP) == str(row[10]):
-						existed = True
-						break
+
 					if str(shot._idshots) == str(row[0]):						
-						shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6], _shotnotes = row[11])
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[10]):
+							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6], _shotnotes = row[11])
 						existed = True
 						break
 					
