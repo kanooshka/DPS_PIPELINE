@@ -12,6 +12,7 @@ a.datas += [('projexui/resources/default/img/treeview/triangle_down.png', 'proje
 a.datas += [('projexui/resources/default/img/treeview/triangle_right.png', 'projexui/resources/default/img/treeview/triangle_right.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/folder.png', 'projexui/resources/default/img/DP/folder.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/noImage.png', 'projexui/resources/default/img/DP/noImage.png', 'DATA')]
+a.datas += [('projexui/resources/default/img/DP/pipe.gif', 'projexui/resources/default/img/DP/pipe.gif', 'DATA')]
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
@@ -22,4 +23,5 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False )
+          console=False,
+		  icon = 'pipe.ico')

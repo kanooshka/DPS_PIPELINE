@@ -3,10 +3,10 @@ from PyQt4 import Qt
 from PyQt4.QtCore import QDate
 from PyQt4 import QtGui, QtCore
 import traceback
-
 import sharedDB
 from datetime import datetime
-#import projexui.pyi_hook
+
+import projexui
 
 from DPSPipeline.calendarview import CalendarView
 from DPSPipeline.widgets.loginwidget import loginwidget
@@ -144,13 +144,15 @@ def my_excepthook(type , value, tback):
     errorMessage.exec_()
     
     # then call the default handler
-    sys.__excepthook__(type, value, tback)
+    #sys.__excepthook__(type, value, tback)
     
 def main():
         sys.excepthook = my_excepthook    
         app = QtGui.QApplication(sys.argv)
-        sharedDB.app = app
-        
+        path = projexui.resources.find('img/DP/pipe.gif')
+        app.setWindowIcon(QtGui.QIcon(path))
+        sharedDB.app = app        
+                
         win = MainWindow()
         
         #sharedDB.mainWindow.show()
