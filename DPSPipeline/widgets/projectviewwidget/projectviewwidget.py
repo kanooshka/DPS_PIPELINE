@@ -26,9 +26,10 @@ class CheckForImagePath(QtCore.QThread):
 	try:
 		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
 		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-		print sentpath
-		print newImage
+		#print sentpath
+		#print newImage
 		if len(newImage)>3:
+			print "Loading Shot Image: "+newImage
 			sharedDB.myProjectViewWidget.shotImagePath = newImage
 			sharedDB.myProjectViewWidget.shotImageFound.emit()
 		
