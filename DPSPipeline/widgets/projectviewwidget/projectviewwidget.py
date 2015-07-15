@@ -74,6 +74,8 @@ class ProjectViewWidget(QWidget):
 	
 	self.setPrivelages()
 	
+	self.headerlist = ["ShotID","Shot Name","Lay","Block","Anim","SetDress","Prep","FX","Lit","Rend","Comp"]
+	
 	#connects signals
 	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
@@ -411,29 +413,49 @@ class ProjectViewWidget(QWidget):
 		sequenceTreeItem.setForeground(0,QtGui.QColor('white'))		
 		self.progressList.addTopLevelItem(sequenceTreeItem)
 		
+		
+		
 		#add shots to sequence
-		for shot in sequence._shots:
-		    #adds list widget to qtreewidget slot
-		    shotTreeWidget = QtGui.QTreeWidget()
-		    shotWidgetItem = QtGui.QTreeWidgetItem()
-		    shotTreeItem = QtGui.QTreeWidgetItem()
+		for x in range(0, len(sequence._shots)):
+			shot=sequence._shots[x]		    
 		    
-		    shotWidgetItem.setText(0,("shot_"+shot._number))
-		    shotTreeWidget.addTopLevelItem(shotWidgetItem)
-		    sequenceTreeItem.addChild(shotTreeItem)
-		    self.progressList.setItemWidget(shotTreeItem,0,shotTreeWidget)
-		    sequenceTreeItem.setExpanded(True)
-		    
-		
-		
-	    '''if self._currentProject._lastSelectedSequenceNumber == '-1':
-		self.sequenceNumber.setCurrentRow(0)
-	    else:
-		for x in range(0,self.sequenceNumber.count()):
-		    if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
-			self.sequenceNumber.setCurrentRow(x)
-			break'''
+			if x ==0:
+				#creates shotlist widget
+				shotTreeWidget = QtGui.QTreeWidget()
+				shotTreeWidget.setHeaderLabels(self.headerlist)
+				
+				shotTreeItem = QtGui.QTreeWidgetItem()				
+				sequenceTreeItem.addChild(shotTreeItem)
+				sequenceTreeItem.setExpanded(True)
+				
+				self.progressList.setItemWidget(shotTreeItem,0,shotTreeWidget)
+				
+				#connect				
+				shotTreeWidget.itemEntered.connect(self.LoadShotValuesFromSent)
+				shotTreeWidget.itemPressed.connect(self.LoadShotValuesFromSent)
+				shotTreeWidget.setColumnHidden(0,True)
 
+			#sets alternating background colors
+			bgc = QtGui.QColor(200,200,200)			
+			if x%2:
+				bgc = QtGui.QColor(250,250,250)
+
+			
+			shotWidgetItem = QtGui.QTreeWidgetItem()
+			shotWidgetItem.setBackground(0,bgc)
+			shotTreeWidget.addTopLevelItem(shotWidgetItem)
+			
+			#shot id
+			shotWidgetItem.setText(0,(str(shot._idshots)))
+			
+			#shot name
+			shotWidgetItem.setText(1,(str(shot._number)))
+			
+			#layout button
+			layCombobox = QtGui.QComboBox()
+			layCombobox.addItems(["Not Started","In Progress","On Hold","Done"])
+			shotTreeWidget.setItemWidget(shotWidgetItem,2,layCombobox)
+			#shotWidgetItem.setText(2,(shot._number))
 	#else:
 	    #self.setProjectListEnabled(0)
     
@@ -612,11 +634,50 @@ class ProjectViewWidget(QWidget):
 		else:
 			#print self._currentShot._shotnotes
 			#print "Loading shot note text"
-			self.shotNotes.setText(self._currentShot._shotnotes)
-		    
-		    
+			self.shotNotes.setText(self._currentShot._shotnotes)    
 	    
-	self.refreshTasks()
+	self._blockUpdates = 0
+	self.blockSignals(False)
+	
+    def LoadShotValuesFromSent(self,itemwidget, column):				
+		    
+	self._blockUpdates = 1
+	self.blockSignals(True)
+	
+	#make sure _currentSequence is current
+	
+	#self.setCurrentShot()
+	
+	for shot in sharedDB.myShots:
+		if str(shot._idshots) == str(itemwidget.text(0)):
+			self._currentShot = shot
+	
+	if self._currentShot is not None:
+	    
+	    #if not remote
+	    #if not sharedDB.mySQLConnection._remote:
+	    self.checkForShotImage()		    
+	    
+	    #set Status
+	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+	    
+	    #set frame range
+	    self.startFrame.setValue(self._currentShot._startframe)
+	    self.endFrame.setValue(self._currentShot._endframe)
+	    
+	    #set Description
+	    if self._currentShot is not None and self._currentShot._description is not None:
+		self.shotDescription.setText(self._currentShot._description)
+	    
+	    
+	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
+		    #print "Setting shot Note text to default"
+		    self.shotNotes.setText('Anim-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-')
+	    else:
+		    #print self._currentShot._shotnotes
+		    #print "Loading shot note text"
+		    self.shotNotes.setText(self._currentShot._shotnotes)
+	
 	self._blockUpdates = 0
 	self.blockSignals(False)
 	    
