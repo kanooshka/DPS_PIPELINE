@@ -34,7 +34,7 @@ class CheckForImagePath(QtCore.QThread):
 			sharedDB.myProjectViewWidget.shotImageFound.emit()
 		
 	except:
-	    print "Image file not found"
+	    print "No Image file found for selected shot"
 	    
 
 class ProjectViewWidget(QWidget):
@@ -297,8 +297,9 @@ class ProjectViewWidget(QWidget):
 		else:
 			self.projectDescription.setText('')
 			
-		
+		self.LoadProgressListValues()
 		self.LoadSequenceNames()
+		
     
 	self._blockUpdates = 0
 	self.blockSignals(False)
@@ -360,23 +361,24 @@ class ProjectViewWidget(QWidget):
 			self._currentSequence._updated = 1
 
     def LoadSequenceNames(self):
-	self.sequenceNumber.clear()
+	self.sequenceNumber.clear()	
 	self._currentSequence = None
 	self.sequenceDescription.setText('')
-	self.sequenceStatus.setCurrentIndex(0)
+	self.sequenceStatus.setCurrentIndex(0)	
 	
 	if (self._currentProject._sequences):
 	    #print str(len(self._currentProject._sequences)) + " Sequences found in project"
 	    self.setSequenceSettingsEnabled(1)
 	    for x in range(0,len(self._currentProject._sequences)):
 		sequence = self._currentProject._sequences[x]
+	
 		sequence.sequenceChanged.connect(self.sequenceChanged)
 		newWidgetItem = QtGui.QListWidgetItem()
 		newWidgetItem.setText(sequence._number)
 		newWidgetItem.setToolTip(str(x))
-		self.sequenceNumber.addItem(newWidgetItem)
-		    
-		    
+		newWidgetItem.setFlags(newWidgetItem.flags() ^ Qt.ItemIsSelectable)
+		self.sequenceNumber.addItem(newWidgetItem)		
+		
 	    if self._currentProject._lastSelectedSequenceNumber == '-1':
 		self.sequenceNumber.setCurrentRow(0)
 	    else:
@@ -390,6 +392,52 @@ class ProjectViewWidget(QWidget):
 	    self.setSequenceSettingsEnabled(0)
 	    self.LoadShotNames()
 	    
+	    
+    def LoadProgressListValues(self):
+	self.progressList.clear()
+	
+	self._currentSequence = None
+	
+	if (self._currentProject._sequences):
+	    #self.setProjectListEnabled(1)
+	    for x in range(0,len(self._currentProject._sequences)):
+		sequence = self._currentProject._sequences[x]
+		    
+		#Add Sequences to list
+		sequenceTreeItem = QtGui.QTreeWidgetItem()
+		sequenceTreeItem.setText(0,("Seq_"+sequence._number))
+		sequenceTreeItem.setTextAlignment(0,QtCore.Qt.AlignCenter)
+		sequenceTreeItem.setBackground(0,QtGui.QColor('grey'))
+		sequenceTreeItem.setForeground(0,QtGui.QColor('white'))		
+		self.progressList.addTopLevelItem(sequenceTreeItem)
+		
+		#add shots to sequence
+		for shot in sequence._shots:
+		    #adds list widget to qtreewidget slot
+		    shotTreeWidget = QtGui.QTreeWidget()
+		    shotWidgetItem = QtGui.QTreeWidgetItem()
+		    shotTreeItem = QtGui.QTreeWidgetItem()
+		    
+		    shotWidgetItem.setText(0,("shot_"+shot._number))
+		    shotTreeWidget.addTopLevelItem(shotWidgetItem)
+		    sequenceTreeItem.addChild(shotTreeItem)
+		    self.progressList.setItemWidget(shotTreeItem,0,shotTreeWidget)
+		    sequenceTreeItem.setExpanded(True)
+		    
+		
+		
+	    '''if self._currentProject._lastSelectedSequenceNumber == '-1':
+		self.sequenceNumber.setCurrentRow(0)
+	    else:
+		for x in range(0,self.sequenceNumber.count()):
+		    if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
+			self.sequenceNumber.setCurrentRow(x)
+			break'''
+
+	#else:
+	    #self.setProjectListEnabled(0)
+    
+	
 	    
 		
     def setSequenceSettingsEnabled(self, v):
