@@ -58,21 +58,6 @@ class CalendarView(QObject):
 	def closeThreads(self):
 		self.myWaitTimer.quit()
 	
-	'''
-	def InitialProjectAdd(self):
-		for project in sharedDB.myProjects:
-			myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
-			myPhaseAssignments.sort(key=operator.attrgetter('_startdate'))
-			if (not project._hidden):
-			    self.AddProject(project,myPhaseAssignments)
-			    
-		
-		self._myXGanttWidget.emitDateRangeChanged()
-		self._myXGanttWidget.setCellWidth(15)
-		
-		self._myXGanttWidget.expandAllTrees()
-	
-		'''	
 	def AddNewProjects(self, idprojects):
 		for project in sharedDB.myProjects:
 			if str(project._idprojects) == str(idprojects):
