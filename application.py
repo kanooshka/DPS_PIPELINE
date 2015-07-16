@@ -29,21 +29,13 @@ class MainWindow(QtGui.QMainWindow):
 
         #sharedDB.lastUpdate = datetime.now()
 
-        if not sharedDB.noDB:
-            try:
-                self.app.loginWidget
-            except:
-                self.app.loginWidget = loginwidget.LoginWidget()
-                
-            self.app.loginWidget.show()
-            self.app.loginWidget.activateWindow()
-        else:
-            sharedDB.users.currentUser = sharedDB.users.GetCurrentUser('twotis')
-            sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
-            sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-            sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
-            self.EnableMainWindow()
-	    #sharedDB.mySQLConnection.closeConnection()
+        try:
+            self.app.loginWidget
+        except:
+            self.app.loginWidget = loginwidget.LoginWidget()
+            
+        self.app.loginWidget.show()
+        self.app.loginWidget.activateWindow()
     
     def EnableMainWindow(self):
         #self.mw = QtGui.QMainWindow() # mw = MainWindow

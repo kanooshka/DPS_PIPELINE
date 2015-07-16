@@ -191,6 +191,10 @@ class Connection(QObject):
 		self._password = _password
 		self._localhost = '10.9.21.12'
 		self._remotehost = '174.79.161.184'
+		
+		if sharedDB.localDB:
+			self._localhost = 'localhost'
+		
 		self._cursor = ''
 		self._host = self._localhost
 		self._remote = 0

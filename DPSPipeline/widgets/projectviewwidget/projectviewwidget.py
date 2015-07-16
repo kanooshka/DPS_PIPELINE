@@ -16,6 +16,7 @@ from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
+from DPSPipeline.widgets.projectviewwidget import projectlistshotwidget
 
 class CheckForImagePath(QtCore.QThread):
 
@@ -73,8 +74,6 @@ class ProjectViewWidget(QWidget):
 	sharedDB.myProjectViewWidget = self
 	
 	self.setPrivelages()
-	
-	self.headerlist = ["ShotID","Shot Name","Lay","Block","Anim","SetDress","Prep","FX","Lit","Rend","Comp"]
 	
 	#connects signals
 	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
@@ -413,49 +412,18 @@ class ProjectViewWidget(QWidget):
 		sequenceTreeItem.setForeground(0,QtGui.QColor('white'))		
 		self.progressList.addTopLevelItem(sequenceTreeItem)
 		
+		shotTreeWidget = projectlistshotwidget.ProjectlistShotWidget(sequence._shots,self._currentProject._phases)
+		
+		sequenceTreeItem.addChild(shotTreeWidget.shotTreeItem)
+		sequenceTreeItem.setExpanded(True)
+		shotTreeWidget.itemEntered.connect(self.LoadShotValuesFromSent)
+		shotTreeWidget.itemPressed.connect(self.LoadShotValuesFromSent)
+		self.progressList.setItemWidget(shotTreeWidget.shotTreeItem,0,shotTreeWidget)
 		
 		
-		#add shots to sequence
-		for x in range(0, len(sequence._shots)):
-			shot=sequence._shots[x]		    
-		    
-			if x ==0:
-				#creates shotlist widget
-				shotTreeWidget = QtGui.QTreeWidget()
-				shotTreeWidget.setHeaderLabels(self.headerlist)
-				
-				shotTreeItem = QtGui.QTreeWidgetItem()				
-				sequenceTreeItem.addChild(shotTreeItem)
-				sequenceTreeItem.setExpanded(True)
-				
-				self.progressList.setItemWidget(shotTreeItem,0,shotTreeWidget)
-				
-				#connect				
-				shotTreeWidget.itemEntered.connect(self.LoadShotValuesFromSent)
-				shotTreeWidget.itemPressed.connect(self.LoadShotValuesFromSent)
-				shotTreeWidget.setColumnHidden(0,True)
-
-			#sets alternating background colors
-			bgc = QtGui.QColor(200,200,200)			
-			if x%2:
-				bgc = QtGui.QColor(250,250,250)
-
-			
-			shotWidgetItem = QtGui.QTreeWidgetItem()
-			shotWidgetItem.setBackground(0,bgc)
-			shotTreeWidget.addTopLevelItem(shotWidgetItem)
-			
-			#shot id
-			shotWidgetItem.setText(0,(str(shot._idshots)))
-			
-			#shot name
-			shotWidgetItem.setText(1,(str(shot._number)))
-			
-			#layout button
-			layCombobox = QtGui.QComboBox()
-			layCombobox.addItems(["Not Started","In Progress","On Hold","Done"])
-			shotTreeWidget.setItemWidget(shotWidgetItem,2,layCombobox)
 			#shotWidgetItem.setText(2,(shot._number))
+		#size = shotTreeWidget.maximumViewportSize()
+		#shotTreeWidget.setMinimumSize(size)
 	#else:
 	    #self.setProjectListEnabled(0)
     

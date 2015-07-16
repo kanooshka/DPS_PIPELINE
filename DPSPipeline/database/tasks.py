@@ -60,14 +60,9 @@ class Tasks():
 def GetTasks():
 	tasks = []
 	
-	if not sharedDB.noDB:
-		rows = sharedDB.mySQLConnection.query("SELECT idtasks, parenttasksid, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp FROM tasks")
+	rows = sharedDB.mySQLConnection.query("SELECT idtasks, parenttasksid, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp FROM tasks")
 		
-		for row in rows:
-			#print row[0]
-			tasks.append(Tasks(_idtasks = row[0],_parenttasksid = row[1],_idphaseassignments = row[2],_idprojects = row[3],_idshots = row[4],_idusers = row[5],_idphases = row[6],_timealotted = row[7],_idsequences = row[8],_duedate = row[9],_percentcomplete = row[10],_done = row[11],_timestamp = row[12],_new = 0))
-
-	#else:
-		#activeProjects.append(Projects(_idprojects = 1,_name = 'TW15-11  Rebel Raw Deal',_idstatuses = 1,_new = 0,_fps = 400,_due_date = datetime.today(),_description = 'Blahty Blahty test test WEEEEEEE!!!'))
+	for row in rows:
+		tasks.append(Tasks(_idtasks = row[0],_parenttasksid = row[1],_idphaseassignments = row[2],_idprojects = row[3],_idshots = row[4],_idusers = row[5],_idphases = row[6],_timealotted = row[7],_idsequences = row[8],_duedate = row[9],_percentcomplete = row[10],_done = row[11],_timestamp = row[12],_new = 0))
 
 	return tasks

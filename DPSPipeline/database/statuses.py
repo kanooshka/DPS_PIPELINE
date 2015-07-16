@@ -23,18 +23,11 @@ class Statuses():
 def GetStatuses():
 	statuses = []
 	
-	if not sharedDB.noDB:
-		rows = sharedDB.mySQLConnection.query("SELECT idstatuses,name FROM statuses")
-		
-		for row in rows:
-			#print row[0]
-			statuses.append(Statuses(_idstatuses = row[0],_name = row[1]))
 
-	else:
-		statuses.append(Statuses(_idstatuses = 1,_name = 'Not Started'))	
-		statuses.append(Statuses(_idstatuses = 2,_name = 'In Progress'))
-		statuses.append(Statuses(_idstatuses = 3,_name = 'On Hold'))
-		statuses.append(Statuses(_idstatuses = 4,_name = 'Finished'))
-		statuses.append(Statuses(_idstatuses = 5,_name = 'Cancelled'))
+	rows = sharedDB.mySQLConnection.query("SELECT idstatuses,name FROM statuses")
+	
+	for row in rows:
+		#print row[0]
+		statuses.append(Statuses(_idstatuses = row[0],_name = row[1]))
 			
 	return statuses

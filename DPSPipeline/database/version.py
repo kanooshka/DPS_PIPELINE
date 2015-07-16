@@ -22,7 +22,7 @@ class Version(QObject):
 		self._name                   = _name
 			
 	def CheckVersion(self):
-		if not sharedDB.noDB and not sharedDB.testing:
+		if not sharedDB.testing:
 			rows = sharedDB.mySQLConnection.query("SELECT name FROM version ORDER BY timestamp DESC LIMIT 1")
 			
 			#print rows[0][0]

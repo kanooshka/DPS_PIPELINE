@@ -17,10 +17,9 @@ myVersion = version.Version("0.0.18")
 #TEST SETTINGS
 
 testing = 0
-noDB = 0
 noSaving = 0
-autologin = 0
-localDB = 0
+autologin = 1
+localDB = 1
 remote = 0
 
 #freezeDBUpdates = 1
