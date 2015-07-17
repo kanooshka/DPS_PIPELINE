@@ -194,7 +194,7 @@ class CalendarView(QObject):
 		
 		parent.addChild(childItem)
 		
-		if (department == 0 or department == sharedDB.currentUser[0]._idDepartment):
+		if (sharedDB.currentUser[0]._idDepartment == 0 or department == sharedDB.currentUser[0]._idDepartment):
 			childItem.setHidden(False)
 			parent.setHidden(False)
 		else:
