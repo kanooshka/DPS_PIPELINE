@@ -1,5 +1,6 @@
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import noWheelCombobox
+import operator
 
 class ProjectlistShotWidget(QtGui.QTreeWidget):
     
@@ -14,14 +15,13 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
         self.shotPhaseNames = ["ShotID","Name"]
         
         
-        self.statuses = ["Not Started","In Progress","On Hold","Done"]
-        
+        self.statuses = ["Not Started","In Progress","On Hold","Done"]        
         
         self.SetShotPhaseNames()
         
         self.setHeaderLabels(self.shotPhaseNames)
         
-        self.shotTreeItem = QtGui.QTreeWidgetItem()        
+        self.shotTreeItem = QtGui.QTreeWidgetItem() 
         
         #Hides project id column				
         self.setColumnHidden(0,True)
@@ -31,11 +31,12 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
         for col in range(0,len(self.shotPhaseNames)):
             self.headerItem().setTextAlignment(col,QtCore.Qt.AlignHCenter)
 
+        self._shots.sort(key=operator.attrgetter('_number'))
         for x in range(0, len(self._shots)):
                 shot=self._shots[x]		    
 
                 shotWidgetItem = QtGui.QTreeWidgetItem()
-
+                
                 #sets alternating background colors
                 bgc = QtGui.QColor(200,200,200)			
                 if x%2:
@@ -53,12 +54,21 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
                 shotWidgetItem.setText(1,(str(shot._number)))
                 self.setColumnWidth(1,40)
                 
+                 
+                
+                #get tasklist from shot
+                #if tasklist less than lenshotphasenames - 2
+                    #iterate through shotphases
+                    #if tasklist doesn't contain shot
+                        #create new task for shot
+                
+                              
+                
                 for p in range(2,len(self.shotPhaseNames)+2):                
                     #layout button
                     self.AddStatusCombobox(shotWidgetItem,p,85)                
 
-    def SetShotPhaseNames(self):
-        
+    def SetShotPhaseNames(self):        
         for phase in self._phases:
             if phase._taskPerShot:
                 self.shotPhaseNames.append(phase._name)
