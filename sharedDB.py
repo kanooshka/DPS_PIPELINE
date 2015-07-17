@@ -50,3 +50,5 @@ mainWindow  = ''
 widgetList = []
 leftWidget = ''
 rightWidget = ''
+
+initialLoad = 0

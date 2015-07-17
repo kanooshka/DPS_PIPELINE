@@ -1,3 +1,5 @@
+import sharedDB
+
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import noWheelCombobox
 import operator
@@ -6,9 +8,10 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
     
     newVersion = QtCore.pyqtSignal(QtCore.QString)
 
-    def __init__(self,_shots, _projectphases):
+    def __init__(self,_currentProject,_shots, _projectphases):
         super(QtGui.QTreeWidget, self).__init__()
         
+        self._project = _currentProject
         self._shots = _shots
         self._phases = _projectphases
         
@@ -57,14 +60,28 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
                  
                 
                 #get tasklist from shot
+                tasks = shot._tasks
                 #if tasklist less than lenshotphasenames - 2
-                    #iterate through shotphases
+                for phase in self._phases:
+                    if phase._taskPerShot:
+                        currentTask = None
+                        for task in tasks:
+                            if task._idphases == phase._idphases:
+                                print "MATCH FOUND"
+                                currentTask = task
+                        
+                        #if task didn't exist, create task  
+                        '''if currentTask is None:
+                            currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphases, _idprojects = self._project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _percentcomplete = 0, _done = 0, _new = 1)
+                            tasks.append(currentTask)
+                            sharedDB.myTasks.append(currentTask)'''                     
+                    
                     #if tasklist doesn't contain shot
                         #create new task for shot
                 
                               
                 
-                for p in range(2,len(self.shotPhaseNames)+2):                
+                for p in range(2,len(self.shotPhaseNames)):                
                     #layout button
                     self.AddStatusCombobox(shotWidgetItem,p,85)                
 

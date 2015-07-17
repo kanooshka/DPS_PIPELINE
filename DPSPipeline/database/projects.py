@@ -160,3 +160,12 @@ class Projects(QObject):
 	def emitProjectChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.projectChanged.emit(str(self._idprojects))
+		    
+	def getPhaseAssignmentByIDPhases(self, idrequest):
+		for phase in phases:
+			if phase._idphases == idrequest:
+				return phase
+			
+		return 0
+		
+	

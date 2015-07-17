@@ -115,7 +115,7 @@ class ProjectViewWidget(QWidget):
 	self.addShot.clicked.connect(self.AddShot)
 	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
 	
-	#connect task settings
+	self.setEnabled(0)
 	    
     def cancel(self):
 	self.close()
@@ -412,7 +412,7 @@ class ProjectViewWidget(QWidget):
 		sequenceTreeItem.setForeground(0,QtGui.QColor('white'))		
 		self.progressList.addTopLevelItem(sequenceTreeItem)
 		
-		shotTreeWidget = projectlistshotwidget.ProjectlistShotWidget(sequence._shots,self._currentProject._phases)
+		shotTreeWidget = projectlistshotwidget.ProjectlistShotWidget(self._currentProject,sequence._shots,self._currentProject._phases)
 		
 		sequenceTreeItem.addChild(shotTreeWidget.shotTreeItem)
 		sequenceTreeItem.setExpanded(True)

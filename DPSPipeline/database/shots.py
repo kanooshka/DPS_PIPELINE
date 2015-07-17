@@ -11,7 +11,7 @@ class Shots(QObject):
 
 	shotChanged = QtCore.pyqtSignal(QtCore.QString)
 
-	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = ''):
+	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=[]):
 		
 		super(QObject, self).__init__()
 		
@@ -27,7 +27,7 @@ class Shots(QObject):
 		self._timestamp		     = _timestamp
 		self._shotnotes		     = _shotnotes
 		
-		#self._tasks                 = _tasks
+		self._tasks                 = _tasks
 		self._updated                = _updated
 		self._type                   = "shot"
 		self._hidden                 = False
@@ -49,6 +49,10 @@ class Shots(QObject):
 	
 		self._new = 0
 		self._updated = 0
+		
+		for task in self._tasks:
+			task.Save()
+		
 	
 	def AddShotToDB(self):
 	
