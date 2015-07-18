@@ -18,7 +18,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 
     def run(self):
 
-	sharedDB.blockSignals = 1
+	#sharedDB.blockSignals = 1
 	
 	if sharedDB.mySQLConnection is not None:
 		while True:
@@ -160,7 +160,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11])
 					#add shot to shot list
 					sharedDB.myTasks.append(myTask)
-					#iterate through sequences
+					#iterate through shots
 					for shot in sharedDB.myShots:
 						##if idsequences matches
 						if shot._idshots == myTask._idshots:
@@ -176,11 +176,11 @@ class AutoParseProjectsThread(QtCore.QThread):
 				#remove row from list
 				del sharedDB.mySQLConnection._tasksToBeParsed[0]
 			else:
+				if len(sharedDB.myProjects) and sharedDB.initialLoad == 0:
+					print "First Load Complete!"
+					sharedDB.initialLoad=1
+					sharedDB.mySQLConnection.firstLoadComplete.emit()
 				break
-
-			if sharedDB.initialLoad == 0:
-				sharedDB.initialLoad=1
-				sharedDB.mySQLConnection.firstLoadComplete.emit()
 				
 
 	time.sleep(2)
@@ -429,7 +429,7 @@ class Connection(QObject):
 		self._shotsToBeParsed.extend(shotrows)
 		
 		taskrows = sharedDB.mySQLConnection.query("SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		self._tasksToBeParsed.extend(shotrows)
+		self._tasksToBeParsed.extend(taskrows)
 		
 		'''for proj in sharedDB.myProjectList:
 			phaseAssignmentRows = sharedDB.mySQLConnection.query("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp" % proj._idprojects)

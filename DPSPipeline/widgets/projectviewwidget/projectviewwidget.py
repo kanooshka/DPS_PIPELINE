@@ -53,7 +53,6 @@ class ProjectViewWidget(QWidget):
 	self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
 	self.cfip = CheckForImagePath()
-	#self.cfip.finished.connect(self.setImagePath)
 	self.shotImageFound.connect(self.setImagePath)
 	self.shotImagePath = projexui.resources.find('img/DP/noImage.png')
 	self.shotImageDir = ''
@@ -73,19 +72,20 @@ class ProjectViewWidget(QWidget):
 	
 	sharedDB.myProjectViewWidget = self
 	
-	self.setPrivelages()
+	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
 	
+	self.setEnabled(0)
+    
+    def propogateUI(self, ):
+	self.setPrivelages()
+
 	#connects signals
 	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.LoadShotNames)
 	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
 	
-	#connects buttons
-	#self.createButton.clicked.connect(self.CreateProject)
-	#self.cancelButton.clicked.connect(self.cancel)
-	self.propogateStatuses()
-	#self.propogateProjectNames()		
+	self.propogateStatuses()		
 	
 	#connect project settings
 	self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadProjectValues)
@@ -115,8 +115,11 @@ class ProjectViewWidget(QWidget):
 	self.addShot.clicked.connect(self.AddShot)
 	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
 	
-	self.setEnabled(0)
-	    
+	self.propogateProjectNames()
+	
+	self.setEnabled(1)
+    
+    
     def cancel(self):
 	self.close()
 
@@ -189,16 +192,13 @@ class ProjectViewWidget(QWidget):
 		
 		self.projectName.addItem(project._name,QVariant(project))
 		#print "setting project "+str(project._name)+"'s tooltip to "+str(project._idprojects)
-		self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
 		self.projectName.setItemData(self.projectName.count()-1,project._idprojects, Qt.ToolTipRole)
 		project.projectChanged.connect(self.projectChanged)
 	
 	self.LoadProjectValues()
 	
-	self.refreshTasks()
+	#self.refreshTasks()
 	
-    def getCurrentProjectID():
-		return self.projectName.itemData(p, Qt.ToolTipRole).toString()
     def getCurrentProjectID(self):
 		return self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		
@@ -275,6 +275,7 @@ class ProjectViewWidget(QWidget):
 	if sharedDB.myProjects:
 	    
 	    for project in sharedDB.myProjects:	
+		#print self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		if str(project._idprojects) == self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString():
 			self._currentProject = project
 	    
