@@ -190,6 +190,7 @@ class ProjectViewWidget(QWidget):
 		self.projectName.addItem(project._name,QVariant(project))
 		#print "setting project "+str(project._name)+"'s tooltip to "+str(project._idprojects)
 		self.projectName.setItemData(p,project._idprojects, Qt.ToolTipRole)
+		self.projectName.setItemData(self.projectName.count()-1,project._idprojects, Qt.ToolTipRole)
 		project.projectChanged.connect(self.projectChanged)
 	
 	self.LoadProjectValues()
@@ -198,6 +199,8 @@ class ProjectViewWidget(QWidget):
 	
     def getCurrentProjectID():
 		return self.projectName.itemData(p, Qt.ToolTipRole).toString()
+    def getCurrentProjectID(self):
+		return self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		
     def AddProjectNameToList(self,projectid):
 	
