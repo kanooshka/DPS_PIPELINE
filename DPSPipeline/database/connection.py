@@ -149,7 +149,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 					if str(task._idtasks) == str(row[0]):						
 						if not str(sharedDB.mySQLConnection.myIP) == str(row[13]):
 							#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp
-							task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11])
+							task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
 						existed = True
 						break
 					
@@ -157,7 +157,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 				#create project
 					print "New TASK found in database CREATING task: "+str(row[0])
 					#create instance of shot class				
-					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11])
+					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
 					#add shot to shot list
 					sharedDB.myTasks.append(myTask)
 					#iterate through shots
@@ -177,7 +177,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 				del sharedDB.mySQLConnection._tasksToBeParsed[0]
 			else:
 				if len(sharedDB.myProjects) and sharedDB.initialLoad == 0:
-					print "First Load Complete!"
+					#print "First Load Complete!"
 					sharedDB.initialLoad=1
 					sharedDB.mySQLConnection.firstLoadComplete.emit()
 				break
@@ -428,7 +428,7 @@ class Connection(QObject):
 		shotrows = sharedDB.mySQLConnection.query("SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		self._shotsToBeParsed.extend(shotrows)
 		
-		taskrows = sharedDB.mySQLConnection.query("SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		taskrows = sharedDB.mySQLConnection.query("SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		self._tasksToBeParsed.extend(taskrows)
 		
 		'''for proj in sharedDB.myProjectList:

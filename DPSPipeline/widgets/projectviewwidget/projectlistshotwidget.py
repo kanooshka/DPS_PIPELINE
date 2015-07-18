@@ -62,44 +62,61 @@ class ProjectlistShotWidget(QtGui.QTreeWidget):
                 #get tasklist from shot
                 tasks = shot._tasks
                 #if tasklist less than lenshotphasenames - 2
+                columnIndex = 2
                 for phase in self._phases:
                     if phase._taskPerShot:
                         currentTask = None
                         
                         for task in tasks:
                             if task._idphases == phase._idphases:
-                                print "MATCH FOUND"
+                                #print "MATCH FOUND"
                                 currentTask = task
                         
                         #if task didn't exist, create task  
                         if currentTask is None:
-                            print "TASKS ADDED"
+                            #print "TASKS ADDED"
                             currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphases, _idprojects = self._project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _percentcomplete = 0, _done = 0, _new = 1)
                             tasks.append(currentTask)
                             sharedDB.myTasks.append(currentTask)
                 
-                for p in range(2,len(self.shotPhaseNames)):                
+                        #create button for currentTask
+                        #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
+                        
+                        btn = taskProgressButton.TaskProgressButton(_task=currentTask)
+                        self.setItemWidget(shotWidgetItem,columnIndex,btn)
+                        self.setColumnWidth(columnIndex,85)
+                        
+                        #connect button state changed signal to task
+                        #print "Connecting statechange to: "+str(currentTask._idtasks)
+                        #btn.stateChanged.connect(currentTask.setShit)
+                        #btn.stateChanged.connect(self.test)
+
+                        columnIndex +=1
+                
+                '''for p in range(2,len(self.shotPhaseNames)):                
                     #layout button
                     #self.AddStatusCombobox(shotWidgetItem,p,85)       
-                    self.AddProgressButton(shotWidgetItem,p,85)
+                    self.AddProgressButton(shotWidgetItem,p,85)'''
                     
     def SetShotPhaseNames(self):        
         for phase in self._phases:
             if phase._taskPerShot:
                 self.shotPhaseNames.append(phase._name)
     
-    def AddStatusCombobox(self,widgetItem,index,width):
+    '''def AddStatusCombobox(self,widgetItem,index,width):
         cmbox = noWheelCombobox.NoWheelComboBox()
         cmbox.addItems(self.statuses)
         self.setItemWidget(widgetItem,index,cmbox)
-        self.setColumnWidth(index,width)
+        self.setColumnWidth(index,width)'''
     
-    def AddProgressButton(self,widgetItem,index,width):
-        btn = taskProgressButton.TaskProgressButton()
-        self.connect(btn, QtCore.SIGNAL('clicked()'), btn.clicked)
+    def AddProgressButton(self,widgetItem,index,width,status):
+        btn = taskProgressButton.TaskProgressButton(_startState = status)
         self.setItemWidget(widgetItem,index,btn)
         self.setColumnWidth(index,width)
+        return btn
+        
     
     #Disable arrow keys for this qtree
     def keyPressEvent(self, event):
         pass
+    
