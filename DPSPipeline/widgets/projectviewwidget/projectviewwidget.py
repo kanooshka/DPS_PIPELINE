@@ -166,13 +166,12 @@ class ProjectViewWidget(QWidget):
 						self.LoadProjectValues()
 					break;
 	
-    def sequenceChanged(self,sequenceId):
+    #def sequenceChanged(self,sequenceId):
         #set project name
-	self.LoadSequenceNames()
+	#self.LoadSequenceNames()
 
-    def shotChanged(self,shotId):
-        #set project name
-	self.LoadShotNames()
+    #def shotChanged(self,shotId):
+	#self.LoadShotNames()
 		    
     def ensure_dir(self,f):  
 	#print f.replace("\\", "\\\\")
@@ -303,7 +302,7 @@ class ProjectViewWidget(QWidget):
 			self.projectDescription.setText('')
 			
 		self.LoadProgressListValues()
-		self.LoadSequenceNames()
+		#self.LoadSequenceNames()
 		
     
 	self._blockUpdates = 0
@@ -341,33 +340,33 @@ class ProjectViewWidget(QWidget):
 	"Sequence name already exists, choose a unique name (it is recommended to leave 10 between each sequence in case sequences need to be added in the middle)", QtGui.QMessageBox.Ok)
     
 	#select sequence by name
-    def selectSequenceByName(self, sName):
+    '''def selectSequenceByName(self, sName):
 	for x in range(0,self.sequenceNumber.count()):
 	    if self.sequenceNumber.item(x).text()==sName:
 		self.sequenceNumber.setCurrentRow(x)
 		break
-	    
+    '''   
     def getSequenceName(self):
 	sName = str(self.newSequenceNumber.value())
 	while( len(sName)<3):
 	    sName = "0"+sName
     
 	return sName
-    
+    '''
     def SetSequenceValues(self):
 	if not self._blockUpdates:
 	    if self._currentSequence is not None:
 		    #self._currentSequence._description = self.sequenceDescription.toPlainText()
 		    self._currentSequence._idstatuses = self.sequenceStatus.currentIndex()+1
 		    self._currentSequence._updated = 1
-
+    '''
     def SaveSequenceDescription(self):
 	if not self._blockUpdates:
 	    if self._currentSequence is not None:
 		if not (self.sequenceDescription.toPlainText() == self._currentSequence._description):
 			self._currentSequence._description = self.sequenceDescription.toPlainText()
 			self._currentSequence._updated = 1
-
+    '''
     def LoadSequenceNames(self):
 	self.sequenceNumber.clear()	
 	self._currentSequence = None
@@ -399,7 +398,7 @@ class ProjectViewWidget(QWidget):
 	else:
 	    self.setSequenceSettingsEnabled(0)
 	    self.LoadShotNames()
-	    
+    '''    
 	    
     def LoadProgressListValues(self):
 	self.progressList.clear()
@@ -439,6 +438,36 @@ class ProjectViewWidget(QWidget):
 		if str(shot._idshots) == str(shotid):
 		    return shot	
 	
+    def CreateTasks(self, shotid = None, shot = None):
+	if shot is None:
+	    print "getting shot by id"
+	    shot = self.GetShotByID(shotid)
+
+	for x in range(0,self.progressList.topLevelItemCount()):
+	    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
+		seqTreeItem = self.progressList.topLevelItem(x)
+	
+		#add shot to that widget
+		seqTreeItem._shotTreeWidget.AddShot(shot)		
+		
+		if not sharedDB.autoCreateShotTasks:
+		    for phase in self._currentProject._phases:	    
+			if phase._taskPerShot:
+			    task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._currentProject._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
+			    task.taskAdded.connect(seqTreeItem._shotTreeWidget.AttachTaskToButton)
+			    
+			    if shot._tasks is None:
+				shot._tasks = [task]
+			    else:
+				shot._tasks.append(task)
+			    
+			    
+			    
+		
+		break
+    
+    
+    
     def AddShotToProgressList(self, shotid = None, shot = None):
 	if shot is None:
 	    print "getting shot by id"
@@ -456,7 +485,7 @@ class ProjectViewWidget(QWidget):
 	self.sequenceNumber.setEnabled(v)
 	self.sequenceStatus.setEnabled(v)
 	self.sequenceDescription.setEnabled(v)
-	
+    '''
     def LoadSequenceValues(self):			
 	self._blockUpdates = 1
 	self.blockSignals(True)
@@ -540,7 +569,7 @@ class ProjectViewWidget(QWidget):
 	    myPixmap = QtGui.QPixmap(self._noImage)
 	    #myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 	    self.shotImage.setPixmap(myPixmap)
-    
+    '''
     def checkForShotImage(self):
 	seq = self._currentSequence
 	shot= self._currentShot
@@ -579,7 +608,7 @@ class ProjectViewWidget(QWidget):
 	self.shotImage.setEnabled(v)
 	self.shotDescription.setEnabled(v)
 	self.shotNotes.setEnabled(v)
-    
+    '''
     def LoadShotValues(self):				
 		    
 	self._blockUpdates = 1
@@ -628,7 +657,7 @@ class ProjectViewWidget(QWidget):
 	    
 	self._blockUpdates = 0
 	self.blockSignals(False)
-	
+    '''
     def LoadShotValuesFromSent(self,itemwidget, column):				
 		    
 	self._blockUpdates = 1
@@ -642,6 +671,14 @@ class ProjectViewWidget(QWidget):
 	for shot in sharedDB.myShots:
 		if str(shot._idshots) == str(itemwidget.text(0)):
 			self._currentShot = shot
+			
+			for seq in self._currentProject._sequences:
+			    if seq._idsequences == shot._idsequences:
+				self._currentSequence = seq
+				break
+			break
+			
+	
 	
 	if self._currentShot is not None:
 	    
@@ -689,7 +726,8 @@ class ProjectViewWidget(QWidget):
 	if unique:
 	    #add sequence
 	    shot = self._currentSequence.AddShotToSequence(newName)
-	    shot.shotAdded.connect(self.AddShotToProgressList)
+	    shot.shotAdded.connect(self.CreateTasks)
+	    
 	    #self.LoadShotNames()	    
 	    #self.LoadProgressListValues()
 	    #self.selectShotByName(newName)
@@ -699,14 +737,14 @@ class ProjectViewWidget(QWidget):
 	    #warning message
 	    message = QtGui.QMessageBox.question(self, 'Message',
 	"Shot name already exists, choose a unique name (it is recommended to leave 10 between each shot in case shots need to be added in the middle)", QtGui.QMessageBox.Ok)
-    
+    '''
 	#select sequence by name
     def selectShotByName(self, sName):
 	for x in range(0,self.shotNumber.count()):
 	    if self.shotNumber.item(x).text()==sName:
 		self.shotNumber.setCurrentRow(x)
 		break	
-    
+    '''
     def getShotName(self):
 	sName = str(self.newShotNumber.value())
 	while( len(sName)<4):

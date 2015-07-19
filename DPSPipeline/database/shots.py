@@ -30,6 +30,7 @@ class Shots(QObject):
 		
 		self._sequence              = self.GetSequenceById()
 		self._tasks                 = _tasks
+		self._taskButtons            = []
 		self._updated                = _updated
 		self._type                   = "shot"
 		self._hidden                 = False

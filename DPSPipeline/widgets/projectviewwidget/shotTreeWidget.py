@@ -52,10 +52,12 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         #self.setSortingEnabled(True)
         #self.sortByColumn(1)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
+        shotWidgetItem.setSizeHint(3,QtCore.QSize(400,25))
         self.UpdateBackgroundColors()
         
         self.itemEntered.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
 	self.itemPressed.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
+        sharedDB.mySQLConnection.newTaskSignal.connect(self.AttachTaskToButton)
             
     def UpdateBackgroundColors(self):
         for x in range(0,self.topLevelItemCount()):           
@@ -73,11 +75,37 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
         self.UpdateBackgroundColors()
+        shotWidgetItem.setSizeHint(3,QtCore.QSize(400,25))
                 
     def SetShotPhaseNames(self):        
         for phase in self._phases:
             if phase._taskPerShot:
                 self.shotPhaseNames.append(phase._name)        
+    
+    def AttachTaskToButton(self, idtasks):
+        #find task with id
+        task = None
+        for t in sharedDB.myTasks:
+            if str(t._idtasks) == str(idtasks):
+                task = t
+                #print idtasks
+                break            
+        
+        if task is not None:
+            #iterate through items to find correct shot index
+            for x in range(0,self.topLevelItemCount()):
+                if self.topLevelItem(x).shot._idshots == task._idshots:
+                    sTreeWidgetItem = self.topLevelItem(x)
+                    for btn in sTreeWidgetItem.btns:
+                        #if btn phaseid = task phase id
+                        if str(btn._forPhase) == str(task._idphases):
+                            btn._task = task
+                            btn.getTaskState()
+                            task.taskChanged.connect(btn.getTaskState)
+                    
+                    break
+        
+    
     
     #Disable arrow keys for this qtree
     def keyPressEvent(self, event):

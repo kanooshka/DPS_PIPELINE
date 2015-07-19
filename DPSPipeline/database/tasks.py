@@ -10,7 +10,8 @@ from PyQt4.QtCore import QObject
 class Tasks(QObject):
 
 	taskChanged = QtCore.pyqtSignal(QtCore.QString)
-
+	taskAdded = QtCore.pyqtSignal(QtCore.QString)
+	
 	def __init__(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0,_timestamp = datetime.now(), _updated = 0, _new = 0):
 		
 		super(QObject, self).__init__()
@@ -61,6 +62,9 @@ class Tasks(QObject):
 		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, status, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
+		
+		sharedDB.myTasks.append(self)
+		self.taskAdded.emit(str(self._idtasks))
 	
 	def UpdateTaskInDB (self):
 		

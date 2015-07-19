@@ -11,6 +11,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.shot = shot
         self.phases = phases
         self.project = project
+        self.btns = []
         
         self.shotWidget.addTopLevelItem(self)
             
@@ -18,7 +19,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.setText(0,(str(self.shot._idshots)))
         
         #shot name
-        self.setText(1,(str(self.shot._number)))
+        self.setText(1,(str(self.shot._number)))        
         
         #if tasklist less than lenshotphasenames - 2
         columnIndex = 2
@@ -33,8 +34,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                             currentTask = task
                 
                 #if task didn't exist, create task  
-                if currentTask is None:
-                    currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphases, _idprojects = self.project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
+                if currentTask is None and sharedDB.autoCreateShotTasks:
+                    currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self.project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
                     if self.shot._tasks is not None:
                         self.shot._tasks.append(currentTask)
                     else:
@@ -44,9 +45,10 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #create button for currentTask
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
-                btn = taskProgressButton.TaskProgressButton(_task=currentTask)
+                btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
                 self.shotWidget.setItemWidget(self,columnIndex,btn)
                 
+                self.btns.append(btn)
                 
                 #connect button state changed signal to task
                 #print "Connecting statechange to: "+str(currentTask._idtasks)
