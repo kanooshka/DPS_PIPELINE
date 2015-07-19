@@ -45,7 +45,8 @@ class SeqDescription(QtGui.QWidget):
     
     def UpdateShotNumberValue(self):
 	#get selected shottreewidgetitem
-	self.newShotNumber.setValue(int(self._sequenceTreeItem._shotTreeWidget.currentItem().shot._number)+10)
+	if self._sequenceTreeItem._shotTreeWidget.currentItem() is not None:
+	    self.newShotNumber.setValue(int(self._sequenceTreeItem._shotTreeWidget.currentItem().shot._number)+10)
     
     def AddShot(self):
 	unique = 1
