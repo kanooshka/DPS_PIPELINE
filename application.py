@@ -12,7 +12,6 @@ from DPSPipeline.calendarview import CalendarView
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
-import qdarkstyle
 #import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
