@@ -101,7 +101,7 @@ class ProjectViewWidget(QWidget):
 	
 	#connect sequence settings		
 	#self.sequenceNumber.currentRowChanged.connect(self.LoadSequenceValues)
-	self.saveSequenceDescription.clicked.connect(self.SaveSequenceDescription)
+	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
@@ -112,7 +112,6 @@ class ProjectViewWidget(QWidget):
 	#self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.SetShotValues)
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
-	self.addShot.clicked.connect(self.AddShot)
 	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
 	
 	self.propogateProjectNames()
@@ -269,7 +268,7 @@ class ProjectViewWidget(QWidget):
 
     def LoadProjectValues(self):
 	self._blockUpdates = 1
-	self.blockSignals(True)
+	#self.blockSignals(True)
 	
 	if sharedDB.myProjects:
 	    
@@ -306,7 +305,7 @@ class ProjectViewWidget(QWidget):
 		
     
 	self._blockUpdates = 0
-	self.blockSignals(False)
+	#self.blockSignals(False)
 	
     
     def AddSequence(self):
@@ -360,12 +359,7 @@ class ProjectViewWidget(QWidget):
 		    self._currentSequence._idstatuses = self.sequenceStatus.currentIndex()+1
 		    self._currentSequence._updated = 1
     '''
-    def SaveSequenceDescription(self):
-	if not self._blockUpdates:
-	    if self._currentSequence is not None:
-		if not (self.sequenceDescription.toPlainText() == self._currentSequence._description):
-			self._currentSequence._description = self.sequenceDescription.toPlainText()
-			self._currentSequence._updated = 1
+    
     '''
     def LoadSequenceNames(self):
 	self.sequenceNumber.clear()	
@@ -422,7 +416,7 @@ class ProjectViewWidget(QWidget):
     
     def AddSequenceToProgressList(self, seqid = None, sequence = None):
 	if sequence is None:
-	    print "getting sequence by id"
+	    #print "getting sequence by id"
 	    sequence = self.GetSequenceByID(seqid)
 	
 	if str(sequence._idprojects) == str(self._currentProject._idprojects):
@@ -436,41 +430,11 @@ class ProjectViewWidget(QWidget):
 	for seq in self._currentProject._sequences:
 	    for shot in seq._shots:
 		if str(shot._idshots) == str(shotid):
-		    return shot	
-	
-    def CreateTasks(self, shotid = None, shot = None):
-	if shot is None:
-	    print "getting shot by id"
-	    shot = self.GetShotByID(shotid)
-
-	for x in range(0,self.progressList.topLevelItemCount()):
-	    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
-		seqTreeItem = self.progressList.topLevelItem(x)
-	
-		#add shot to that widget
-		seqTreeItem._shotTreeWidget.AddShot(shot)		
-		
-		if not sharedDB.autoCreateShotTasks:
-		    for phase in self._currentProject._phases:	    
-			if phase._taskPerShot:
-			    task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._currentProject._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
-			    task.taskAdded.connect(seqTreeItem._shotTreeWidget.AttachTaskToButton)
-			    
-			    if shot._tasks is None:
-				shot._tasks = [task]
-			    else:
-				shot._tasks.append(task)
-			    
-			    
-			    
-		
-		break
-    
-    
+		    return shot	   
     
     def AddShotToProgressList(self, shotid = None, shot = None):
 	if shot is None:
-	    print "getting shot by id"
+	    #print "getting shot by id"
 	    shot = self.GetShotByID(shotid)
 
 	for x in range(0,self.progressList.topLevelItemCount()):
@@ -661,12 +625,13 @@ class ProjectViewWidget(QWidget):
     def LoadShotValuesFromSent(self,itemwidget, column):				
 		    
 	self._blockUpdates = 1
-	self.blockSignals(True)
+	#self.blockSignals(True)
 	
 	#make sure _currentSequence is current
 	
 	
 	#self.setCurrentShot()
+	self._currentShot = None
 	
 	for shot in sharedDB.myShots:
 		if str(shot._idshots) == str(itemwidget.text(0)):
@@ -685,6 +650,9 @@ class ProjectViewWidget(QWidget):
 	    #if not remote
 	    #if not sharedDB.mySQLConnection._remote:
 	    self.checkForShotImage()		    
+	    
+	    #set title
+	    self.ShotBox.setTitle("Shot "+str(self._currentSequence._number)+"_"+str(self._currentShot._number))
 	    
 	    #set Status
 	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
@@ -707,67 +675,24 @@ class ProjectViewWidget(QWidget):
 		    self.shotNotes.setText(self._currentShot._shotnotes)
 	
 	self._blockUpdates = 0
-	self.blockSignals(False)
-	    
-    def AddShot(self):
-	unique = 1
-	
-	#get sequence name
-	newName = self.getShotName()
-	
-	#iterate through sequences
-	for shot in self._currentSequence._shots:	    
-	    #if sequence matches name
-	    if newName == shot._number:
-		unique = 0
-		break
-	    
-	#if unique
-	if unique:
-	    #add sequence
-	    shot = self._currentSequence.AddShotToSequence(newName)
-	    shot.shotAdded.connect(self.CreateTasks)
-	    
-	    #self.LoadShotNames()	    
-	    #self.LoadProgressListValues()
-	    #self.selectShotByName(newName)
-	    
-	    
-	else:
-	    #warning message
-	    message = QtGui.QMessageBox.question(self, 'Message',
-	"Shot name already exists, choose a unique name (it is recommended to leave 10 between each shot in case shots need to be added in the middle)", QtGui.QMessageBox.Ok)
-    '''
-	#select sequence by name
-    def selectShotByName(self, sName):
-	for x in range(0,self.shotNumber.count()):
-	    if self.shotNumber.item(x).text()==sName:
-		self.shotNumber.setCurrentRow(x)
-		break	
-    '''
-    def getShotName(self):
-	sName = str(self.newShotNumber.value())
-	while( len(sName)<4):
-	    sName = "0"+sName
-    
-	return sName
+	#self.blockSignals(False)
     
     def SetShotValues(self):
-	if not self._blockUpdates:
-	    if self._currentShot is not None:
-		#self._currentShot._description = self.shotDescription.toPlainText()
-		self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
-		self._currentShot._startframe = self.startFrame.value()
-		self._currentShot._endframe = self.endFrame.value()
-		self._currentShot._updated = 1
+	#if not self._blockUpdates:
+	if self._currentShot is not None:
+	    #self._currentShot._description = self.shotDescription.toPlainText()
+	    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
+	    self._currentShot._startframe = self.startFrame.value()
+	    self._currentShot._endframe = self.endFrame.value()
+	    self._currentShot._updated = 1
 	    
 	    
     def SaveShotDescription(self):
-	if not self._blockUpdates:
-	    if self._currentShot is not None:
-		if not (self.shotDescription.toPlainText() == self._currentShot._description):
-			self._currentShot._description = self.shotDescription.toPlainText()
-			self._currentShot._updated = 1
+	#if not self._blockUpdates:
+	if self._currentShot is not None:
+	    if not (self.shotDescription.toPlainText() == self._currentShot._description):
+		    self._currentShot._description = self.shotDescription.toPlainText()
+		    self._currentShot._updated = 1
 
     def SaveShotNotes(self):
 	#if not self._blockUpdates:

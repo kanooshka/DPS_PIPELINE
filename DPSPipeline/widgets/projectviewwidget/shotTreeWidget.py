@@ -10,13 +10,16 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     
     newVersion = QtCore.pyqtSignal(QtCore.QString)
 
-    def __init__(self,_project,_sequence):
+    def __init__(self,_project,_sequence,_parentWidgetItem):
         super(QtGui.QTreeWidget, self).__init__()
         
         self._project = _project
+        self._parentWidgetItem = _parentWidgetItem
         self._shots = _sequence._shots
         self._phases = _project._phases
         self._sequence = _sequence
+        
+        self.rowHeight = 25
         
         self.shotPhaseNames = ["ShotID","Name"]
         
@@ -47,18 +50,36 @@ class ShotTreeWidget(QtGui.QTreeWidget):
                 
                      
                 shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
+                shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
                 #self.addTopLevelItem(shotWidgetItem)
          
         #self.setSortingEnabled(True)
         #self.sortByColumn(1)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
-        shotWidgetItem.setSizeHint(3,QtCore.QSize(400,25))
+        
         self.UpdateBackgroundColors()
         
         self.itemEntered.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
 	self.itemPressed.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
+        
+        self.itemEntered.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
+	self.itemPressed.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
         sharedDB.mySQLConnection.newTaskSignal.connect(self.AttachTaskToButton)
-            
+        
+        self.UpdateWidgetHeight()
+        
+        #disables vertical scroll bar
+        self.setHorizontalScrollBarPolicy( QtCore.Qt.ScrollBarAlwaysOff )
+        
+    def UpdateWidgetHeight(self):
+        
+        height = self.topLevelItemCount()*self.rowHeight+40
+        #self._parentWidgetItem.setSizeHint(0,QtCore.QSize(0,height))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(sizePolicy)
+        self.setMinimumSize(0,height)
+        
+    
     def UpdateBackgroundColors(self):
         for x in range(0,self.topLevelItemCount()):           
         
@@ -75,8 +96,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
         self.UpdateBackgroundColors()
-        shotWidgetItem.setSizeHint(3,QtCore.QSize(400,25))
-                
+        shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
+        self.UpdateWidgetHeight()
     def SetShotPhaseNames(self):        
         for phase in self._phases:
             if phase._taskPerShot:

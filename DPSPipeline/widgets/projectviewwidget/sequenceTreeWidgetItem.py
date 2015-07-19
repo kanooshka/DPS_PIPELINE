@@ -2,6 +2,7 @@ import sharedDB
 
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
+from DPSPipeline.widgets.projectviewwidget import seqDescription
 
 class SequenceTreeWidgetItem(QtGui.QTreeWidgetItem):
 
@@ -12,9 +13,10 @@ class SequenceTreeWidgetItem(QtGui.QTreeWidgetItem):
         self._progressList = progressList
         self._project = _project
         self._projectviewwidget = _projectviewwidget
-        self._shotTreeWidget = shotTreeWidget.ShotTreeWidget(self._project,self._sequence)
+        self.sequenceDescription = seqDescription.SeqDescription(_sequence = self._sequence,_sequenceTreeItem = self, _project = self._project)
+        self._shotTreeWidget = shotTreeWidget.ShotTreeWidget(self._project,self._sequence,self)
         
-        self.sequenceDescription = QtGui.QTextEdit()
+        
         self.descriptionTreeItem = QtGui.QTreeWidgetItem()
 
         self.setText(0,("Seq_"+self._sequence._number))
@@ -23,7 +25,7 @@ class SequenceTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.setForeground(0,QtGui.QColor('white'))
         
         #add description to widget
-        self.sequenceDescription.setFixedHeight(40)
+        #self.sequenceDescription.setFixedHeight(40)
         self.addChild(self.descriptionTreeItem)
         self._progressList.setItemWidget(self.descriptionTreeItem,0,self.sequenceDescription)
 		    
