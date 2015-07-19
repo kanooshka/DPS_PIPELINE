@@ -83,11 +83,12 @@ class AutoParseProjectsThread(QtCore.QThread):
 							#print "Adding Sequence "+str(mySeq._idsequences)+ " in Project " + str(proj._idprojects)
 							proj._sequences.append(mySeq)
 							###if current project in projectview update
-							if sharedDB.myProjectViewWidget._currentProject is not None:
+							sharedDB.mySQLConnection.newSequenceSignal.emit(str(mySeq._idsequences))
+							'''if sharedDB.myProjectViewWidget._currentProject is not None:
 								if sharedDB.myProjectViewWidget._currentProject._idprojects == mySeq._idprojects:
 									#emit new sequence signal
-									sharedDB.mySQLConnection.newSequenceSignal.emit()
-									#print "emitSignal"
+									
+									#print "emitSignal"'''
 									
 							
 							break
@@ -127,10 +128,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 							###add to sequence's shot list
 							seq._shots.append(myShot)
 							###if current sequence in projectview update
-							if sharedDB.myProjectViewWidget._currentSequence is not None:
-								if sharedDB.myProjectViewWidget._currentSequence._idsequences == myShot._idsequences:
-									#emit new shot signal
-									sharedDB.mySQLConnection.newShotSignal.emit()
+							sharedDB.mySQLConnection.newShotSignal.emit(str(myShot._idshots))
 							break
 					
 				#remove row from list
@@ -158,19 +156,22 @@ class AutoParseProjectsThread(QtCore.QThread):
 					print "New TASK found in database CREATING task: "+str(row[0])
 					#create instance of shot class				
 					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
-					#add shot to shot list
+					#add task to task list
 					sharedDB.myTasks.append(myTask)
 					#iterate through shots
 					for shot in sharedDB.myShots:
 						##if idsequences matches
+						#print "Shot id:" +str(shot._idshots)+" Task Id shots: "+str(myTask._idshots)
 						if shot._idshots == myTask._idshots:
+							
 							###add to sequence's shot list
-							shot._tasks.append(myTask)
-							###if current sequence in projectview update
-							if sharedDB.myProjectViewWidget._currentShot is not None:
-								if sharedDB.myProjectViewWidget._currentShot._idshots == myTask._idshots:
-									#emit new task signal
-									sharedDB.mySQLConnection.newTaskSignal.emit()
+							if shot._tasks is not None:
+								shot._tasks.append(myTask)
+							else:
+								shot._tasks = [myTask]
+
+							sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
+							
 							break
 					
 				#remove row from list
@@ -220,9 +221,9 @@ class AutoCheckDatabase(QtCore.QThread):
 class Connection(QObject):
 	
 	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)
-	newSequenceSignal = QtCore.pyqtSignal()
-	newShotSignal = QtCore.pyqtSignal()
-	newTaskSignal = QtCore.pyqtSignal()
+	newSequenceSignal = QtCore.pyqtSignal(QtCore.QString)
+	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
+	newTaskSignal = QtCore.pyqtSignal(QtCore.QString)
 	wrongVersionSignal = QtCore.pyqtSignal()
 	firstLoadComplete = QtCore.pyqtSignal()
 

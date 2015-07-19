@@ -10,8 +10,9 @@ from PyQt4.QtCore import QObject
 class Shots(QObject):
 
 	shotChanged = QtCore.pyqtSignal(QtCore.QString)
-
-	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=[]):
+	shotAdded = QtCore.pyqtSignal(QtCore.QString)
+	
+	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
 		
 		super(QObject, self).__init__()
 		
@@ -27,6 +28,7 @@ class Shots(QObject):
 		self._timestamp		     = _timestamp
 		self._shotnotes		     = _shotnotes
 		
+		self._sequence              = self.GetSequenceById()
 		self._tasks                 = _tasks
 		self._updated                = _updated
 		self._type                   = "shot"
@@ -42,17 +44,26 @@ class Shots(QObject):
 		if self._new:	
 			self.AddShotToDB()
 			print "Shot '"+self._number+"' Added to Database!"
+			self._new = 0
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateShotInDB()
 			print "Shot '"+self._number+"' Updated in Database!"
+			self._updated = 0
 	
-		self._new = 0
-		self._updated = 0
 		
-		for task in self._tasks:
-			task.Save()
 		
+		
+		if self._tasks is not None:
+			for task in self._tasks:
+				task.Save()
+		
+	def GetSequenceById(self):
+		for seq in sharedDB.mySequences:
+			if seq._idsequences == self._idsequences:
+				return seq
+		
+	
 	
 	def AddShotToDB(self):
 	
@@ -63,6 +74,8 @@ class Shots(QObject):
 		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, shotnotes) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+notes+"');","commit")	
 	
 		self._idshots = sharedDB.mySQLConnection._lastInsertId
+		
+		self.shotAdded.emit(str(self._idshots))
 	
 	def UpdateShotInDB (self):
 

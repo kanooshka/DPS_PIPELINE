@@ -10,6 +10,7 @@ from PyQt4.QtCore import QObject
 class Sequences(QObject):
 
 	sequenceChanged = QtCore.pyqtSignal(QtCore.QString)
+	sequenceAdded = QtCore.pyqtSignal(QtCore.QString)
 	
 	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
 		
@@ -42,14 +43,12 @@ class Sequences(QObject):
 		if self._new:	
 			self.AddSequenceToDB()
 			print "Sequence '"+self._number+"' Added to Database!"
-		
+			self._new = 0
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateSequenceInDB()
 			print "Sequence '"+self._number+"' Updated in Database!"
-	
-		self._new = 0
-		self._updated = 0
+			self._updated = 0
 	
 		for shot in self._shots:
 			shot.Save()
@@ -62,6 +61,8 @@ class Sequences(QObject):
 	
 		self._idsequences = sharedDB.mySQLConnection._lastInsertId
 	
+		self.sequenceAdded.emit(str(self._idsequences))
+		
 	def UpdateSequenceInDB (self):
 
 		descr = str(self._description).replace("\'","\'\'")
@@ -74,6 +75,8 @@ class Sequences(QObject):
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101)
 		self._shots.append(shot)
 		sharedDB.myShots.append(shot)
+		
+		return shot
 	
 	def SetValues(self,_idsequences = 0, _number = '', _idstatuses = 1, _description = '', _timestamp = ''):
 		print ("Downloaded updated for Sequence '"+str(self._number)+"'")

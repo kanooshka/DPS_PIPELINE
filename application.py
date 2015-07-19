@@ -12,14 +12,14 @@ from DPSPipeline.calendarview import CalendarView
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
-
+import qdarkstyle
 #import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
     
     def __init__( self):
         QtGui.QMainWindow.__init__(self)
-        
+
         self.setWindowTitle("Sludge v"+sharedDB.myVersion._name)
         self._fileMenu = ''
         
@@ -144,7 +144,14 @@ def main():
         path = projexui.resources.find('img/DP/pipe.gif')
         app.setWindowIcon(QtGui.QIcon(path))
         sharedDB.app = app        
-                
+        '''
+	stylesheet = projexui.resources.find('styles/DarkOrange.stylesheet')
+	qfile = QtCore.QFile(stylesheet)
+	qfile.open(QtCore.QFile.ReadOnly);
+	StyleSheet = QtCore.QLatin1String(qfile.readAll());
+	
+	app.setStyleSheet(StyleSheet)'''
+	
         win = MainWindow()
         
         #sharedDB.mainWindow.show()

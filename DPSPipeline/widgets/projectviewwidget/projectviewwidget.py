@@ -16,7 +16,7 @@ from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
-from DPSPipeline.widgets.projectviewwidget import projectlistshotwidget
+from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 
 class CheckForImagePath(QtCore.QThread):
 
@@ -81,8 +81,8 @@ class ProjectViewWidget(QWidget):
 
 	#connects signals
 	sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
-	sharedDB.mySQLConnection.newSequenceSignal.connect(self.LoadSequenceNames)
-	sharedDB.mySQLConnection.newShotSignal.connect(self.LoadShotNames)
+	sharedDB.mySQLConnection.newSequenceSignal.connect(self.AddSequenceToProgressList)
+	sharedDB.mySQLConnection.newShotSignal.connect(self.AddShotToProgressList)
 	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
 	
 	self.propogateStatuses()		
@@ -100,16 +100,16 @@ class ProjectViewWidget(QWidget):
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
 	#connect sequence settings		
-	self.sequenceNumber.currentRowChanged.connect(self.LoadSequenceValues)
+	#self.sequenceNumber.currentRowChanged.connect(self.LoadSequenceValues)
 	self.saveSequenceDescription.clicked.connect(self.SaveSequenceDescription)
-	self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
+	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	#connect shot settings
-	self.shotNumber.currentRowChanged.connect(self.LoadShotValues)
+	#self.shotNumber.currentRowChanged.connect(self.LoadShotValues)
 	self.saveShotDescription.clicked.connect(self.SaveShotDescription)
-	self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.SetShotValues)
+	#self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.SetShotValues)
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
 	self.addShot.clicked.connect(self.AddShot)
@@ -326,10 +326,13 @@ class ProjectViewWidget(QWidget):
 	#if unique
 	if unique:
 	    #add sequence
-	    self._currentProject.AddSequenceToProject(newName)
-	    self.LoadSequenceNames()
-	    self.selectSequenceByName(newName)
-	    self.LoadShotNames()
+	    seq = self._currentProject.AddSequenceToProject(newName)
+	    seq.sequenceAdded.connect(self.AddSequenceToProgressList)
+	    #self.LoadProgressListValues()
+	    #self.LoadSequenceNames()
+	    #self.selectSequenceByName(newName)
+	    #self.LoadShotNames()
+	    
 	    #self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
 	    
 	else:
@@ -400,7 +403,9 @@ class ProjectViewWidget(QWidget):
 	    
     def LoadProgressListValues(self):
 	self.progressList.clear()
-	
+	#self.progressList.header().sortIndicatorOrder()
+	self.progressList.sortByColumn(0, QtCore.Qt.AscendingOrder);
+	self.progressList.setSortingEnabled(True);
 	self._currentSequence = None
 	
 	if (self._currentProject._sequences):
@@ -409,31 +414,44 @@ class ProjectViewWidget(QWidget):
 		sequence = self._currentProject._sequences[x]
 		    
 		#Add Sequences to list
-		sequenceTreeItem = QtGui.QTreeWidgetItem()
-		sequenceTreeItem.setText(0,("Seq_"+sequence._number))
-		sequenceTreeItem.setTextAlignment(0,QtCore.Qt.AlignCenter)
-		sequenceTreeItem.setBackground(0,QtGui.QColor('grey'))
-		sequenceTreeItem.setForeground(0,QtGui.QColor('white'))		
-		self.progressList.addTopLevelItem(sequenceTreeItem)
-		
-		shotTreeWidget = projectlistshotwidget.ProjectlistShotWidget(self._currentProject,sequence._shots,self._currentProject._phases)
-		
-		sequenceTreeItem.addChild(shotTreeWidget.shotTreeItem)
-		sequenceTreeItem.setExpanded(True)
-		shotTreeWidget.itemEntered.connect(self.LoadShotValuesFromSent)
-		shotTreeWidget.itemPressed.connect(self.LoadShotValuesFromSent)
-		self.progressList.setItemWidget(shotTreeWidget.shotTreeItem,0,shotTreeWidget)
-		
-		
-			#shotWidgetItem.setText(2,(shot._number))
-		#size = shotTreeWidget.maximumViewportSize()
-		#shotTreeWidget.setMinimumSize(size)
-	#else:
-	    #self.setProjectListEnabled(0)
+		self.AddSequenceToProgressList(sequence = sequence)
     
+    def GetSequenceByID(self,seqid):
+	for seq in self._currentProject._sequences:
+	    if str(seq._idsequences) == str(seqid):
+		return seq    
+    
+    def AddSequenceToProgressList(self, seqid = None, sequence = None):
+	if sequence is None:
+	    print "getting sequence by id"
+	    sequence = self.GetSequenceByID(seqid)
 	
-	    
-		
+	if str(sequence._idprojects) == str(self._currentProject._idprojects):
+	
+	    #Add Sequences to list
+	    sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
+	    self.progressList.addTopLevelItem(sequenceTreeItem)
+	    sequenceTreeItem.setExpanded(True)	    
+    	
+    def GetShotByID(self,shotid):
+	for seq in self._currentProject._sequences:
+	    for shot in seq._shots:
+		if str(shot._idshots) == str(shotid):
+		    return shot	
+	
+    def AddShotToProgressList(self, shotid = None, shot = None):
+	if shot is None:
+	    print "getting shot by id"
+	    shot = self.GetShotByID(shotid)
+
+	for x in range(0,self.progressList.topLevelItemCount()):
+	    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
+		seqTreeItem = self.progressList.topLevelItem(x)
+	
+		#add shot to that widget
+		seqTreeItem._shotTreeWidget.AddShot(shot)		
+		break
+
     def setSequenceSettingsEnabled(self, v):
 	self.sequenceNumber.setEnabled(v)
 	self.sequenceStatus.setEnabled(v)
@@ -618,6 +636,7 @@ class ProjectViewWidget(QWidget):
 	
 	#make sure _currentSequence is current
 	
+	
 	#self.setCurrentShot()
 	
 	for shot in sharedDB.myShots:
@@ -669,10 +688,12 @@ class ProjectViewWidget(QWidget):
 	#if unique
 	if unique:
 	    #add sequence
-	    self._currentSequence.AddShotToSequence(newName)
-	    self.LoadShotNames()
-	    self.selectShotByName(newName)
-	    #self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
+	    shot = self._currentSequence.AddShotToSequence(newName)
+	    shot.shotAdded.connect(self.AddShotToProgressList)
+	    #self.LoadShotNames()	    
+	    #self.LoadProgressListValues()
+	    #self.selectShotByName(newName)
+	    
 	    
 	else:
 	    #warning message
@@ -716,42 +737,3 @@ class ProjectViewWidget(QWidget):
 	    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
 		    self._currentShot._shotnotes = self.shotNotes.toPlainText()
 		    self._currentShot._updated = 1
-	
-    def refreshTasks(self):
-	self.taskTable.clear()
-	'''for x in range(0, len(sharedDB.myTasks)):
-	    task = sharedDB.myTasks[x]
-	    if task._idshots == self._currentShot._idshots:
-		newRow = QtGui.QTreeWidgetItem()
-		self.taskTable.insertTopLevelItem(0,newRow)
-		
-		#add task names
-		phaseCombobox = QtGui.QComboBox()
-		self.taskTable.setItemWidget(newRow,0,phaseCombobox)
-		for y in range(0,len(sharedDB.myPhases)):
-		    phase = sharedDB.myPhases[y]
-		    phaseCombobox.addItem(phase._name)
-		    if phase._idphases == task._idphases:
-			phaseCombobox.setCurrentIndex(y)
-		
-		#add user names
-		userComboBox = QtGui.QComboBox()
-		self.taskTable.setItemWidget(newRow,1,userComboBox)
-		for y in range(0,len(sharedDB.myUsers)):
-		    user = sharedDB.myUsers[y]
-		    userComboBox.addItem(user._name)
-		    if user._idusers == task._idusers:
-			userComboBox.setCurrentIndex(y)
-		
-		#newWidgetItem.setText(str(task._idtasks))
-		#newWidgetItem.setToolTip(str(x))
-		#newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
-		#newWidgetItem.setData(sequence._number)
-		#
-		#self.taskTable.setItem(0,0,newWidgetItem)
-		
-		#Table
-		#self.taskTable.insertRow(0)
-		#combobox = QtGui.QComboBox()
-		#self.taskTable.setCellWidget(0,0,combobox)
-		'''

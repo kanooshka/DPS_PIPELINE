@@ -92,7 +92,8 @@ class Projects(QObject):
 
 		seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
 		self._sequences.append(seq)
-		sharedDB.mySequences.append(seq)	
+		sharedDB.mySequences.append(seq)
+		return seq
 	
 	def UpdateProjectInDB (self):
 		descr = str(self._description).replace("\'","\'\'")

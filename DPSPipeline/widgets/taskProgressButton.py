@@ -22,10 +22,16 @@ class TaskProgressButton(QtGui.QLabel):
         #self.resize(25, 25)
         #self.setPixmap(QtGui.QPixmap(self.buttonOrder[self._currentState]))
         self.connect(self, QtCore.SIGNAL('clicked()'), self.clicked)
+        
+        #connect task update from DB to update status
+        self._task.taskChanged.connect(self.getTaskState)
+        
         self.updateImage()
         
     def mouseReleaseEvent(self, ev):
-        self.emit(QtCore.SIGNAL('clicked()'))
+        if ev.button() == QtCore.Qt.RightButton:
+            self.emit(QtCore.SIGNAL('clicked()'))
+            
         
     def clicked(self):
         if (self._currentState == len(self.buttonOrder)-1):
@@ -33,9 +39,17 @@ class TaskProgressButton(QtGui.QLabel):
         else:
             self._currentState += 1
         
+        self.updateState()        
         
+    def updateState(self):
         self._task.setStatus(self._currentState)
         self.updateImage()
         
     def updateImage(self):
-        self.setPixmap(QtGui.QPixmap(self.buttonOrder[self._currentState])) 
+        self.setPixmap(QtGui.QPixmap(self.buttonOrder[self._currentState]))
+    
+    
+    def getTaskState(self):
+        self._currentState = self._task._status
+        self.updateImage()
+    
