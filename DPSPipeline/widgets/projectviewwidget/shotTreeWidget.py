@@ -132,6 +132,9 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def keyPressEvent(self, event):
         pass
     
+    def wheelEvent(self, event):
+	self._parentWidgetItem._progressList.wheelEvent(event)
+    
     '''
     #self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu);    
     #self.connect(self,SIGNAL("customContextMenuRequested(QPoint)"),self,SLOT("contextMenuRequested(QPoint)"))
