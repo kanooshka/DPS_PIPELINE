@@ -678,25 +678,25 @@ class ProjectViewWidget(QWidget):
 	#self.blockSignals(False)
     
     def SetShotValues(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    #self._currentShot._description = self.shotDescription.toPlainText()
-	    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
-	    self._currentShot._startframe = self.startFrame.value()
-	    self._currentShot._endframe = self.endFrame.value()
-	    self._currentShot._updated = 1
+	if not self._blockUpdates:
+		if self._currentShot is not None:
+		    #self._currentShot._description = self.shotDescription.toPlainText()
+		    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
+		    self._currentShot._startframe = self.startFrame.value()
+		    self._currentShot._endframe = self.endFrame.value()
+		    self._currentShot._updated = 1
 	    
 	    
     def SaveShotDescription(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    if not (self.shotDescription.toPlainText() == self._currentShot._description):
-		    self._currentShot._description = self.shotDescription.toPlainText()
-		    self._currentShot._updated = 1
+	if not self._blockUpdates:
+		if self._currentShot is not None:
+		    if not (self.shotDescription.toPlainText() == self._currentShot._description):
+			    self._currentShot._description = self.shotDescription.toPlainText()
+			    self._currentShot._updated = 1
 
     def SaveShotNotes(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
-		    self._currentShot._shotnotes = self.shotNotes.toPlainText()
-		    self._currentShot._updated = 1
+	if not self._blockUpdates:
+		if self._currentShot is not None:
+		    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
+			    self._currentShot._shotnotes = self.shotNotes.toPlainText()
+			    self._currentShot._updated = 1
