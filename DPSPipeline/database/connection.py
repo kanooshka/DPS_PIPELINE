@@ -21,6 +21,74 @@ class AutoParseProjectsThread(QtCore.QThread):
 	#sharedDB.blockSignals = 1
 	
 	if sharedDB.mySQLConnection is not None:
+		
+		#clients
+		while True:
+			if len(sharedDB.mySQLConnection._clientsToBeParsed)>0:
+				row = sharedDB.mySQLConnection._clientsToBeParsed[0]
+				existed = False		
+				#iterate through ip list
+				for client in sharedDB.myClients:
+					#if id exists update entry
+					if str(client._idclients) == str(row[0]):
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[3]) or sharedDB.testing:
+							client.SetValues(_idclients = row[0],_name = row[1])
+						existed = True
+						break
+				if not existed:
+					#create client
+					print "New Client found in database CREATING client: "+str(row[0])
+					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
+					myClient =sharedDB.clients.Clients(_idclients = row[0],_name = row[1],_new = 0)
+					#add ip to ip list
+					sharedDB.myClients.append(myClient)	
+		
+					#emit new client signal
+					sharedDB.mySQLConnection.newClientSignal.emit(str(myClient._idclients))
+					
+				#remove row from list
+				del sharedDB.mySQLConnection._clientsToBeParsed[0]
+			else:
+				break
+		
+		#ips
+		while True:
+			if len(sharedDB.mySQLConnection._ipsToBeParsed)>0:
+				row = sharedDB.mySQLConnection._ipsToBeParsed[0]
+				existed = False		
+				#iterate through ip list
+				for ip in sharedDB.myIps:
+					#if id exists update entry
+					if str(ip._idips) == str(row[0]):
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[4]) or sharedDB.testing:
+							ip.SetValues(_idips = row[0],_name = row[1],_idclients = row[2])
+						existed = True
+						break
+				if not existed:
+					#create ip
+					print "New IP found in database CREATING ip: "+str(row[0])
+					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
+					myIp =sharedDB.ips.Ips(_idips = row[0],_name = row[1],_idclients = row[2],_new = 0)
+					#add ip to ip list
+					sharedDB.myIps.append(myIp)
+					#iterate through projects
+					for client in sharedDB.myClients:
+						##if idprojects matches
+						if client._idclients == myIp._idclients:
+							###add to client's ips
+							client._ips.append(myIp)
+							break
+		
+		
+					#emit new sequence signal
+					sharedDB.mySQLConnection.newIpSignal.emit(str(myIp._idips))
+					
+				#remove row from list
+				del sharedDB.mySQLConnection._ipsToBeParsed[0]
+			else:
+				break
+
+		#Projects
 		while True:
 			#print "Queue Lenght: "+str(x)
 			if len(sharedDB.mySQLConnection._projectsToBeParsed)>0:
@@ -39,10 +107,18 @@ class AutoParseProjectsThread(QtCore.QThread):
 					#create project
 					print "New PROJECT found in database CREATING project: "+str(row[0])
 					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
-					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0)
+					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12],_new = 0)
 					#add project to project list
 					sharedDB.myProjects.append(myProj)
 					#iterate through projects
+					for ip in sharedDB.myIps:
+						##if idprojects matches
+						if ip._idips == myProj._idips:
+							###add to project's sequences
+							#print "Adding Sequence "+str(mySeq._idsequences)+ " in Project " + str(proj._idprojects)
+							ip._projects.append(myProj)
+							break
+		
 		
 					#emit new sequence signal
 					sharedDB.mySQLConnection.newProjectSignal.emit(str(myProj._idprojects))
@@ -51,7 +127,8 @@ class AutoParseProjectsThread(QtCore.QThread):
 				del sharedDB.mySQLConnection._projectsToBeParsed[0]
 			else:
 				break
-	
+		
+		#Sequences
 		while True:
 			#print "Queue Lenght: "+str(x)
 			if len(sharedDB.mySQLConnection._sequencesToBeParsed)>0:
@@ -110,7 +187,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 
 					if str(shot._idshots) == str(row[0]):						
 						if not str(sharedDB.mySQLConnection.myIP) == str(row[10]) or sharedDB.testing:
-							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _shotnotes = row[11])
+							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6], _shotnotes = row[11])
 						existed = True
 						break
 					
@@ -221,7 +298,8 @@ class AutoCheckDatabase(QtCore.QThread):
 	time.sleep(sharedDB.mySQLConnection._autoUpdateFrequency)
 	    
 class Connection(QObject):
-	
+	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
+	newIpSignal = QtCore.pyqtSignal(QtCore.QString)
 	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)
 	newSequenceSignal = QtCore.pyqtSignal(QtCore.QString)
 	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
@@ -253,6 +331,8 @@ class Connection(QObject):
 		
 		self._lastInsertId = ''
 		
+		self._clientsToBeParsed = []
+		self._ipsToBeParsed = []
 		self._projectsToBeParsed = []
 		self._sequencesToBeParsed = []
 		self._shotsToBeParsed = []
@@ -420,7 +500,15 @@ class Connection(QObject):
 
 	def CheckForNewEntries (self):
 
-		projrows = self.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		clientrows = self.query("SELECT idclients, name, lasteditedbyname, lasteditedbyip FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		clientrows.sort(key=lambda x: x[2])
+		self._clientsToBeParsed.extend(clientrows)
+		
+		iprows = self.query("SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
+		iprows.sort(key=lambda x: x[2])
+		self._ipsToBeParsed.extend(iprows)
+		
+		projrows = self.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
 		projrows.sort(key=lambda x: x[2])
 		self._projectsToBeParsed.extend(projrows)		
 			
@@ -467,4 +555,37 @@ class Connection(QObject):
 		versionError.exec_()
 		
 		sharedDB.app.exit()
+		
+	'''	
+	#parseList = sharedDB.mySQLConnection._clientsToBeParsed,existingEntries = sharedDB.myClients,idstring = 
+	def CheckForDBUpdates(self,parseList,existingEntries):
+		#clients
+		while True:
+			if len(parseList)>0:
+				row = parseList[0]
+				existed = False		
+				#iterate through ip list
+				for entry in existingEntries:
+					#if id exists update entry
+					if str(entry._idclients) == str(row[0]):
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[3]) or sharedDB.testing:
+							client.SetValues(_idclients = row[0],_name = row[1])
+						existed = True
+						break
+				if not existed:
+					#create client
+					print "New Client found in database CREATING client: "+str(row[0])
+					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
+					myClient =sharedDB.clients.Clients(_idclients = row[0],_name = row[1],_new = 0)
+					#add ip to ip list
+					sharedDB.myClients.append(myClient)	
+		
+					#emit new client signal
+					sharedDB.mySQLConnection.newClientSignal.emit(str(myClient._idclients))
+					
+				#remove row from list
+				del parseList[0]
+			else:
+				break
 	
+	'''

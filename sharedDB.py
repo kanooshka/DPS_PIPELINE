@@ -1,3 +1,5 @@
+from DPSPipeline.database import clients
+from DPSPipeline.database import ips
 from DPSPipeline.database import projects
 from DPSPipeline.database import phaseAssignments
 from DPSPipeline.database import phases
@@ -33,6 +35,8 @@ myPhases = []
 myShots = []
 myTasks = []
 myUsers = []
+myClients = []
+myIps = []
 myProjects = []
 mySequences = []
 

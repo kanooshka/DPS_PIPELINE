@@ -9,30 +9,68 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         self._projectviewwidget = parent
         
         self.setText("Right Click To Select Project...")
+        self.setReadOnly(True)
+        self.showAllEnabled = 0
+        self._project = None
     
     def contextMenuEvent(self, ev):
+        
+        activeIps = []
+        activeClients = []
+        
+
+        for proj in sharedDB.myProjects:
+            if not proj._hidden or self.showAllEnabled:
+                if proj._idclients not in activeClients or self.showAllEnabled:
+                    activeClients.append(proj._idclients)
+                if proj._idips not in activeIps or self.showAllEnabled:
+                    activeIps.append(proj._idips)
+        
         menu	 = QtGui.QMenu()
+           
+           
+        showAllAction = menu.addAction('Show Inactive Projects')
+        showAllAction.setCheckable(True)
+        showAllAction.setChecked(self.showAllEnabled)
+        showAllAction.triggered.connect(self.toggleShowAllAction)       
+           
+        menu.addSeparator()
            
         #iterate through clients
         for i in xrange(0, len(sharedDB.myClients)):
-            exec("client_menu%d = QtGui.QMenu(sharedDB.myClients[i]._name)" % (i + 1))
-            exec("menu.addMenu(client_menu%d)" % (i + 1))
-            #Iterate through Client's IPs
-            for j in xrange(0, len(sharedDB.myClients[i]._ips)):
-                exec("ip%d_%d = QtGui.QMenu(sharedDB.myClients[i]._ips[j]._name)" % (i + 1,j + 1))
-                exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
-                #Iterate through projects in IP
-                for k in xrange(0, len(sharedDB.myClients[i]._ips[j]._projects)):
-                    #exec("action%d_%d_%d = QtGui.QAction(sharedDB.myClients[i]._ips[j]._projects[k]._name, self)" % (i + 1, j + 1, k + 1))
-                    #exec("action%d_%d_%d.triggered[()].connect(lambda item=sharedDB.myClients[i]._ips[j]._projects[k]._idprojects: self.SelectShot(item))" %(i + 1,j + 1,k+1))
-                    #exec("ip%d_%d.addAction(action%d_%d_%d)" % (i + 1,j + 1,i + 1,j + 1,k + 1))
-                    #exec("self.connect(action%d_%d_%d,SIGNAL(\"triggered(QtGui.QAction)\"),self,SLOT(\"SelectShot(QtGui.QAction)\"))" % (i + 1, j + 1, k + 1))
-                    
-                    exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(sharedDB.myClients[i]._ips[j]._projects[k]._name)))
-                    exec("ip%d_%d.triggered.connect(self._projectviewwidget.LoadProjectValues)" % (i + 1,j + 1))
+            if sharedDB.myClients[i]._idclients in activeClients:
+                exec("client_menu%d = QtGui.QMenu(sharedDB.myClients[i]._name)" % (i + 1))
+                exec("menu.addMenu(client_menu%d)" % (i + 1))
+                #Iterate through Client's IPs
+                for j in xrange(0, len(sharedDB.myClients[i]._ips)):
+                    if sharedDB.myClients[i]._ips[j]._idips in activeIps:
+                        exec("ip%d_%d = QtGui.QMenu(sharedDB.myClients[i]._ips[j]._name)" % (i + 1,j + 1))
+                        exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
+                        #Iterate through projects in IP
+                        for k in xrange(0, len(sharedDB.myClients[i]._ips[j]._projects)):
+                            #exec("action%d_%d_%d = QtGui.QAction(sharedDB.myClients[i]._ips[j]._projects[k]._name, self)" % (i + 1, j + 1, k + 1))
+                            #exec("action%d_%d_%d.triggered[()].connect(lambda item=sharedDB.myClients[i]._ips[j]._projects[k]._idprojects: self.SelectShot(item))" %(i + 1,j + 1,k+1))
+                            #exec("ip%d_%d.addAction(action%d_%d_%d)" % (i + 1,j + 1,i + 1,j + 1,k + 1))
+                            #exec("self.connect(action%d_%d_%d,SIGNAL(\"triggered(QtGui.QAction)\"),self,SLOT(\"SelectShot(QtGui.QAction)\"))" % (i + 1, j + 1, k + 1))
+                            if not sharedDB.myClients[i]._ips[j]._projects[k]._hidden or self.showAllEnabled:
+                                exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(sharedDB.myClients[i]._ips[j]._projects[k]._name)))
+                                exec("ip%d_%d.triggered.connect(self.ChangeProject)" % (i + 1,j + 1))
                 
         menu.exec_(ev.globalPos())
+    
+    def ChangeProject(self, projname):
+        for proj in sharedDB.myProjects:
+            if str(proj._name) == str(projname.text()):
+                self._projectviewwidget._currentProject = proj
+                break
+            
+        self._projectviewwidget.LoadProjectValues()
         
+    
+      
+    def toggleShowAllAction(self):
+        self.showAllEnabled = not self.showAllEnabled
+
     '''def SelectShot(self, action):
         #iterate through projects
         for proj in sharedDB.myProjects:
