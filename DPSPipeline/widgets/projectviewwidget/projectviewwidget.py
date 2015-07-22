@@ -427,12 +427,13 @@ class ProjectViewWidget(QWidget):
 	    #print "getting sequence by id"
 	    sequence = self.GetSequenceByID(seqid)
 	
-	if str(sequence._idprojects) == str(self._currentProject._idprojects):
-	
-	    #Add Sequences to list
-	    sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
-	    self.progressList.addTopLevelItem(sequenceTreeItem)
-	    sequenceTreeItem.setExpanded(True)	    
+	if sequence is not None:
+		if str(sequence._idprojects) == str(self._currentProject._idprojects):
+		
+		    #Add Sequences to list
+		    sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
+		    self.progressList.addTopLevelItem(sequenceTreeItem)
+		    sequenceTreeItem.setExpanded(True)	    
     	
     def GetShotByID(self,shotid):
 	for seq in self._currentProject._sequences:
@@ -444,14 +445,15 @@ class ProjectViewWidget(QWidget):
 	if shot is None:
 	    #print "getting shot by id"
 	    shot = self.GetShotByID(shotid)
-
-	for x in range(0,self.progressList.topLevelItemCount()):
-	    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
-		seqTreeItem = self.progressList.topLevelItem(x)
 	
-		#add shot to that widget
-		seqTreeItem._shotTreeWidget.AddShot(shot)		
-		break
+	if shot is not None:
+		for x in range(0,self.progressList.topLevelItemCount()):
+		    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
+			seqTreeItem = self.progressList.topLevelItem(x)
+		
+			#add shot to that widget
+			seqTreeItem._shotTreeWidget.AddShot(shot)		
+			break
 
     def setSequenceSettingsEnabled(self, v):
 	self.sequenceNumber.setEnabled(v)
