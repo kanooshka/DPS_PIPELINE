@@ -134,6 +134,10 @@ def my_excepthook(type , value, tback):
     errorMessage.setText("An Error has Occurred, please contact support: \nTraceback: "+traceString+"\nValue: "+str(value))
     errorMessage.exec_()
     
+    if errorMessage.Ok:
+	sharedDB.app.quit()
+	
+    
     # then call the default handler
     #sys.__excepthook__(type, value, tback)
     
