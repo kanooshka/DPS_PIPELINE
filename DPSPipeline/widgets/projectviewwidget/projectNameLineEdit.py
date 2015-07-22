@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 import sharedDB
 from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT
+import operator
 
 class ProjectNameLineEdit(QtGui.QLineEdit):
    
@@ -17,7 +18,6 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         
         activeIps = []
         activeClients = []
-        
 
         for proj in sharedDB.myProjects:
             if not proj._hidden or self.showAllEnabled:
@@ -27,6 +27,8 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
                     activeIps.append(proj._idips)
         
         menu	 = QtGui.QMenu()
+        
+        
            
            
         showAllAction = menu.addAction('Show Inactive Projects')
@@ -37,24 +39,32 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         menu.addSeparator()
            
         #iterate through clients
-        for i in xrange(0, len(sharedDB.myClients)):
-            if sharedDB.myClients[i]._idclients in activeClients:
-                exec("client_menu%d = QtGui.QMenu(sharedDB.myClients[i]._name)" % (i + 1))
+        cli = sharedDB.myClients
+        cli.sort(key=operator.attrgetter('_name'),reverse=False)
+        for i in xrange(0, len(cli)):
+            if cli[i]._idclients in activeClients:
+                exec("client_menu%d = QtGui.QMenu(cli[i]._name)" % (i + 1))
                 exec("menu.addMenu(client_menu%d)" % (i + 1))
                 #Iterate through Client's IPs
-                for j in xrange(0, len(sharedDB.myClients[i]._ips)):
-                    if sharedDB.myClients[i]._ips[j]._idips in activeIps:
-                        exec("ip%d_%d = QtGui.QMenu(sharedDB.myClients[i]._ips[j]._name)" % (i + 1,j + 1))
-                        exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
-                        #Iterate through projects in IP
-                        for k in xrange(0, len(sharedDB.myClients[i]._ips[j]._projects)):
-                            #exec("action%d_%d_%d = QtGui.QAction(sharedDB.myClients[i]._ips[j]._projects[k]._name, self)" % (i + 1, j + 1, k + 1))
-                            #exec("action%d_%d_%d.triggered[()].connect(lambda item=sharedDB.myClients[i]._ips[j]._projects[k]._idprojects: self.SelectShot(item))" %(i + 1,j + 1,k+1))
-                            #exec("ip%d_%d.addAction(action%d_%d_%d)" % (i + 1,j + 1,i + 1,j + 1,k + 1))
-                            #exec("self.connect(action%d_%d_%d,SIGNAL(\"triggered(QtGui.QAction)\"),self,SLOT(\"SelectShot(QtGui.QAction)\"))" % (i + 1, j + 1, k + 1))
-                            if not sharedDB.myClients[i]._ips[j]._projects[k]._hidden or self.showAllEnabled:
-                                exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(sharedDB.myClients[i]._ips[j]._projects[k]._name)))
-                                exec("ip%d_%d.triggered.connect(self.ChangeProject)" % (i + 1,j + 1))
+                if len(cli[i]._ips):
+                    ips = cli[i]._ips
+                    ips.sort(key=operator.attrgetter('_name'),reverse=False)
+                    for j in xrange(0, len(ips)):
+                        if ips[j]._idips in activeIps:
+                            exec("ip%d_%d = QtGui.QMenu(ips[j]._name)" % (i + 1,j + 1))
+                            exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
+                            #Iterate through projects in IP
+                            if len(ips[j]._projects):
+                                projs = ips[j]._projects
+                                projs.sort(key=operator.attrgetter('_name'),reverse=False)
+                                for k in xrange(0, len(projs)):
+                                    #exec("action%d_%d_%d = QtGui.QAction(sharedDB.myClients[i]._ips[j]._projects[k]._name, self)" % (i + 1, j + 1, k + 1))
+                                    #exec("action%d_%d_%d.triggered[()].connect(lambda item=sharedDB.myClients[i]._ips[j]._projects[k]._idprojects: self.SelectShot(item))" %(i + 1,j + 1,k+1))
+                                    #exec("ip%d_%d.addAction(action%d_%d_%d)" % (i + 1,j + 1,i + 1,j + 1,k + 1))
+                                    #exec("self.connect(action%d_%d_%d,SIGNAL(\"triggered(QtGui.QAction)\"),self,SLOT(\"SelectShot(QtGui.QAction)\"))" % (i + 1, j + 1, k + 1))
+                                    if not projs[k]._hidden or self.showAllEnabled:
+                                        exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(projs[k]._name)))
+                                        exec("ip%d_%d.triggered.connect(self.ChangeProject)" % (i + 1,j + 1))
                 
         menu.exec_(ev.globalPos())
     
