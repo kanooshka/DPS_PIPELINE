@@ -19,6 +19,7 @@ from DPSPipeline.database import projects
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
 
+
 class CheckForImagePath(QtCore.QThread):
 
     def run(self):
@@ -418,9 +419,11 @@ class ProjectViewWidget(QWidget):
 		self.AddSequenceToProgressList(sequence = sequence)
     
     def GetSequenceByID(self,seqid):
-	for seq in self._currentProject._sequences:
-	    if str(seq._idsequences) == str(seqid):
-		return seq    
+	if self._currentProject is not None:
+		if self._currentProject._sequences is not None:
+			for seq in self._currentProject._sequences:
+			    if str(seq._idsequences) == str(seqid):
+				return seq    
     
     def AddSequenceToProgressList(self, seqid = None, sequence = None):
 	if sequence is None:
@@ -436,10 +439,11 @@ class ProjectViewWidget(QWidget):
 		    sequenceTreeItem.setExpanded(True)	    
     	
     def GetShotByID(self,shotid):
-	for seq in self._currentProject._sequences:
-	    for shot in seq._shots:
-		if str(shot._idshots) == str(shotid):
-		    return shot	   
+	if self._currentProject is not None:
+		for seq in self._currentProject._sequences:
+		    for shot in seq._shots:
+			if str(shot._idshots) == str(shotid):
+			    return shot	   
     
     def AddShotToProgressList(self, shotid = None, shot = None):
 	if shot is None:
