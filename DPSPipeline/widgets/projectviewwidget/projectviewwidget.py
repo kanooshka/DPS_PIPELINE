@@ -728,13 +728,13 @@ class ProjectViewWidget(QWidget):
 	#self.blockSignals(False)
     
     def SetShotValues(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    #self._currentShot._description = self.shotDescription.toPlainText()
-	    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
-	    self._currentShot._startframe = self.startFrame.value()
-	    self._currentShot._endframe = self.endFrame.value()
-	    self._currentShot._updated = 1
+	if not self._blockUpdates:
+		if self._currentShot is not None:
+		    #self._currentShot._description = self.shotDescription.toPlainText()
+		    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
+		    self._currentShot._startframe = self.startFrame.value()
+		    self._currentShot._endframe = self.endFrame.value()
+		    self._currentShot._updated = 1
 	    
 	    
     def SaveShotDescription(self):
