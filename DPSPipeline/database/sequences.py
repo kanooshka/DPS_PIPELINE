@@ -54,7 +54,7 @@ class Sequences(QObject):
 			shot.Save()
 	
 	def AddSequenceToDB(self):
-	
+		self._description = str(self._description).replace("\\","/")
 		descr = str(self._description).replace("\'","\'\'")
 		
 		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
@@ -64,14 +64,14 @@ class Sequences(QObject):
 		self.sequenceAdded.emit(str(self._idsequences))
 		
 	def UpdateSequenceInDB (self):
-
+		self._description = str(self._description).replace("\\","/")
 		descr = str(self._description).replace("\'","\'\'")
 
 		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
 		print ("Updating sequence in DB: "+str(self._idsequences))
 	
 	def AddShotToSequence(self, newName):
-
+		
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101)
 		self._shots.append(shot)
 		sharedDB.myShots.append(shot)

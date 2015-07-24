@@ -98,6 +98,8 @@ class Projects(QObject):
 		return seq
 	
 	def UpdateProjectInDB (self):
+		self._description = str(self._description).replace("\\","/")
+		
 		descr = str(self._description).replace("\'","\'\'")
 		name = str(self._name).replace("\'","\'\'")
 
@@ -106,6 +108,7 @@ class Projects(QObject):
 	
 	def AddProjectToDB (self):
 		
+		self._description = str(self._description).replace("\\","/")
 		descr = str(self._description).replace("\'","\'\'")
 		name = str(self._name).replace("\'","\'\'")
 		#print ("Adding project to DB: "+str(self._idprojects))

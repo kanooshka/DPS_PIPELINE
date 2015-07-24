@@ -62,14 +62,14 @@ class Shots(QObject):
 	def GetSequenceById(self):
 		for seq in sharedDB.mySequences:
 			if seq._idsequences == self._idsequences:
-				return seq
-		
-	
+				return seq	
 	
 	def AddShotToDB(self):
-	
+		self._description =self._description.replace("\\","/")
+		
 		descr = str(self._description).replace("\'","\'\'")
 		notes = str(self._shotnotes).replace("\'","\'\'")
+		
 		#descr = descr.replace("\"","\"\"")
 	
 		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, shotnotes) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+notes+"');","commit")	
@@ -78,8 +78,8 @@ class Shots(QObject):
 		
 		self.shotAdded.emit(str(self._idshots))
 	
-	def UpdateShotInDB (self):
-
+	def UpdateShotInDB (self):	
+		self._description =self._description.replace("\\","/")
 		descr = str(self._description).replace("\'","\'\'")
 		notes = str(self._shotnotes).replace("\'","\'\'")
 		#descr = descr.replace("\"","\"\"")
