@@ -18,6 +18,7 @@ from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
+from DPSPipeline import clickableImageQLabel
 
 
 class CheckForImagePath(QtCore.QThread):
@@ -34,14 +35,31 @@ class CheckForImagePath(QtCore.QThread):
 		if len(newImage)>3:
 			print "Loading Shot Image: "+newImage
 			sharedDB.myProjectViewWidget.shotImagePath = newImage
-			sharedDB.myProjectViewWidget.shotImageFound.emit()
+			sharedDB.myProjectViewWidget.shotImageFound.emit(newImage)
 		
 	except:
 	    print "No Image file found for selected shot"
 	    
+class CheckForPlayblastPath(QtCore.QThread):
+
+    def run(self):
+	#search for image
+	sentpath = sharedDB.myProjectViewWidget.shotPlayblastDir
+	
+	try:
+		newPlayblast = max(glob.iglob(os.path.join(sentpath, '*.[Mm][Oo][Vv]')), key=os.path.getctime)
+		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
+		#print sentpath
+		#print newImage
+		if len(newPlayblast)>3:
+		    print "Loading Shot Playblast: "+newPlayblast
+		    os.startfile(newPlayblast)
+		
+	except:
+	    print "No Playblast file found for selected shot"
 
 class ProjectViewWidget(QWidget):
-    shotImageFound = QtCore.pyqtSignal()
+    shotImageFound = QtCore.pyqtSignal(QtCore.QString)
     refreshProjectValuesSignal = QtCore.pyqtSignal()
     
     def __init__( self, parent = None ):
@@ -54,11 +72,6 @@ class ProjectViewWidget(QWidget):
 	
 	self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
-	self.cfip = CheckForImagePath()
-	self.shotImageFound.connect(self.setImagePath)
-	self.shotImagePath = projexui.resources.find('img/DP/noImage.png')
-	self.shotImageDir = ''
-	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
 	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/projectviewwidget.ui"))
@@ -67,6 +80,22 @@ class ProjectViewWidget(QWidget):
 	    projexui.loadUi(__file__, self)
 	#projexui.loadUi(__file__, self)
 	
+	self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
+	self.shotImageLayout.addWidget(self.shotImage)
+	
+	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
+	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
+	
+	self.cfip = CheckForImagePath()
+	self.shotImageFound.connect(self.shotImage.assignImage)
+	#self.shotImagePath = projexui.resources.find('img/DP/noImage.png')
+	self.shotImageDir = ''	
+	
+	self.cfpb = CheckForPlayblastPath()
+	self.shotPlayblastPath = None
+	self.shotPlayblastDir = ''
+	self.shotImage.clicked.connect(self.checkForPlayblast)
+	
 	# define custom properties
 	
 	self._backend               = None
@@ -74,15 +103,12 @@ class ProjectViewWidget(QWidget):
 	
 	sharedDB.myProjectViewWidget = self
 	
-	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
-	
-	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
-	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
-	
 	#self.setEnabled(0)
 	self.projectValueGrp.setEnabled(0)
 	self.progressListGrp.setEnabled(0)
 	self.ShotBox.setEnabled(0)
+	
+	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
     
     def propogateUI(self, ):
 	self.setPrivelages()
@@ -555,30 +581,36 @@ class ProjectViewWidget(QWidget):
 	if len(self.projectPath.text())>3 and seq is not None and shot is not None:
 	    d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
 	    
-	    myPixmap = QtGui.QPixmap(self._noImage)
-	    self.shotImage.setPixmap(myPixmap)
+	    #myPixmap = QtGui.QPixmap(self._noImage)
+	    self.shotImage.assignImage()
 	    #if os.path.isdir(d):
 	    if shot is not None:	
 		    if len(self.projectPath.text()):
 			self.shotImageDir = d
 			self.cfip.start()
-		    '''try:
-			newImage = max(glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-			if len(newImage)>3:
-			    myPixmap = QtGui.QPixmap(newImage)    
-		    except:
-			myPixmap = QtGui.QPixmap(self._noImage)'''
-	
-	
     
+    def checkForPlayblast(self):
+	seq = self._currentSequence
+	shot= self._currentShot
+	
+	if len(self.projectPath.text())>3 and seq is not None and shot is not None:
+	    d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\")	   
+	    
+	    #if os.path.isdir(d):
+	    if shot is not None:	
+		    if len(self.projectPath.text()):
+			self.shotPlayblastDir = d
+			self.cfpb.start()
+    
+    '''
     def setImagePath(self):
 	#print len(newImage)
 	#if len(newImage)>3:
 	myPixmap = QtGui.QPixmap(self.shotImagePath)    
 	#else:
 	    #myPixmap = QtGui.QPixmap(self._noImage)
-	    
-	self.shotImage.setPixmap(myPixmap)    
+	self.shotImage.setPixmap(myPixmap)
+    '''
     
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)
