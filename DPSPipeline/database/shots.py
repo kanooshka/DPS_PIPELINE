@@ -12,7 +12,7 @@ class Shots(QObject):
 	shotChanged = QtCore.pyqtSignal(QtCore.QString)
 	shotAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
+	def __init__(self,_idshots = -1,_idsequences = -1,_idprojects = -1, _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
 		
 		super(QObject, self).__init__()
 		
