@@ -14,7 +14,7 @@ from DPSPipeline.database import connection
 from PyQt4.QtCore   import QDate
 from datetime import datetime,timedelta
 
-myVersion = version.Version("0.0.24")
+myVersion = version.Version("0.0.25")
 
 #TEST SETTINGS
 

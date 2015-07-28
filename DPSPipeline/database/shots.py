@@ -17,19 +17,19 @@ class Shots(QObject):
 		super(QObject, self).__init__()
 		
 		# define custom properties
-		self._idshots             = _idshots
-		self._idprojects	      = _idprojects
-		self._idsequences		= _idsequences		
-		self._number                   = _number
-		self._startframe		=_startframe
-		self._endframe			=_endframe
+		self._idshots                = _idshots
+		self._idprojects	     = _idprojects
+		self._idsequences	     = _idsequences		
+		self._number                 = _number
+		self._startframe	     =_startframe
+		self._endframe		     =_endframe
 		self._idstatuses             = _idstatuses
 		self._description	     = _description
 		self._timestamp		     = _timestamp
 		self._shotnotes		     = _shotnotes
 		
-		self._sequence              = self.GetSequenceById()
-		self._tasks                 = _tasks
+		self._sequence               = self.GetSequenceById()
+		self._tasks                  = _tasks
 		self._taskButtons            = []
 		self._updated                = _updated
 		self._type                   = "shot"
@@ -51,10 +51,7 @@ class Shots(QObject):
 			self.UpdateShotInDB()
 			print "Shot '"+self._number+"' Updated in Database!"
 			self._updated = 0
-	
-		
-		
-		
+
 		if self._tasks is not None:
 			for task in self._tasks:
 				task.Save()
@@ -65,10 +62,16 @@ class Shots(QObject):
 				return seq	
 	
 	def AddShotToDB(self):
-		self._description =self._description.replace("\\","/")
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
 		
-		descr = str(self._description).replace("\'","\'\'")
-		notes = str(self._shotnotes).replace("\'","\'\'")
+		self._description =self._description.replace("\\","/")		
+		descr = self._description.replace("\'","\'\'")
+		
+		if isinstance(self._shotnotes, QtCore.QString):
+			self._shotnotes = unicode(self._shotnotes.toUtf8(), encoding="UTF-8")
+			
+		notes = self._shotnotes.replace("\'","\'\'")
 		
 		#descr = descr.replace("\"","\"\"")
 	
@@ -79,10 +82,16 @@ class Shots(QObject):
 		self.shotAdded.emit(str(self._idshots))
 	
 	def UpdateShotInDB (self):	
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")		
+		
 		self._description =self._description.replace("\\","/")
-		descr = str(self._description).replace("\'","\'\'")
-		notes = str(self._shotnotes).replace("\'","\'\'")
-		#descr = descr.replace("\"","\"\"")
+		descr = self._description.replace("\'","\'\'")
+		
+		if isinstance(self._shotnotes, QtCore.QString):
+			self._shotnotes = unicode(self._shotnotes.toUtf8(), encoding="UTF-8")
+			
+		notes = self._shotnotes.replace("\'","\'\'")
 		
 		sharedDB.mySQLConnection.query("UPDATE shots SET number = '"+str(self._number)+"', startframe = '"+str(self._startframe)+"', endframe = '"+str(self._endframe)+"', idsequences = '"+str(self._idsequences)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', shotnotes = '"+notes+"' WHERE idshots = "+str(self._idshots)+";","commit")
 

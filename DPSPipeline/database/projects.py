@@ -98,19 +98,23 @@ class Projects(QObject):
 		return seq
 	
 	def UpdateProjectInDB (self):
-		self._description = str(self._description).replace("\\","/")
-		
-		descr = str(self._description).replace("\'","\'\'")
-		name = str(self._name).replace("\'","\'\'")
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
+			
+		self._description = self._description.replace("\\","/")		
+		descr = self._description.replace("\'","\'\'")
+		name = self._name.replace("\'","\'\'")
 
 		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+name+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idprojects = '"+str(self._idprojects)+"';","commit")
 		#print ("Updating project in DB: "+str(self._idprojects))
 	
 	def AddProjectToDB (self):
-		
-		self._description = str(self._description).replace("\\","/")
-		descr = str(self._description).replace("\'","\'\'")
-		name = str(self._name).replace("\'","\'\'")
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
+			
+		self._description = self._description.replace("\\","/")
+		descr = self._description.replace("\'","\'\'")
+		name = self._name.replace("\'","\'\'")
 		#print ("Adding project to DB: "+str(self._idprojects))
 
 		sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, fps, lasteditedbyname, lasteditedbyip) VALUES ('"+name+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+descr+"', '"+str(self._fps)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
