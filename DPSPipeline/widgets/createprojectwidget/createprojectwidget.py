@@ -10,6 +10,7 @@ from PyQt4 import QtGui
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
+from DPSPipeline.widgets.createprojectwidget import clientIPLineEdit
 
 class CreateProjectWidget(QWidget):
    
@@ -30,12 +31,16 @@ class CreateProjectWidget(QWidget):
         
         self._backend               = None
         
+	self.myClientNameLineEdit = clientIPLineEdit.ClientIPLineEdit(self)
+	self.clientIPBoxLayout.addWidget(self.myClientNameLineEdit)
+	
         #connects buttons
         self.createButton.clicked.connect(self.CreateProject)
         self.cancelButton.clicked.connect(self.cancel)
         self.setDefaults()
 	
         
+	
         #self.open()
 
     def cancel(self):
