@@ -17,7 +17,7 @@ from datetime import datetime,timedelta
 myVersion = version.Version("0.0.25")
 
 #TEST SETTINGS
-
+ignoreVersion = 0
 testing = 0
 noSaving = 0
 autologin = 0
