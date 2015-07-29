@@ -58,10 +58,6 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
                                 projs = ips[j]._projects
                                 projs.sort(key=operator.attrgetter('_name'),reverse=False)
                                 for k in xrange(0, len(projs)):
-                                    #exec("action%d_%d_%d = QtGui.QAction(sharedDB.myClients[i]._ips[j]._projects[k]._name, self)" % (i + 1, j + 1, k + 1))
-                                    #exec("action%d_%d_%d.triggered[()].connect(lambda item=sharedDB.myClients[i]._ips[j]._projects[k]._idprojects: self.SelectShot(item))" %(i + 1,j + 1,k+1))
-                                    #exec("ip%d_%d.addAction(action%d_%d_%d)" % (i + 1,j + 1,i + 1,j + 1,k + 1))
-                                    #exec("self.connect(action%d_%d_%d,SIGNAL(\"triggered(QtGui.QAction)\"),self,SLOT(\"SelectShot(QtGui.QAction)\"))" % (i + 1, j + 1, k + 1))
                                     if not projs[k]._hidden or self.showAllEnabled:
                                         exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(projs[k]._name)))
                                         exec("ip%d_%d.triggered.connect(self.ChangeProject)" % (i + 1,j + 1))

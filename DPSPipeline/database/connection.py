@@ -357,12 +357,6 @@ class Connection(QObject):
 		self._projectParser.daemon = True
 		
 		atexit.register(self.closeThreads)
-		#self._sequenceParser = AutoParseSequencesThread()
-		#self._sequenceParser.finished.connect(self._sequenceParser.start)
-		#self._sequenceParser.start()
-
-		#print "connection initiated"
-	
 	def closeThreads(self):
 		self._autoCheckDatabaseThread.quit()
 		self._projectParser.quit()
@@ -373,16 +367,6 @@ class Connection(QObject):
 			return True
 		except:
 			print "FAILED TO connect if trying to connect remotely make sure to enable the remote access checkbox"
-			'''
-			print "FAILED TO connect locally, attempting WAN connection"
-			try:
-				self._host = '174.79.161.184'
-				self.openConnection()
-				return True
-			except:
-				self._host = '10.9.21.12'
-				print "FAILED TO connect over WAN"
-			'''
 		return False
 	
 	def openConnection(self):
@@ -421,57 +405,7 @@ class Connection(QObject):
 		self._autoCheckDatabaseThread.finished.connect(self._autoCheckDatabaseThread.start)
 		self._autoCheckDatabaseThread.start()
 	
-	'''
-	def SaveToDatabaseOLD(self):
 	
-		"""
-		Saves the updated entries to the database
-		"""
-		try:
-			if (not sharedDB.noSaving):
-				
-				if sharedDB.myVersion.CheckVersion():
-			
-					try:
-						#threading.Timer(2.0, self.SaveToDatabase).start()
-						#print "Checking database for update..."
-						
-						
-						if not sharedDB.pauseSaving:
-						
-							#timestamp = datetime.now()
-							
-							for proj in sharedDB.myProjects :
-					
-							    proj.Save()
-							
-							
-							self.UpdateFromDatabase()
-							self.closeConnection()
-					except:
-						errorMessage = QtGui.QMessageBox()
-						errorMessage.setWindowTitle("ERROR!")
-						errorMessage.setText("An error occured when save / loading from database, please contact support.")
-						errorMessage.exec_()
-				else:
-					timer = QTimer()
-					timer.timeout.connect(self.exit)
-					timer.start(15000)
-					
-					sharedDB.pauseSaving = 1
-					sharedDB.noSaving = 1
-					
-					versionError = QtGui.QMessageBox()
-					versionError.setWindowTitle("OUT OF DATE!")
-					versionError.setText("A New version of Sludge is ready to be implemented, please close Sludge and wait a few minutes to reopen. Sludge will autoclose in 15 seconds.")
-					#versionError.button().setText("EXIT")
-					
-					versionError.exec_()
-					
-					QTimer.singleShot(10,sharedDB.app.exit())
-		finally:
-			QTimer.singleShot(self._autoUpdateFrequency,self.SaveToDatabase)
-	'''
 	def GetTimestamp(self):
 		rows = ""
 		self.openConnection()

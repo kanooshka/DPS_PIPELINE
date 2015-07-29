@@ -41,7 +41,6 @@ class Shots(QObject):
 			#self._hidden = True
 			
 	def Save(self):
-
 		if self._new:	
 			self.AddShotToDB()
 			print "Shot '"+self._number+"' Added to Database!"
