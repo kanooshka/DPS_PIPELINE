@@ -187,7 +187,7 @@ class AutoParseProjectsThread(QtCore.QThread):
 
 					if str(shot._idshots) == str(row[0]):						
 						if not str(sharedDB.mySQLConnection.myIP) == str(row[10]) or sharedDB.testing:
-							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6], _shotnotes = row[11])
+							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _shotnotes = row[11])
 						existed = True
 						break
 					
