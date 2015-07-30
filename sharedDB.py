@@ -14,15 +14,15 @@ from DPSPipeline.database import connection
 from PyQt4.QtCore   import QDate
 from datetime import datetime,timedelta
 
-myVersion = version.Version("0.0.25")
+myVersion = version.Version("0.0.26")
 
 #TEST SETTINGS
-ignoreVersion = 0
+ignoreVersion = 1
 testing = 0
-noSaving = 0
-autologin = 0
+disableSaving = 1
+autologin = 1
 localDB = 0
-remote = 0
+remote = 1
 autoCreateShotTasks = 0
 
 #freezeDBUpdates = 1
@@ -41,7 +41,7 @@ myProjects = []
 mySequences = []
 
 Doobedeba = -0.0*0+0
-pauseSaving = 0
+
 
 myProjectViewWidget = ''
 

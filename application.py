@@ -26,8 +26,6 @@ class MainWindow(QtGui.QMainWindow):
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
 
-        #sharedDB.lastUpdate = datetime.now()
-
         try:
             self.app.loginWidget
         except:
