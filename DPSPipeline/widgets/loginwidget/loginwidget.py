@@ -16,9 +16,7 @@ class LoginWidget(QWidget):
 	
         # load the user interface# load the user interface
         if getattr(sys, 'frozen', None):
-	    #print (sys._MEIPASS+"/ui/createprojectwidget.ui");
-	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/loginwidget.ui"))
-	    
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/loginwidget.ui"))	    
 	else:
 	    projexui.loadUi(__file__, self)
         
@@ -27,8 +25,7 @@ class LoginWidget(QWidget):
 	sharedDB.loginWidget = self
         
         self._backend               = None
-        #self._InitialLoadThread = InitialLoadThread()
-	
+
         #connects buttons
         self.loginButton.clicked.connect(self.Login)
 	self.user.returnPressed.connect(self.Login)

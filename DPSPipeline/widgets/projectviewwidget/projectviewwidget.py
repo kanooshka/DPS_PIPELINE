@@ -29,9 +29,6 @@ class CheckForImagePath(QtCore.QThread):
 	
 	try:
 		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-		#print sentpath
-		#print newImage
 		if len(newImage)>3:
 			print "Loading Shot Image: "+newImage
 			sharedDB.myProjectViewWidget.shotImagePath = newImage
@@ -48,9 +45,7 @@ class CheckForPlayblastPath(QtCore.QThread):
 	
 	try:
 		newPlayblast = max(glob.iglob(os.path.join(sentpath, '*.[Mm][Oo][Vv]')), key=os.path.getctime)
-		#print os.path.join(d, '*.[Jj][Pp]*[Gg]')
-		#print sentpath
-		#print newImage
+
 		if len(newPlayblast)>3:
 		    print "Loading Shot Playblast: "+newPlayblast
 		    os.startfile(newPlayblast)
@@ -78,7 +73,6 @@ class ProjectViewWidget(QWidget):
 	    
 	else:
 	    projexui.loadUi(__file__, self)
-	#projexui.loadUi(__file__, self)
 	
 	self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
 	self.shotImageLayout.addWidget(self.shotImage)
@@ -88,7 +82,6 @@ class ProjectViewWidget(QWidget):
 	
 	self.cfip = CheckForImagePath()
 	self.shotImageFound.connect(self.shotImage.assignImage)
-	#self.shotImagePath = projexui.resources.find('img/DP/noImage.png')
 	self.shotImageDir = ''	
 	
 	self.cfpb = CheckForPlayblastPath()
@@ -96,14 +89,11 @@ class ProjectViewWidget(QWidget):
 	self.shotPlayblastDir = ''
 	self.shotImage.clicked.connect(self.checkForPlayblast)
 	
-	# define custom properties
-	
 	self._backend               = None
 	self._blockUpdates = 0
 	
 	sharedDB.myProjectViewWidget = self
-	
-	#self.setEnabled(0)
+
 	self.projectValueGrp.setEnabled(0)
 	self.progressListGrp.setEnabled(0)
 	self.ShotBox.setEnabled(0)
@@ -114,7 +104,6 @@ class ProjectViewWidget(QWidget):
 	self.setPrivelages()
 
 	#connects signals
-	#sharedDB.mySQLConnection.newProjectSignal.connect(self.AddProjectNameToList)
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.AddSequenceToProgressList)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.AddShotToProgressList)
 	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
@@ -122,8 +111,6 @@ class ProjectViewWidget(QWidget):
 	self.propogateStatuses()		
 	
 	#connect project settings
-	#self.projectName.currentIndexChanged[QtCore.QString].connect(self.LoadProjectValues)
-	#self.projectName.editTextChanged[QtCore.QString].connect(self.SetProjectValues)
 	self.projectStatus.currentIndexChanged[QtCore.QString].connect(self.SetProjectValues)
 	self.fps.valueChanged.connect(self.SetProjectValues)
 	self.dueDate.dateChanged.connect(self.SetProjectValues)
@@ -133,25 +120,17 @@ class ProjectViewWidget(QWidget):
 	self.projectPath.textChanged.connect(self.SetProjectValues)		
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
-	#connect sequence settings		
-	#self.sequenceNumber.currentRowChanged.connect(self.LoadSequenceValues)
-	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	#connect shot settings
-	#self.shotNumber.currentRowChanged.connect(self.LoadShotValues)
 	self.saveShotDescription.clicked.connect(self.SaveShotDescription)
-	#self.shotStatus.currentIndexChanged[QtCore.QString].connect(self.SetShotValues)
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
 	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
-	
-	#self.propogateProjectNames()
-	
-	self.setEnabled(1)
-    
+
+	self.setEnabled(1)    
     
     def cancel(self):
 	self.close()
@@ -198,14 +177,7 @@ class ProjectViewWidget(QWidget):
 					if x == self.projectName.currentIndex():
 						self.LoadProjectValues()
 					break;
-	
-    #def sequenceChanged(self,sequenceId):
-        #set project name
-	#self.LoadSequenceNames()
 
-    #def shotChanged(self,shotId):
-	#self.LoadShotNames()
-		    
     def ensure_dir(self,f):  
 	#print f.replace("\\", "\\\\")
 	d = os.path.dirname(f)
@@ -234,36 +206,6 @@ class ProjectViewWidget(QWidget):
     def getCurrentProjectID(self):
 		return self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		
-    '''
-    def AddProjectNameToList(self,projectid):
-	
-	projectMatch = None
-	#find project with id
-	for proj in sharedDB.myProjects:
-		if str(proj._idprojects) == (projectid):
-			projectMatch = proj
-			break
-		
-	if projectMatch is not None and not projectMatch._hidden:
-		unique = 1
-		#iterate through projectname bar
-		for x in range(0,self.projectName.count()):
-		    
-		    if self.projectName.itemData(x, Qt.ToolTipRole).toString() == str(projectid):
-			unique = 0
-			break
-		    
-				    
-		if unique:		
-			
-			self.projectName.addItem(projectMatch._name,QVariant(projectMatch))
-			#print "setting project "+str(projectMatch._name)+"'s tooltip to "+str(projectMatch._idprojects)
-			self.projectName.setItemData(self.projectName.count()-1,projectMatch._idprojects, Qt.ToolTipRole)
-			projectMatch.projectChanged.connect(self.projectChanged)
-		
-		if self.projectName.count() == 1:
-			self.refreshProjectValuesSignal.emit()
-    '''
     def propogateStatuses(self):
 	for status in sharedDB.myStatuses:
 	    self.projectStatus.addItem(status._name, QVariant(status))
@@ -336,8 +278,6 @@ class ProjectViewWidget(QWidget):
 		    self.projectDescription.setText('')
 		    
 	    self.LoadProgressListValues()
-	    #self.LoadSequenceNames()
-	    
     
 	self._blockUpdates = 0
 	#self.blockSignals(False)
@@ -361,83 +301,26 @@ class ProjectViewWidget(QWidget):
 	    #add sequence
 	    seq = self._currentProject.AddSequenceToProject(newName)
 	    seq.sequenceAdded.connect(self.AddSequenceToProgressList)
-	    #self.LoadProgressListValues()
-	    #self.LoadSequenceNames()
-	    #self.selectSequenceByName(newName)
-	    #self.LoadShotNames()
-	    
-	    #self.newSequenceNumber.setValue(self.newSequenceNumber.value()+10)
 	    
 	else:
 	    #warning message
 	    message = QtGui.QMessageBox.question(self, 'Message',
 	"Sequence name already exists, choose a unique name (it is recommended to leave 10 between each sequence in case sequences need to be added in the middle)", QtGui.QMessageBox.Ok)
-    
-	#select sequence by name
-    '''def selectSequenceByName(self, sName):
-	for x in range(0,self.sequenceNumber.count()):
-	    if self.sequenceNumber.item(x).text()==sName:
-		self.sequenceNumber.setCurrentRow(x)
-		break
-    '''   
+
     def getSequenceName(self):
 	sName = str(self.newSequenceNumber.value())
 	while( len(sName)<3):
 	    sName = "0"+sName
     
 	return sName
-    '''
-    def SetSequenceValues(self):
-	if not self._blockUpdates:
-	    if self._currentSequence is not None:
-		    #self._currentSequence._description = self.sequenceDescription.toPlainText()
-		    self._currentSequence._idstatuses = self.sequenceStatus.currentIndex()+1
-		    self._currentSequence._updated = 1
-    '''
-    
-    '''
-    def LoadSequenceNames(self):
-	self.sequenceNumber.clear()	
-	self._currentSequence = None
-	self.sequenceDescription.setText('')
-	self.sequenceStatus.setCurrentIndex(0)	
-	
-	if (self._currentProject._sequences):
-	    #print str(len(self._currentProject._sequences)) + " Sequences found in project"
-	    self.setSequenceSettingsEnabled(1)
-	    for x in range(0,len(self._currentProject._sequences)):
-		sequence = self._currentProject._sequences[x]
-	
-		sequence.sequenceChanged.connect(self.sequenceChanged)
-		newWidgetItem = QtGui.QListWidgetItem()
-		newWidgetItem.setText(sequence._number)
-		newWidgetItem.setToolTip(str(x))
-		newWidgetItem.setFlags(newWidgetItem.flags() ^ Qt.ItemIsSelectable)
-		self.sequenceNumber.addItem(newWidgetItem)		
-		
-	    if self._currentProject._lastSelectedSequenceNumber == '-1':
-		self.sequenceNumber.setCurrentRow(0)
-	    else:
-		for x in range(0,self.sequenceNumber.count()):
-		    if self.sequenceNumber.item(x).text() == self._currentProject._lastSelectedSequenceNumber:
-			self.sequenceNumber.setCurrentRow(x)
-			break
-		
-	    self.LoadSequenceValues()
-	else:
-	    self.setSequenceSettingsEnabled(0)
-	    self.LoadShotNames()
-    '''    
 	    
     def LoadProgressListValues(self):
 	self.progressList.clear()
-	#self.progressList.header().sortIndicatorOrder()
 	self.progressList.sortByColumn(0, QtCore.Qt.AscendingOrder);
 	self.progressList.setSortingEnabled(True);
 	self._currentSequence = None
 	
 	if (self._currentProject._sequences):
-	    #self.progressListGrp.setEnabled(1)
 	    for x in range(0,len(self._currentProject._sequences)):
 		sequence = self._currentProject._sequences[x]
 		    
@@ -489,91 +372,7 @@ class ProjectViewWidget(QWidget):
 	self.sequenceNumber.setEnabled(v)
 	self.sequenceStatus.setEnabled(v)
 	self.sequenceDescription.setEnabled(v)
-    '''
-    def LoadSequenceValues(self):			
-	self._blockUpdates = 1
-	self.blockSignals(True)
-	
-	#make sure _currentSequence is current
-	self.setCurrentSequence()
-	
-	if self._currentSequence is not None:
-	    #self.setCurrentShot()
-	    
-	    #update editName
-	    if self.sequenceNumber.currentItem() is not None:
-		self.newSequenceNumber.setValue(int(self.sequenceNumber.currentItem().text())+10)
-	    
-	    #set Status
-	    
-	    self.sequenceStatus.setCurrentIndex(self._currentSequence._idstatuses-1)
-	    
-	    #set Description
-	    if self._currentSequence is not None and self._currentSequence._description is not None:
-		self.sequenceDescription.setText(self._currentSequence._description)
-	
-	self.LoadShotNames()
-	    
-	self._blockUpdates = 0
-	self.blockSignals(False)
-	
-    def setCurrentSequence(self):
-	self.currentSequence = None
-	if len(self._currentProject._sequences) and self.sequenceNumber.currentItem() is not None:
-	    self._currentProject._lastSelectedSequenceNumber = self.sequenceNumber.currentItem().text()
-	    self._currentSequence = self._currentProject._sequences[int(self.sequenceNumber.currentItem().toolTip())]
-    
-    def setCurrentShot(self):
-	self.currentShot = None
-	if len(self._currentSequence._shots) and self.shotNumber.currentItem() is not None:
-	    self._currentSequence._lastSelectedShotNumber = self.shotNumber.currentItem().text()
-	    self._currentShot = self._currentSequence._shots[int(self.shotNumber.currentItem().toolTip())]
-    
-    def LoadShotNames(self):
-	self.shotNumber.clear()
-	self._currentShot = None
-	self.shotDescription.setText('')
-	self.shotNotes.setText('')
-	self.shotStatus.setCurrentIndex(0)
-	
-	if self._currentSequence is not None:
-	    if (self._currentSequence._shots):		    
-		self.setShotSettingsEnabled(1)
-		
-		for x in range(0,len(self._currentSequence._shots)):
-		    shot = self._currentSequence._shots[x]
-		    shot.shotChanged.connect(self.shotChanged)
-		    newWidgetItem = QtGui.QListWidgetItem()
-		    newWidgetItem.setText(shot._number)
-		    newWidgetItem.setToolTip(str(x))
-		    #newWidgetItem.setFlags(newWidgetItem.flags() | QtCore.Qt.ItemIsEditable)
-		    #newWidgetItem.setData(sequence._number)
-		    self.shotNumber.addItem(newWidgetItem)
-			
-		
-		#select last selected on switching sequences
-		if self._currentSequence._lastSelectedShotNumber == '-1':
-		    self.shotNumber.setCurrentRow(0)
-		else:
-		    for x in range(0,self.shotNumber.count()):
-			if self.shotNumber.item(x).text() == self._currentSequence._lastSelectedShotNumber:
-			    self.shotNumber.setCurrentRow(x)
-			    break
-		
-		self.LoadShotValues()
-		
-	    else:
-		self.setShotSettingsEnabled(0)
-		myPixmap = QtGui.QPixmap(self._noImage)
-		#myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-		self.shotImage.setPixmap(myPixmap)
-		
-	else:
-	    self.setShotSettingsEnabled(0)
-	    myPixmap = QtGui.QPixmap(self._noImage)
-	    #myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-	    self.shotImage.setPixmap(myPixmap)
-    '''
+
     def checkForShotImage(self):
 	seq = self._currentSequence
 	shot= self._currentShot
@@ -602,16 +401,6 @@ class ProjectViewWidget(QWidget):
 			self.shotPlayblastDir = d
 			self.cfpb.start()
     
-    '''
-    def setImagePath(self):
-	#print len(newImage)
-	#if len(newImage)>3:
-	myPixmap = QtGui.QPixmap(self.shotImagePath)    
-	#else:
-	    #myPixmap = QtGui.QPixmap(self._noImage)
-	self.shotImage.setPixmap(myPixmap)
-    '''
-    
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)
 	self.shotStatus.setEnabled(v)
@@ -620,56 +409,7 @@ class ProjectViewWidget(QWidget):
 	self.shotImage.setEnabled(v)
 	self.shotDescription.setEnabled(v)
 	self.shotNotes.setEnabled(v)
-    '''
-    def LoadShotValues(self):				
-		    
-	self._blockUpdates = 1
-	self.blockSignals(True)
-	
-	#make sure _currentSequence is current
-	self.newShotNumber.setValue(10)
-	
-	if self._currentSequence is not None:
-	    self.setCurrentShot()
-	    
-	    if self._currentShot is not None:
-		
-		#update editName
-		if self.shotNumber.currentItem() is not None:
-		    self.newShotNumber.setValue(int(self.shotNumber.currentItem().text())+10)
-		
-		#update shotImage
-		#myPixmap = QtGui.QPixmap("C:\\Users\\Dan\\Desktop\\5543ce94806f4.jpg")
-		#myScaledPixmap = myPixmap.scaled(self.shotImage.width(),self.shotImage.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-		#self.shotImage.setPixmap(myPixmap)
-		
-		#if not remote
-		#if not sharedDB.mySQLConnection._remote:
-		self.checkForShotImage()		    
-		
-		#set Status
-		self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-		
-		#set frame range
-		self.startFrame.setValue(self._currentShot._startframe)
-		self.endFrame.setValue(self._currentShot._endframe)
-		
-		#set Description
-		if self._currentShot is not None and self._currentShot._description is not None:
-		    self.shotDescription.setText(self._currentShot._description)
-		
-		
-		if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-			#print "Setting shot Note text to default"
-			self.shotNotes.setText('Anim-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-')
-		else:
-			#print self._currentShot._shotnotes
-			#print "Loading shot note text"
-			self.shotNotes.setText(self._currentShot._shotnotes)    
-	    
-	self._blockUpdates = 0
-	self.blockSignals(False)
-    '''
+    
     def LoadShotValuesFromSent(self,itemwidget, column):				
 		    
 	self._blockUpdates = 1
@@ -690,13 +430,9 @@ class ProjectViewWidget(QWidget):
 				self._currentSequence = seq
 				break
 			break
-			
-	
-	
+
 	if self._currentShot is not None and self._currentSequence is not None:
 	    
-	    #if not remote
-	    #if not sharedDB.mySQLConnection._remote:
 	    self.ShotBox.setEnabled(1)
 	    
 	    self.checkForShotImage()		    
@@ -717,15 +453,11 @@ class ProjectViewWidget(QWidget):
 	    
 	    
 	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-		    #print "Setting shot Note text to default"
 		    self.shotNotes.setText('Anim-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-')
 	    else:
-		    #print self._currentShot._shotnotes
-		    #print "Loading shot note text"
 		    self.shotNotes.setText(self._currentShot._shotnotes)
 	
 	self._blockUpdates = 0
-	#self.blockSignals(False)
     
     def SetShotValues(self):
 	if not self._blockUpdates:
