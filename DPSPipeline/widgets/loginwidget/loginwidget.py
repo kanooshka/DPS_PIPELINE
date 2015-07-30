@@ -7,15 +7,16 @@ from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
-'''
+
 class InitialLoadThread(QtCore.QThread):
 
     def run(self):
 	#print sharedDB.mySQLConnection._user
 	#sharedDB.mySQLConnection.testConnection()
-	#sharedDB.mySQLConnection.UpdateDatabaseClasses()
+	sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(sharedDB.loginWidget.user.text()))
+	sharedDB.mySQLConnection.UpdateDatabaseClasses()
 	#sharedDB.calendarview.InitialProjectAdd()
-'''	
+	
 class LoginWidget(QWidget):
    
     def __init__( self, parent = None ):
@@ -31,9 +32,11 @@ class LoginWidget(QWidget):
 	    projexui.loadUi(__file__, self)
         
         # define custom properties
+       
+	sharedDB.loginWidget = self
         
         self._backend               = None
-       # self._InitialLoadThread = InitialLoadThread()
+        self._InitialLoadThread = InitialLoadThread()
 	
         #connects buttons
         self.loginButton.clicked.connect(self.Login)
@@ -55,12 +58,13 @@ class LoginWidget(QWidget):
 	else:
 	    sharedDB.mySQLConnection.setHost("local")	
 	
-	if sharedDB.mySQLConnection.testConnection():
-	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))
-	    sharedDB.mySQLConnection.UpdateDatabaseClasses()
-	    sharedDB.mySQLConnection.SaveToDatabase()
-	    #self._InitialLoadThread.finished.connect(sharedDB.mySQLConnection.SaveToDatabase)
-	    #self._InitialLoadThread.start()	    
+	if sharedDB.mySQLConnection.testConnection():	    
+	    #sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(self.user.text()))
+	    #sharedDB.mySQLConnection.UpdateDatabaseClasses()
+	    #sharedDB.mySQLConnection.SaveToDatabase()
+	    
+	    self._InitialLoadThread.finished.connect(sharedDB.mySQLConnection._queryProcessor.start)
+	    self._InitialLoadThread.start()	    
 	    self.close()
 	    sharedDB.mainWindow.EnableMainWindow()
 	else:

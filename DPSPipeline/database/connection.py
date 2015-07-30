@@ -260,43 +260,55 @@ class AutoParseProjectsThread(QtCore.QThread):
 					#print "First Load Complete!"
 					sharedDB.initialLoad=1
 					sharedDB.mySQLConnection.firstLoadComplete.emit()
+					sharedDB.mySQLConnection.firstLoadCompleteInt = 1
 				break
 				
 
 	time.sleep(2)
-	
-class AutoCheckDatabase(QtCore.QThread):
 
-    def run(self):
-
-	if (not sharedDB.noSaving):
+class processQueries(QtCore.QThread):
+	def run(self):
+		
+		sharedDB.mySQLConnection.CheckForNewEntries()
+		
+		while True:
+			if len(sharedDB.mySQLConnection._queries)>0:
+				queryType =  sharedDB.mySQLConnection._queries[0][0]
+				db = sharedDB.mySQLConnection._queries[0][1]		
+				q = sharedDB.mySQLConnection._queries[0][2]
 				
+				rows = sharedDB.mySQLConnection.query(q)
+		
+				if db == "clients":
+					rows.sort(key=lambda x: x[2])
+					sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)				
+				elif db == "ips":
+					rows.sort(key=lambda x: x[2])
+					sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
+				elif db == "projects":
+					rows.sort(key=lambda x: x[2])
+					sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
+				elif db == "sequences":
+					sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
+				elif db == "shots":
+					sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
+				elif db == "tasks":
+					sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
+					
+				del sharedDB.mySQLConnection._queries[0]
+	
 		if sharedDB.myVersion.CheckVersion():
 	
 			#try:				
 			if not sharedDB.pauseSaving:
-			
-				#timestamp = datetime.now()
 				
-				for proj in sharedDB.myProjects :
-		
+				for proj in sharedDB.myProjects :		
 				    proj.Save()
-				
-				#print "Updating from Database!"
-				sharedDB.mySQLConnection.UpdateFromDatabase()
-				#sharedDB.mySQLConnection.closeConnection()
-			'''except:
-				errorMessage = QtGui.QMessageBox()
-				errorMessage.setWindowTitle("ERROR!")
-				errorMessage.setText("An error occured when save / loading from database, please contact support.")
-				errorMessage.exec_()'''
 		else:
 			sharedDB.mySQLConnection.wrongVersionSignal.emit()
-			
-	#print "Checking for update"
-	sharedDB.blockSignals = 0
-	time.sleep(sharedDB.mySQLConnection._autoUpdateFrequency)
-	    
+	
+		time.sleep(sharedDB.mySQLConnection._autoUpdateFrequency)
+    
 class Connection(QObject):
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
 	newIpSignal = QtCore.pyqtSignal(QtCore.QString)
@@ -319,6 +331,8 @@ class Connection(QObject):
 		self._localhost = '10.9.21.12'
 		self._remotehost = '174.79.161.184'
 		
+		sharedDB.mySQLConnection = self
+		
 		if sharedDB.localDB:
 			self._localhost = 'localhost'
 		
@@ -330,6 +344,8 @@ class Connection(QObject):
 		self.myIP = socket.gethostbyname(socket.gethostname())
 		
 		self._lastInsertId = ''
+		
+		self._queries = []
 		
 		self._clientsToBeParsed = []
 		self._ipsToBeParsed = []
@@ -345,20 +361,24 @@ class Connection(QObject):
 			self._database = 'testDB'
 		else:
 			self._database = 'dpstudio'
-			
-		self._autoCheckDatabaseThread = AutoCheckDatabase()
-		self._autoCheckDatabaseThread.daemon = True
 		
 		self.wrongVersionSignal.connect(self.wrongVersion)
+		
+		
+		self._queryProcessor = processQueries()
+		self._queryProcessor.finished.connect(self._queryProcessor.start)
+		self._queryProcessor.daemon = True
 		
 		self._projectParser = AutoParseProjectsThread()
 		self._projectParser.finished.connect(self._projectParser.start)
 		self._projectParser.start()
 		self._projectParser.daemon = True
 		
+		self.firstLoadCompleteInt = 0
+		
 		atexit.register(self.closeThreads)
 	def closeThreads(self):
-		self._autoCheckDatabaseThread.quit()
+		self._queryProcessor.quit()
 		self._projectParser.quit()
 		
 	def testConnection(self):
@@ -399,12 +419,7 @@ class Connection(QObject):
 		sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
 		sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 		#sharedDB.myProjects = sharedDB.projects.GetActiveProjects()
-		sharedDB.myUsers = sharedDB.users.GetAllUsers()
-	
-	def SaveToDatabase(self):
-		self._autoCheckDatabaseThread.finished.connect(self._autoCheckDatabaseThread.start)
-		self._autoCheckDatabaseThread.start()
-	
+		sharedDB.myUsers = sharedDB.users.GetAllUsers()	
 	
 	def GetTimestamp(self):
 		rows = ""
@@ -417,46 +432,30 @@ class Connection(QObject):
 		
 		#self.closeConnection()
 
-		return rows[0]
-	
-	def UpdateFromDatabase(self):
-	
-		"""
-		Checks the database for any updated entries
-		"""
+		return rows[0]		
 
+	def CheckForNewEntries (self):
+		
 		newdatetime = self.GetTimestamp();
 		#newdatetime = datetime.now()- timedelta(years=4);
 		newdatetime = newdatetime[0]
-		self.CheckForNewEntries()
-		#print type(newdatetime)
 		sharedDB.lastUpdate = newdatetime - timedelta(seconds=4)
-
-	def CheckForNewEntries (self):
-
-		clientrows = self.query("SELECT idclients, name, lasteditedbyname, lasteditedbyip FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		clientrows.sort(key=lambda x: x[2])
-		self._clientsToBeParsed.extend(clientrows)
 		
-		iprows = self.query("SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		iprows.sort(key=lambda x: x[2])
-		self._ipsToBeParsed.extend(iprows)
+		self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 		
-		projrows = self.query("SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		projrows.sort(key=lambda x: x[2])
-		self._projectsToBeParsed.extend(projrows)		
+		self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+		
+		self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+		
+		self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+		
+		self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+		
+		self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])	
 			
-		seqrows = sharedDB.mySQLConnection.query("SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		self._sequencesToBeParsed.extend(seqrows)		
-						
-				
-		shotrows = sharedDB.mySQLConnection.query("SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		self._shotsToBeParsed.extend(shotrows)
 		
-		taskrows = sharedDB.mySQLConnection.query("SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\"")
-		self._tasksToBeParsed.extend(taskrows)
-		
-		'''for proj in sharedDB.myProjectList:
+		'''		
+		for proj in sharedDB.myProjectList:
 			phaseAssignmentRows = sharedDB.mySQLConnection.query("SELECT a.idphaseassignments,a.idphases,a.idprojects,a.startdate,a.enddate,a.progress,a.archived,a.idstatuses, b.MaxTimeStamp FROM phaseassignments a JOIN (SELECT idphases,idprojects , Max(Timestamp) AS MaxTimeStamp FROM phaseassignments WHERE idprojects = %s GROUP BY idphases) b ON a.idphases = b.idphases AND a.idprojects = b.idprojects AND a.Timestamp = b.MaxTimeStamp" % proj._idprojects)
 			self._phaseAssignmentsToBeParsed.extend(phaseAssignmentRows)
 		'''
@@ -468,7 +467,7 @@ class Connection(QObject):
 		elif typeString == "remote":
 			self._host = self._remotehost
 			self._remote = 1
-			self._autoUpdateFrequency = 2
+			self._autoUpdateFrequency = 10
 			
 	def exit(self):
 		sharedDB.app.exit()

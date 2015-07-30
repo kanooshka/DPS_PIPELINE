@@ -37,10 +37,8 @@ class MainWindow(QtGui.QMainWindow):
         self.app.loginWidget.activateWindow()
     
     def EnableMainWindow(self):
-        #self.mw = QtGui.QMainWindow() # mw = MainWindow
 
         menubar = QtGui.QMenuBar()
-	#menubar.sizeHint(QSize.setHeight(10))
 	
 	self._fileMenu = menubar.addMenu('&File')
 	
@@ -56,29 +54,21 @@ class MainWindow(QtGui.QMainWindow):
         
         
         projectMenu = menubar.addMenu('&Project')
-        createProjectMenuItem = projectMenu.addAction('Create Project')
+        self.createProjectMenuItem = projectMenu.addAction('Create Project')
         projectMenu.triggered.connect( self.projectMenuActions )
         
-        if sharedDB.currentUser[0]._idPrivileges > 1:
-            createProjectMenuItem.setEnabled(0)
-            
-        '''userMenu = menubar.addMenu('&Users')
-        #userMenu.addAction('Create User')
-        userMenu.addAction('Assignment Window')
-        userMenu.triggered.connect( self.userMenuActions )
-        '''
+        #if sharedDB.currentUser[0]._idPrivileges > 1:
+        self.createProjectMenuItem.setEnabled(0)
+
         self.setMenuBar(menubar)
         self.setCentralWidget(None)   
         self.resize(1280,720)
         self.show()
-        #self.showMaximized()
             
         sharedDB.calendarview = CalendarView()
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
-        #self.CreateProjectWidget()
 	self.CreateProjectViewWidget()
-        #sharedDB.mySQLConnection.SaveToDatabase()
         
     def CreateProjectWidget(self):
 	
@@ -107,8 +97,6 @@ class MainWindow(QtGui.QMainWindow):
 	
 	:param      action | <QAction>
 	"""
-	#if ( action.text() == 'Save' ):
-	    #sharedDB.calendarview._myXGanttWidget.SaveToDatabase()
 	if (action.text() == 'Exit'):
             self.app.closeAllWindows()
             

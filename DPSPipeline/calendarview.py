@@ -38,10 +38,7 @@ class CalendarView(QObject):
 		dockWidget.setWindowTitle("Calendar View")
 		sharedDB.leftWidget = dockWidget
 		sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
-		
-		#self._myXGanttWidget = XGanttWidget()
-		#self._myXGanttWidget.show()
-		
+
 		reload(projex)
 		reload(projexui)
 		
@@ -61,13 +58,12 @@ class CalendarView(QObject):
 	def AddNewProjects(self, idprojects):
 		for project in sharedDB.myProjects:
 			if str(project._idprojects) == str(idprojects):
-				#print "NewProject!: "+str(idprojects)
 				if project._phases:
 					#print "PHASE EXISTS!"
 					myPhaseAssignments = project._phases
-				else:
+				'''else:
 					myPhaseAssignments = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(project._idprojects)
-				
+				'''
 				
 				if (not project._hidden):
 				    #self.AddProject(project,myPhaseAssignments)
@@ -199,5 +195,5 @@ class CalendarView(QObject):
 			parent.setHidden(False)
 		else:
 			childItem.setHidden(True)
-
+		
 	
