@@ -62,7 +62,8 @@ class Projects(QObject):
 					break
 			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
 			print "Project '"+self._name+"' Added to Database!"
-
+		else:
+			self._phases = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(self._idprojects)
 		#self.GetSequencesFromProject()
 		
 		if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:

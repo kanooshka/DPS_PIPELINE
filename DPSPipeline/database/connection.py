@@ -65,7 +65,6 @@ class processQueries(QtCore.QThread):
 						
 						rows.sort(key=lambda x: x[2])
 						sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
-						#print sharedDB.mySQLConnection._clientsToBeParsed
 					elif self._currentDB == "ips":
 						rows.sort(key=lambda x: x[2])
 						sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
