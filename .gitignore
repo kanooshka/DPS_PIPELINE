@@ -50,3 +50,4 @@ Temporary Items
 dist/
 build/
 DPS_PIPELINE.pro.user
+*.komodoproject
