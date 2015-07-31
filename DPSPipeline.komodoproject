@@ -5,10 +5,10 @@
 <preference-set id="Invocations">
 <preference-set id="default">
   <string id="cookieparams"></string>
-  <string id="cwd"></string>
+  <string relative="path" id="cwd"></string>
   <string id="documentRoot"></string>
   <string id="executable-params"></string>
-  <string relative="path" id="filename">application.py</string>
+  <string id="filename">application.py</string>
   <string id="getparams"></string>
   <string id="language">Python</string>
   <string id="mpostparams"></string>
