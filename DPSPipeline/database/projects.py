@@ -18,7 +18,7 @@ class Projects(QObject):
 	projectChanged = QtCore.pyqtSignal(QtCore.QString)
 	#projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50,_phases = [], _updated = 0,_new = 1,_description = ''):
+	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = ''):
 		super(QObject, self).__init__()
 		
 		# define custom properties
@@ -40,7 +40,7 @@ class Projects(QObject):
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		self._phases                 = _phases
+		self._phases                 = []
 		#self._duePhase 		= []
 		self._sequences              = []
 		
@@ -53,17 +53,11 @@ class Projects(QObject):
 			self.AddProjectToDB()
 			self._new = 0
 			sharedDB.myProjects.append(self)
-			
-			for phase in self._phases:
-				print phase._idphases
-				if str(phase._idphases) == "16":
-					self._due_date = phase._enddate
-					print self._due_date
-					break
+			self.SetDueDate()			
 			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
 			print "Project '"+self._name+"' Added to Database!"
-		else:
-			self._phases = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(self._idprojects)
+		#else:
+			#self._phases = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(self._idprojects)
 		#self.GetSequencesFromProject()
 		
 		if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
@@ -76,6 +70,7 @@ class Projects(QObject):
 		#print self._name
 		if self._updated:
 			#print self._name+" Updated in DB!"			
+			self.SetDueDate()
 			self.UpdateProjectInDB()
 			self._updated = 0
 			print "Project '"+self._name+"' Updated in Database!"
@@ -98,7 +93,7 @@ class Projects(QObject):
 		sharedDB.mySequences.append(seq)
 		return seq
 	
-	def UpdateProjectInDB (self):
+	def UpdateProjectInDB (self):		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
 			
@@ -110,6 +105,8 @@ class Projects(QObject):
 		#print ("Updating project in DB: "+str(self._idprojects))
 	
 	def AddProjectToDB (self):
+		self.SetDueDate()
+		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
 			
@@ -161,6 +158,14 @@ class Projects(QObject):
 	#def UpdateCalendarView(self):
 	#	self._calendarWidgetItem.setName(self._name)
 		
+	def SetDueDate(self):
+		for phase in self._phases:
+			#print phase._idphases
+			if str(phase._idphases) == "16":
+				self._due_date = phase._enddate
+				print self._due_date
+				break
+	
 	def setProperty(self,propertyname,value):
 		if (propertyname == "Name"):
 			if (value != self._name):
