@@ -1708,6 +1708,9 @@ class XTreeWidget(QTreeWidget):
         act.setIcon(QIcon(resources.find('img/treeview/fit.png')))
         act.triggered.connect( self.resizeToContents )
         '''
+        expandAll = menu.addAction( 'Expand All Projects' )
+        expandAll.triggered.connect(sharedDB.calendarview._myXGanttWidget.expandAllTrees)
+        
         menu.addSeparator()
         
         #Show/Hide Phases
@@ -3149,12 +3152,11 @@ class XTreeWidget(QTreeWidget):
         be hidden.
         `
         :param      action | <QAction>
-        """
+        """       
+  
         if ( action.text() == 'Show All' ):
             #print "Showing All Phases"
-            sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(True)
-
-            
+            sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(True)            
         elif ( action.text() == 'Hide All' ):
             sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(False)
             #print "Hiding All Phases"    
@@ -3162,7 +3164,7 @@ class XTreeWidget(QTreeWidget):
             state   = action.isChecked()
             #print (action.text() + " = " + str(state))
             sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(state,action.text())
-            
+
         
         self.resizeToContents()
         self.update()
