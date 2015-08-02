@@ -15,6 +15,7 @@ class ClickableImageQLabel(QtGui.QLabel):
         self._noImage = projexui.resources.find('img/DP/noImage.png')
         self._image = QtGui.QPixmap(self._noImage) 
         self._parent = parent
+        self.setAlignment(QtCore.Qt.AlignCenter)
         
     def mousePressEvent (self, event):
         self.clicked.emit()
