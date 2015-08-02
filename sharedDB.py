@@ -18,6 +18,7 @@ myVersion = version.Version("0.0.26")
 
 #TEST SETTINGS
 ignoreVersion = 1
+testDB = 0
 testing = 0
 disableSaving = 1
 autologin = 1
