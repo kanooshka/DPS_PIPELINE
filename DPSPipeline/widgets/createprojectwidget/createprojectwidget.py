@@ -6,11 +6,11 @@ import sys
 
 from datetime import timedelta
 #from projexui import qt import Signal
-from PyQt4 import QtGui
+from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
-from DPSPipeline.widgets.createprojectwidget import clientIPLineEdit
+#from DPSPipeline.widgets.createprojectwidget import clientIPLineEdit
 
 class CreateProjectWidget(QWidget):
    
@@ -31,17 +31,36 @@ class CreateProjectWidget(QWidget):
         
         self._backend               = None
         
-	self.myClientNameLineEdit = clientIPLineEdit.ClientIPLineEdit(self)
-	self.clientIPBoxLayout.addWidget(self.myClientNameLineEdit)
+	#self.myClientNameLineEdit = clientIPLineEdit.ClientIPLineEdit(self)
+	#self.clientIPBoxLayout.addWidget(self.myClientNameLineEdit)
 	
         #connects buttons
         self.createButton.clicked.connect(self.CreateProject)
         self.cancelButton.clicked.connect(self.cancel)
-        self.setDefaults()
+        self.UpdateClientList()
+	self.clientComboBox.currentIndexChanged.connect(self.UpdateIPList)
+	
+	self.UpdateIPList(self.clientComboBox.currentIndex())
+	
+	self.setDefaults()
 	
         
 	
         #self.open()
+
+    def UpdateClientList(self):
+	self.clientComboBox.clear()
+	for client in sharedDB.myClients:
+	    self.clientComboBox.addItem(client._name,QtCore.QVariant(client._idclients))
+    
+    def UpdateIPList(self, sentclientid):
+	self.ipComboBox.clear()
+	for client in sharedDB.myClients:
+	    if str(client._idclients) == self.clientComboBox.itemData(sentclientid).toString():
+		for ip in client._ips:
+		    self.ipComboBox.addItem(ip._name,QtCore.QVariant(ip._idips))
+		    
+		return
 
     def cancel(self):
         self.close()
@@ -69,10 +88,12 @@ class CreateProjectWidget(QWidget):
 	self.activateWindow()
     '''	
     def CreateProject(self):        
-        name = self.projectNameQLineEdit.text()
+        name = str(self.projectNameQLineEdit.text())
         folderLocation = ''
         #idstatus = 0
-        fps = self.fps.value()
+        idips = str(self.ipComboBox.itemData(self.ipComboBox.currentIndex()).toString())
+	idclients = str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())
+	fps = self.fps.value()
         renderWidth = self.xres_spinBox.value()
         renderHeight = self.yres_spinBox.value()
         due_date = self.duedateEdit.date().toPyDate();
@@ -97,10 +118,11 @@ class CreateProjectWidget(QWidget):
         #Add due date into phases
         phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = 16, _startdate = due_date,_enddate = due_date,_updated = 0))
         
-        #sharedDB.projects.AddProject(_name = name, _folderLocation = folderLocation, _fps = fps,_renderWidth = renderWidth,_renderHeight = renderHeight,_due_date = due_date,_renderPriority = renderPriority, phases = phases, _description = description)
-        newProj = sharedDB.projects.Projects(_name = name, _folderLocation = '', _idstatuses = 1, _fps = fps, _renderWidth = renderWidth, _renderHeight = renderHeight, _due_date = due_date, _renderPriority = renderPriority, _description = description, _new = 1)
+        newProj = sharedDB.projects.Projects(_name = name, _folderLocation = '', _idstatuses = 1, _fps = fps, _renderWidth = renderWidth, _renderHeight = renderHeight, _due_date = due_date, _renderPriority = renderPriority, _description = description, _idips = idips, _idclients = idclients, _new = 0)
 	newProj._phases = phases
-       
+	newProj._new = 1
+	sharedDB.myProjects.append(newProj)
+	
         self.close();
         
 def InitializeDates(phases,due_date,duration):

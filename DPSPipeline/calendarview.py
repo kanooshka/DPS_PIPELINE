@@ -20,12 +20,13 @@ class WaitTimer(QtCore.QThread):
 		
 		if sharedDB.calendarview is not None:
 			sharedDB.calendarview.AddProjectSignal.emit()
+			#sharedDB.calendarview.AddPhaseAssignmentSignal.emit()
 		
 		time.sleep(.5)
 
 class CalendarView(QObject):
 	AddProjectSignal = QtCore.pyqtSignal()
-	
+	AddPhaseAssignmentSignal = QtCore.pyqtSignal()
 	def __init__(self):
 		#global myXGanttWidget
 		super(QObject, self).__init__()
@@ -43,6 +44,7 @@ class CalendarView(QObject):
 		reload(projexui)
 		
 		self._projectQueue = []
+		self._phaseassignmentQueue = []
 		self.myWaitTimer = WaitTimer()
 		self.myWaitTimer.daemon = True
 		self.myWaitTimer.finished.connect(self.myWaitTimer.start)
@@ -50,7 +52,9 @@ class CalendarView(QObject):
 		atexit.register(self.closeThreads)
 		
 		self.AddProjectSignal.connect(self.AddProject)
+		self.AddPhaseAssignmentSignal.connect(self.AddPhase)
 		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
+		sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.AddNewPhaseAssignment)
 	
 	def closeThreads(self):
 		self.myWaitTimer.quit()
@@ -58,27 +62,27 @@ class CalendarView(QObject):
 	def AddNewProjects(self, idprojects):
 		for project in sharedDB.myProjects:
 			if str(project._idprojects) == str(idprojects):
-				if project._phases:
-					myPhaseAssignments = project._phases
-				
+				#if project._phases:
+					#myPhaseAssignments = project._phases				
 				if (not project._hidden):
-				    #self.AddProject(project,myPhaseAssignments)
-				    #tmp = []
-				   # tmp.append(project)
-				    #tmp.append(myPhaseAssignments)
-				    #self._projectQueue.append(project)
-				    #self._projectQueue.append(myPhaseAssignments)
 				    self._projectQueue.append(project)
-				    self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
+				    #self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
 				
-	
+	def AddNewPhaseAssignment(self, idphaseassignments):
+		for phase in sharedDB.myPhaseAssignments:
+			if str(phase._idphaseassignments) == str(idphaseassignments):
+				#find project with same id
+				self.AddPhase(phase)
+				
+				
+						
 	
 	#def AddProject(self, project,phases = []):
 	def AddProject(self):
 		#global myXGanttWidget
 		if len(self._projectQueue)>0:
 			project = self._projectQueue[0]
-			phases = project._phases
+			#phases = project._phases
 			
 			projectXGanttWidgetItem = XGanttWidgetItem(self._myXGanttWidget)
 			
@@ -87,33 +91,18 @@ class CalendarView(QObject):
 			
 			projectXGanttWidgetItem.setName(project._name)
 			
-			
-			project._calendarWidgetItem = projectXGanttWidgetItem
-			
 			viewItem = projectXGanttWidgetItem.viewItem()
 			#viewItem.setText(project._name)
-			
-			projectXGanttWidgetItem.phases = phases
-			
 			
 			#projectXGanttWidgetItem.setHidden(True)
 			
 			#find where to insert item
 			index = 0
-			'''duedate = QDate(project._due_date)
-			#print phases
-			for p in phases:
-				#print p._idphases
-				if str(p._idphases) == "16":
-					#print duedate
-					duedate = QDate(p._enddate)
-					#print duedate
-					break
-			'''
+
 			#print self._myXGanttWidget.topLevelItemCount()
 			for x in range(0,self._myXGanttWidget.topLevelItemCount()):
 				index = x
-				if self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date >= project._due_date:
+				if self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date > project._due_date:
 					#print  str(self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date) + " less than " + self._myXGanttWidget.topLevelItem(x)._dateEnd.toString("MM.dd.yyyy")					
 					break				
 				
@@ -121,22 +110,17 @@ class CalendarView(QObject):
 			self._myXGanttWidget.insertTopLevelItem(index,projectXGanttWidgetItem)
 			#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
 			
-			#projectXGanttWidgetItem.setDateStart(QDate(2014,11,4))
-			#projectXGanttWidgetItem.setDateStart(QDate(2015,2,21))
+			project._calendarWidgetItem = projectXGanttWidgetItem
+			
+			for phase in project._phases:
+				self.AddPhase(phase)
+			
+			#print project._calendarWidgetItem			
 	
-			project._phases = phases
-			
-			#for phase in project
-			
-			for phase in phases:
-				#if str(phase._idphases) == "16":
-				self.AddPhase(projectXGanttWidgetItem, phase)
-			
-			projectXGanttWidgetItem.adjustRange()
-	
-			self._myXGanttWidget._dateStart = QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day)		
-			projectXGanttWidgetItem.setExpanded(1)
-			
+			self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
+			projectXGanttWidgetItem.setExpanded(0)
+			self._myXGanttWidget.syncView()
+			projectXGanttWidgetItem.sync()
 			del self._projectQueue[0]
 		
 		#if project starts before view start date
@@ -144,52 +128,62 @@ class CalendarView(QObject):
 		#if project ends after view end date
 
 	
-	def AddPhase(self, parent, phase):	
-		department = 0
+	def AddPhase(self, phase):
 		
-		for myPhase in sharedDB.myPhases:
-			if myPhase._idphases == phase._idphases:
-				name = myPhase._name
+		if phase.project is not None:
+			if phase.project._calendarWidgetItem is not None:
+
+				parentItem = phase.project._calendarWidgetItem
 				
-				BGcolor = myPhase._ganttChartBGColor.split(',')
-				#print BGcolor[0]
-				BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
+				department = 0
 				
-				textColor = myPhase._ganttChartTextColor.split(',')
-				#print textColor[0]
-				textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
+				for myPhase in sharedDB.myPhases:
+					if myPhase._idphases == phase._idphases:
+						name = myPhase._name
+						
+						BGcolor = myPhase._ganttChartBGColor.split(',')
+						#print BGcolor[0]
+						BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
+						
+						textColor = myPhase._ganttChartTextColor.split(',')
+						#print textColor[0]
+						textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
+						
+						department = myPhase._idDepartment
+						continue
 				
-				department = myPhase._idDepartment
-		
-		startDate = phase._startdate
-		endDate = phase._enddate
-		
-		if (startDate<sharedDB.earliestDate):
-			sharedDB.earliestDate = startDate
-			#print (startDate)
-		
-		
-		childItem = XGanttWidgetItem(self._myXGanttWidget)
-		childItem._dbEntry = phase
-		
-		childItem.setName(name)		
-		childItem._name = name
-			
-		#if (qStartDate.isValid()):
-		childItem.setDateStart(QDate(startDate.year,startDate.month,startDate.day))
-		childItem.setDateEnd(QDate(endDate.year,endDate.month,endDate.day))
-		#sets view Item
-		viewItem = childItem.viewItem()
-		viewItem.setText(name)
-		viewItem.setColor(BGcolor)
-		viewItem.setTextColor(textColor)
-		
-		parent.addChild(childItem)
-		
-		if (sharedDB.currentUser[0]._idDepartment == 0 or department == sharedDB.currentUser[0]._idDepartment):
-			childItem.setHidden(False)
-			parent.setHidden(False)
-		else:
-			childItem.setHidden(True)
-		
-	
+				startDate = phase._startdate
+				endDate = phase._enddate
+				
+				if (startDate<sharedDB.earliestDate):
+					sharedDB.earliestDate = startDate
+					#print (startDate)
+				
+				
+				childItem = XGanttWidgetItem(self._myXGanttWidget)
+				childItem._dbEntry = phase
+				
+				childItem.setName(name)		
+				childItem._name = name
+					
+				#if (qStartDate.isValid()):
+				#childItem.setDateStart(QDate(startDate.year,startDate.month,startDate.day))
+				#childItem.setDateEnd(QDate(endDate.year,endDate.month,endDate.day))
+				#sets view Item
+				viewItem = childItem.viewItem()
+				viewItem.setText(name)
+				viewItem.setColor(BGcolor)
+				viewItem.setTextColor(textColor)			
+				
+				childItem.GetDatesFromDBEntry()
+				phase.phaseAssignmentChanged.connect(childItem.GetDatesFromDBEntry)
+				
+				parentItem.addChild(childItem)
+				
+				if (sharedDB.currentUser[0]._idDepartment == 0 or department == sharedDB.currentUser[0]._idDepartment):
+					childItem.setHidden(False)
+					parentItem.setHidden(False)
+				else:
+					childItem.setHidden(True)
+
+				parentItem.adjustRange()

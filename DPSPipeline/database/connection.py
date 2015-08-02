@@ -49,6 +49,7 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])					
@@ -61,16 +62,18 @@ class processQueries(QtCore.QThread):
 					
 					rows = sharedDB.mySQLConnection.query(self._currentQuery)
 
-					if self._currentDB == "clients":
-						
+					if self._currentDB == "clients":						
 						rows.sort(key=lambda x: x[2])
 						sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
 					elif self._currentDB == "ips":
 						rows.sort(key=lambda x: x[2])
 						sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
 					elif self._currentDB == "projects":
-						rows.sort(key=lambda x: x[2])
+						rows = sorted(rows, key=lambda x: x[2])
 						sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
+					elif self._currentDB == "phaseassignments":
+						rows = sorted(rows, key=lambda x: x[3])
+						sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
 					elif self._currentDB == "sequences":
 						sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
 					elif self._currentDB == "shots":
@@ -85,11 +88,9 @@ class processQueries(QtCore.QThread):
 			#parse updates
 			sharedDB.mySQLConnection.ParseUpdatesFromDB()
 			
-			#save changes
-			if not sharedDB.disableSaving:
-				
-				for proj in sharedDB.myProjects :		
-				    proj.Save()
+			#save changes				
+			for proj in sharedDB.myProjects :		
+			    proj.Save()
 		else:
 			sharedDB.mySQLConnection.wrongVersionSignal.emit()
 			time.sleep(99999)
@@ -103,6 +104,7 @@ class Connection(QObject):
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
 	newIpSignal = QtCore.pyqtSignal(QtCore.QString)
 	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)
+	newPhaseAssignmentSignal = QtCore.pyqtSignal(QtCore.QString)
 	newSequenceSignal = QtCore.pyqtSignal(QtCore.QString)
 	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
 	newTaskSignal = QtCore.pyqtSignal(QtCore.QString)
@@ -137,7 +139,7 @@ class Connection(QObject):
 		
 		if sharedDB.localDB:
 			self._host = 'localhost'
-		if sharedDB.testing and not sharedDB.localDB:
+		if sharedDB.testDB:
 			self._database = 'testDB'
 		else:
 			self._database = 'dpstudio'
@@ -147,6 +149,7 @@ class Connection(QObject):
 		self._clientsToBeParsed = []
 		self._ipsToBeParsed = []
 		self._projectsToBeParsed = []
+		self._phaseassignmentsToBeParsed = []
 		self._sequencesToBeParsed = []
 		self._shotsToBeParsed = []
 		self._phaseAssignmentsToBeParsed = []
@@ -184,7 +187,8 @@ class Connection(QObject):
 		if queryType == "fetchAll":
 			rows = self._cursor.fetchall()
 		elif queryType == "commit":
-			self._cnx.commit()
+			if not sharedDB.disableSaving:
+				self._cnx.commit()
 		
 		
 		self._cursor.close()
@@ -315,6 +319,47 @@ class Connection(QObject):
 					
 				#remove row from list
 				del self._projectsToBeParsed[0]
+			else:
+				break
+		
+		#Phase Assignments           **** idphaseassignments, idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip *****
+		while True:
+			#print "Queue Lenght: "+str(x)
+			if len(self._phaseassignmentsToBeParsed)>0:
+				row = self._phaseassignmentsToBeParsed[0]
+				
+				existed = False
+				for phase in sharedDB.myPhaseAssignments:			
+					#if id exists update entry
+	
+					if str(phase._idphaseassignments) == str(row[0]):
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[9]) or sharedDB.testing:
+							phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7])
+						existed = True
+						break
+			
+					
+				if existed == False:
+				#create phase assignment
+					print "New PHASE ASSIGNMENT found in database CREATING phase assignment: "+str(row[0])
+					#create instance of phase assignment class				
+					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7], _new = 0)
+					#add phase to phase assignment list
+					sharedDB.myPhaseAssignments.append(myPhase)
+					#iterate through projects
+					for proj in sharedDB.myProjects:
+						##if idprojects matches
+						if proj._idprojects == myPhase._idprojects:
+							###add to project's phases
+							#print proj._idprojects
+							proj._phases.append(myPhase)
+							myPhase.project = proj
+							###if current project in projectview update
+							sharedDB.mySQLConnection.newPhaseAssignmentSignal.emit(str(myPhase._idphaseassignments))					
+							break
+					
+				#remove row from list
+				del self._phaseassignmentsToBeParsed[0]
 			else:
 				break
 		

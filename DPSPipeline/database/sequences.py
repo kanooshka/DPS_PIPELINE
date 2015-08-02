@@ -32,12 +32,6 @@ class Sequences(QObject):
 		self._new		     = _new
 		self._lastSelectedShotNumber = '-1'
 		
-		#self.GetShotsFromSequence()
-		
-		
-		#if self._idstatuses == 3 or self._idstatuses == 5:
-			#self._hidden = True
-			
 	def Save(self):
 		
 		if self._new:	
@@ -74,7 +68,7 @@ class Sequences(QObject):
 		descr = self._description.replace("\'","\'\'")
 
 		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
-		print ("Updating sequence in DB: "+str(self._idsequences))
+		#print ("Updating sequence in DB: "+str(self._idsequences))
 	
 	def AddShotToSequence(self, newName):
 		

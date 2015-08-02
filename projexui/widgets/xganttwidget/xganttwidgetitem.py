@@ -74,7 +74,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         self._useGroupStyleWithChildren = True
         self._dependencies              = {}
         self._reverseDependencies       = {}
-        self._dbEntry                   = ''
+        self._dbEntry                   = None
         self._workdays                  = 0
         self._ganttWidget               = ganttWidget
         #self._calculateWeekdays         = 0
@@ -209,6 +209,14 @@ class XGanttWidgetItem(XTreeWidgetItem):
         :return     <XGanttViewItem>
         """
         return XGanttViewItem(self)
+    
+    def GetDatesFromDBEntry(self):
+        if self._dbEntry is not None:
+            startDate = self._dbEntry._startdate
+            endDate = self._dbEntry._enddate
+            self.setDateStart(QDate(startDate.year,startDate.month,startDate.day),True)
+	    self.setDateEnd(QDate(endDate.year,endDate.month,endDate.day),True)
+        
     
     def dataUpdated(self,startdate,enddate):
         """
@@ -377,7 +385,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         """
         self._allDay = state
     
-    def setDateEnd( self, date ):
+    def setDateEnd( self, date, ignoreDuration = False ):
         """
         Sets the date start value for this item.
         
@@ -393,7 +401,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
             self._dateEnd = date
         else:
             duration        = self.duration()
-            self._dateStart = date.addDays(-duration)
+            if ignoreDuration is False:
+                self._dateStart = date.addDays(-duration)
             self._dateEnd   = date
             
         self.adjustChildren(delta)
@@ -402,7 +411,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
         # sync the tree
         self.sync()
         
-    def setDateStart( self, date ):
+    def setDateStart( self, date, ignoreDuration = False):
         """
         Sets the date start value for this item.
         
@@ -416,7 +425,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
         duration        = self.duration()
         self._dateStart = date
         
-        self.setWorkdayDuration(self._workdays)
+        if ignoreDuration is False:
+            self.setWorkdayDuration(self._workdays)
         
         #if type(date) is QDate:
         #    date.addDays(duration - 1)

@@ -39,6 +39,7 @@ myClients = []
 myIps = []
 myProjects = []
 mySequences = []
+myPhaseAssignments = []
 
 Doobedeba = -0.0*0+0
 

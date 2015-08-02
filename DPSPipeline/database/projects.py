@@ -47,15 +47,8 @@ class Projects(QObject):
 		self._new		     = _new
 		
 		self._lastSelectedSequenceNumber = '-1'
-		self._calendarWidgetItem = ''
+		self._calendarWidgetItem = None
 		
-		if self._new:
-			self.AddProjectToDB()
-			self._new = 0
-			sharedDB.myProjects.append(self)
-			self.SetDueDate()			
-			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
-			print "Project '"+self._name+"' Added to Database!"
 		#else:
 			#self._phases = sharedDB.phaseAssignments.GetPhaseAssignmentsFromProject(self._idprojects)
 		#self.GetSequencesFromProject()
@@ -73,7 +66,14 @@ class Projects(QObject):
 			self.SetDueDate()
 			self.UpdateProjectInDB()
 			self._updated = 0
-			print "Project '"+self._name+"' Updated in Database!"
+			print "Project '"+self._name+"' Updated in Database!"		
+		
+		if self._new:
+			self.AddProjectToDB()
+			self._new = 0			
+			self.SetDueDate()			
+			sharedDB.mySQLConnection.newProjectSignal.emit(str(self._idprojects))
+			print "Project '"+self._name+"' Added to Database!"
 		'''elif self._new:			
 			self.AddProjectToDB()
 			self._new = 0
@@ -122,7 +122,7 @@ class Projects(QObject):
 		#connect phases to projectid
 		for phase in self._phases:
 			phase._idprojects = self._idprojects
-			phase._updated = 1
+			phase._new = 1
 			
 		
 		
@@ -183,5 +183,3 @@ class Projects(QObject):
 				return phase
 			
 		return 0
-		
-	
