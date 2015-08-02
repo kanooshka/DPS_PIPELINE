@@ -114,8 +114,8 @@ class XGanttWidget(QWidget):
 	#enable drag and drop
 	self.uiGanttTREE.setDragDropFilter(self.uiGanttTREE.setDragDropFilter(XGanttWidget.handleDragDrop))
 	
-	#if (sharedDB.currentUser[0]._idPrivileges==3):
-	self.uiGanttTREE.setEditable(False)
+	if (sharedDB.currentUser[0]._idPrivileges==3):
+	    self.uiGanttTREE.setEditable(False)
 	for act in sharedDB.mainWindow._fileMenu.actions():
 	    if act.text() == "Save" or act.text() == "Create Project":
 		act.setEnabled(False)
