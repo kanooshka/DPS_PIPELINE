@@ -113,8 +113,8 @@ class CalendarView(QObject):
 			#print self._myXGanttWidget.topLevelItemCount()
 			for x in range(0,self._myXGanttWidget.topLevelItemCount()):
 				index = x
-				if self._myXGanttWidget.topLevelItem(x)._dateEnd >= project._due_date:
-					#print  duedate.toString("MM.dd.yyyy") + " less than " + self._myXGanttWidget.topLevelItem(x)._dateEnd.toString("MM.dd.yyyy")					
+				if self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date >= project._due_date:
+					#print  str(self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date) + " less than " + self._myXGanttWidget.topLevelItem(x)._dateEnd.toString("MM.dd.yyyy")					
 					break				
 				
 			#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
