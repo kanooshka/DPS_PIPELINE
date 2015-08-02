@@ -128,7 +128,8 @@ def my_excepthook(type , value, tback):
     #sys.__excepthook__(type, value, tback)
     
 def main():
-        sys.excepthook = my_excepthook    
+        if not sharedDB.testing:
+            sys.excepthook = my_excepthook    
         app = QtGui.QApplication(sys.argv)
         path = projexui.resources.find('img/DP/pipe.gif')
         app.setWindowIcon(QtGui.QIcon(path))
