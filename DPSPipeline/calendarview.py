@@ -72,9 +72,7 @@ class CalendarView(QObject):
 		for phase in sharedDB.myPhaseAssignments:
 			if str(phase._idphaseassignments) == str(idphaseassignments):
 				#find project with same id
-				self.AddPhase(phase)
-				
-				
+				self.AddPhase(phase)				
 						
 	
 	#def AddProject(self, project,phases = []):
@@ -101,7 +99,7 @@ class CalendarView(QObject):
 
 			#print self._myXGanttWidget.topLevelItemCount()
 			for x in range(0,self._myXGanttWidget.topLevelItemCount()):
-				index = x
+				index = x+1
 				if self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date > project._due_date:
 					#print  str(self._myXGanttWidget.topLevelItem(x)._dbEntry._due_date) + " less than " + self._myXGanttWidget.topLevelItem(x)._dateEnd.toString("MM.dd.yyyy")					
 					break				
