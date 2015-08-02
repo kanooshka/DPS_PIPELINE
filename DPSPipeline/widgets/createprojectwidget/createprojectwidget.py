@@ -123,6 +123,10 @@ class CreateProjectWidget(QWidget):
 	newProj._new = 1
 	sharedDB.myProjects.append(newProj)
 	
+	for ip in sharedDB.myIps:
+	    if str(ip._idips) == str(idips):
+		ip._projects.append(newProj)
+	
         self.close();
         
 def InitializeDates(phases,due_date,duration):
