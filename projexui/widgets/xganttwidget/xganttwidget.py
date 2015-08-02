@@ -412,21 +412,7 @@ class XGanttWidget(QWidget):
 	self.treeWidget().insertTopLevelItem(index, item)
 	
 	item.sync(recursive = True)
-    
-    def SaveToDatabase(self):
-	"""
-	Saves the updated entries to the database
-	"""
-	
-	for x in range(self.topLevelItemCount()):
-	    #save top level
-	    self.topLevelItem(x)._dbEntry.Save()
-	    #iterate through children
-	    topItem = self.topLevelItem(x)
-	    for i in range(topItem.childCount()):
-		topItem.child(i)._dbEntry.Save()
-	sharedDB.changesToBeSaved = 0
-    
+
     def setAlternateBrush( self, brush ):
 	"""
 	Sets the alternating brush used for this widget to the inputed brush.
