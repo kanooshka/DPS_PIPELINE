@@ -1710,7 +1710,8 @@ class XTreeWidget(QTreeWidget):
         '''
         expandAll = menu.addAction( 'Expand All Projects' )
         expandAll.triggered.connect(sharedDB.calendarview._myXGanttWidget.expandAllTrees)
-        
+        collapseAll = menu.addAction( 'Collapse All Projects' )
+        collapseAll.triggered.connect(sharedDB.calendarview._myXGanttWidget.collapseAllTrees)
         menu.addSeparator()
         
         #Show/Hide Phases

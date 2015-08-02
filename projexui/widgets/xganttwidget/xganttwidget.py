@@ -347,6 +347,14 @@ class XGanttWidget(QWidget):
 	if ( not self.signalsBlocked() ):
 	    self.dateRangeChanged.emit()
     
+    def collapseAllTrees(self):
+	self.uiGanttTREE.blockSignals(True)
+	#for x in range(0,self.treeWidget().topLevelItemCount()):
+	    #self.treeWidget().topLevelItem(x).setExpanded(True)
+	self.treeWidget().collapseAll()
+	self.uiGanttTREE.blockSignals(False)
+	self.syncView()
+	
     def expandAllTrees(self):
 	self.uiGanttTREE.blockSignals(True)
 	#for x in range(0,self.treeWidget().topLevelItemCount()):
