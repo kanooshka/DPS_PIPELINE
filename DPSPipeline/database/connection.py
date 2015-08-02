@@ -127,6 +127,8 @@ class Connection(QObject):
 		
 		if sharedDB.localDB:
 			self._localhost = 'localhost'
+		elif sharedDB.remote:
+			self.localhost = self._remotehost
 		
 		self._cursor = ''
 		self._host = self._localhost
