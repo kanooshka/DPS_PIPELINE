@@ -81,6 +81,9 @@ class Shots(QObject):
 		self.shotAdded.emit(str(self._idshots))
 	
 	def UpdateShotInDB (self):	
+		if self._description is None:
+			self._description = "None"
+		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")		
 		
