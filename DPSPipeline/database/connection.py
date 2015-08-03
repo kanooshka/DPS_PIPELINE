@@ -44,7 +44,7 @@ class processQueries(QtCore.QThread):
 				
 				sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
 				sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-				sharedDB.myUsers = sharedDB.users.GetAllUsers()	
+				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
 		
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			

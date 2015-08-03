@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
         self.createProjectMenuItem = projectMenu.addAction('Create Project')
         projectMenu.triggered.connect( self.projectMenuActions )
         
-        if sharedDB.currentUser[0]._idPrivileges > 1:
+        if sharedDB.currentUser._idPrivileges > 1:
             self.createProjectMenuItem.setEnabled(0)
 
         self.setMenuBar(menubar)

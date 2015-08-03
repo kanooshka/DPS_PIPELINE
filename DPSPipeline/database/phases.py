@@ -35,7 +35,7 @@ class Phases():
 		self._idDepartment    = _idDepartment
 		self._taskPerShot     = _taskPerShot
 		
-		if (sharedDB.currentUser[0]._idDepartment == 0 or sharedDB.currentUser[0]._idDepartment == _idDepartment):
+		if (sharedDB.currentUser._idDepartment == 0 or sharedDB.currentUser._idDepartment == _idDepartment):
 			self._visible = 1
 		else:
 			self._visible = 0

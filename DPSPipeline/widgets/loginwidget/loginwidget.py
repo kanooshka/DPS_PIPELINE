@@ -47,8 +47,13 @@ class LoginWidget(QWidget):
 	    sharedDB.mySQLConnection.setHost("local")	
 	
 	if sharedDB.mySQLConnection.testConnection():	    
-
-	    sharedDB.currentUser = sharedDB.users.GetCurrentUser(str(sharedDB.loginWidget.user.text()))
+	    sharedDB.myUsers = sharedDB.users.GetAllUsers()
+	    for user in sharedDB.myUsers:
+		if str(user._username).lower() == str(sharedDB.loginWidget.user.text()).lower():
+		    sharedDB.currentUser = user
+		    break
+	    
+	    
 	    sharedDB.mySQLConnection._queryProcessor.start()
 	    self.close()
 	    sharedDB.mainWindow.EnableMainWindow()

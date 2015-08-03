@@ -533,7 +533,7 @@ class XGanttViewItem(QGraphicsRectItem):
     def setPrivelages(self):
         #iterate through fields and adjust edit flag
         #print ("Privelages: "+str(sharedDB.currentUser[0]._idPrivileges))
-        if sharedDB.currentUser[0]._idPrivileges > 1:
+        if sharedDB.currentUser._idPrivileges > 1:
             self.setFlags( self.flags() ^ Qt.ItemIsEditable )
         else:
             flags = self.ItemIsMovable
