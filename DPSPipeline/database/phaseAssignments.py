@@ -61,14 +61,14 @@ class PhaseAssignments(QObject):
 				break
 		
 	def AddPhaseAssignmentToDB(self):
-		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 	def UpdatePhaseAssignmentInDB (self):
-		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		

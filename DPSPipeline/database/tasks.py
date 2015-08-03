@@ -59,7 +59,7 @@ class Tasks(QObject):
 	
 	def AddTaskToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, status, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, status, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
 		
@@ -68,7 +68,7 @@ class Tasks(QObject):
 	
 	def UpdateTaskInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE tasks SET idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', done = '"+str(self._done)+"', status = '"+str(self._status)+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idtasks = "+str(self._idtasks)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE tasks SET idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', done = '"+str(self._done)+"', status = '"+str(self._status)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idtasks = "+str(self._idtasks)+";","commit")
 
 	def SetValues(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0, _timestamp = datetime.now()):
 		print ("Downloaded updated for Task '"+str(self._idtasks)+"'")

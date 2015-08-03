@@ -60,11 +60,11 @@ class Ips(QObject):
 	
 	def UpdateIpInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE ips SET name = '"+name+"', idclients = '"+str(self.idclients)+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idips = '"+str(self._idips)+"';","commit")
+		sharedDB.mySQLConnection.query("UPDATE ips SET name = '"+name+"', idclients = '"+str(self.idclients)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idips = '"+str(self._idips)+"';","commit")
 	
 	def AddIpToDB (self):
 
-		sharedDB.mySQLConnection.query("INSERT INTO ips (name, idclients, lasteditedbyname, lasteditedbyip) VALUES ('"+self._name+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
+		sharedDB.mySQLConnection.query("INSERT INTO ips (name, idclients, lasteditedbyname, lasteditedbyip) VALUES ('"+self._name+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
 		
 		self._idips = sharedDB.mySQLConnection._lastInsertId
 		
