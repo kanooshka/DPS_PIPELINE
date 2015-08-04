@@ -15,6 +15,7 @@ a.datas += [('projexui/resources/default/img/DP/folder.png', '/Users/Shellane/DP
 a.datas += [('projexui/resources/default/img/DP/noImage.png', '/Users/Shellane/DPS_PIPELINE/projexui/resources/default/img/DP/noImage.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/Statuses/notStarted.png', '/Users/Shellane/DPS_PIPELINE/projexui/resources/default/img/DP/Statuses/notStarted.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/Statuses/inProgress.png', '/Users/Shellane/DPS_PIPELINE/projexui/resources/default/img/DP/Statuses/inProgress.png', 'DATA')]
+a.datas += [('projexui/resources/default/img/DP/Statuses/needsAttention.png', '/Users/Shellane/DPS_PIPELINE/projexui/resources/default/img/DP/Statuses/needsAttention.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/Statuses/done.png', '/Users/Shellane/DPS_PIPELINE/projexui/resources/default/img/DP/Statuses/done.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/pipe.gif', 'projexui/resources/default/img/DP/pipe.gif', 'DATA')]
 pyz = PYZ(a.pure)
