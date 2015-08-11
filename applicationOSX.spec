@@ -28,4 +28,9 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False )
+          console=False,
+		  icon = 'pipe.icns')
+
+app = BUNDLE(exe,
+			 name = 'application.app',
+			 icon = 'pipe.icns')
