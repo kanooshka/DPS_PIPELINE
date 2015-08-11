@@ -39,6 +39,9 @@ class Tasks(QObject):
 		self._new		     = _new
 		
 		self.statusButton	= ''
+		self.phaseAssignment = ''
+		self.projects = ''
+		self.user = sharedDB.users.getUserByID(self._idusers)		
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
@@ -52,10 +55,7 @@ class Tasks(QObject):
 			#print self._number+" Updated!"
 			self.UpdateTaskInDB()
 			print "Task '"+str(self._idtasks)+"' Updated in Database!"
-			self._updated = 0
-	
-		
-		
+			self._updated = 0		
 	
 	def AddTaskToDB(self):
 	
@@ -100,7 +100,11 @@ class Tasks(QObject):
 		self._status = newStatus
 		self._updated = 1
 	
+	def setUserId(self, newid):
+		self._idusers = newid
+		self._updated = 1
 	
 	def emitTaskChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.taskChanged.emit(str(self._idtasks))
+	

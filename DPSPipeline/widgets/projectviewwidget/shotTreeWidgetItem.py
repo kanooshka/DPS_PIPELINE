@@ -1,5 +1,6 @@
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import taskProgressButton
+from DPSPipeline.widgets import userLabel
 import sharedDB
 
 class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
@@ -46,7 +47,14 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
                 btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
-                self.shotWidget.setItemWidget(self,columnIndex,btn)
+                uLabel = userLabel.UserLabel(task = currentTask)
+                
+                taskBtnWidget = QtGui.QWidget()
+                vLayout = QtGui.QHBoxLayout()
+                taskBtnWidget.setLayout(vLayout)
+                vLayout.addWidget(btn)
+                vLayout.addWidget(uLabel)
+                self.shotWidget.setItemWidget(self,columnIndex,taskBtnWidget)
                 
                 self.btns.append(btn)
                 

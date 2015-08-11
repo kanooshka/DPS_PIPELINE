@@ -85,3 +85,8 @@ class PhaseAssignments(QObject):
 		self._timestamp                    = _timestamp
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
+
+def getPhaseAssignmentByID(sentid):
+	for phase in sharedDB.myPhaseAssignments:		
+		if str(phase._idphaseassignments) == str(sentid):
+			return phase

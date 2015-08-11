@@ -453,7 +453,7 @@ class ProjectViewWidget(QWidget):
 	    
 	    
 	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-		    self.shotNotes.setText('Anim-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-')
+		    self.shotNotes.setText('Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-')
 	    else:
 		    self.shotNotes.setText(self._currentShot._shotnotes)
 	
