@@ -19,7 +19,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         self._phases = _project._phases
         self._sequence = _sequence
         
-        self.rowHeight = 25
+        self.rowHeight = 45
         
         self.shotPhaseNames = ["ShotID","Name"]
         
