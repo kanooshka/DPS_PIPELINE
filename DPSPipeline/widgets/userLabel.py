@@ -17,7 +17,7 @@ class UserLabel(QtGui.QLabel):
         self.getUserFromTask()
 
     def getUserFromTask(self):
-        if str(self.task._idusers) == "0":
+        if self.task == None or str(self.task._idusers) == "0":
             self.setText("----")
         else:
             self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
@@ -31,32 +31,33 @@ class UserLabel(QtGui.QLabel):
     
     def contextMenuEvent(self, ev):
         
-        menu	 = QtGui.QMenu()
-        
-        userList = []
-        for user in sharedDB.myUsers:
-            #if in department
-            if self.showAllEnabled:
-                userList.append(user._name)
-            else:
-                if user._active and str(user._iddepartments) == str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments):
+        if self.task is not None:
+            menu	 = QtGui.QMenu()
+            
+            userList = []
+            for user in sharedDB.myUsers:
+                #if in department
+                if self.showAllEnabled:
                     userList.append(user._name)
-                
-        userList.sort(reverse=False)
-         
-        showAllDepartmentsAction = menu.addAction('Show All Departments')
-        showAllDepartmentsAction.setCheckable(True)
-        showAllDepartmentsAction.setChecked(self.showAllEnabled)
-        showAllDepartmentsAction.triggered.connect(self.toggleShowAllAction)    
-           
-        menu.addSeparator()
-        
-        for user in userList:
-            menu.addAction(str(user))     
-        
-        menu.triggered.connect(self.mActions)
-        
-        menu.exec_(ev.globalPos())
+                else:
+                    if user._active and str(user._iddepartments) == str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments):
+                        userList.append(user._name)
+                    
+            userList.sort(reverse=False)
+             
+            showAllDepartmentsAction = menu.addAction('Show All Departments')
+            showAllDepartmentsAction.setCheckable(True)
+            showAllDepartmentsAction.setChecked(self.showAllEnabled)
+            showAllDepartmentsAction.triggered.connect(self.toggleShowAllAction)    
+               
+            menu.addSeparator()
+            
+            for user in userList:
+                menu.addAction(str(user))     
+            
+            menu.triggered.connect(self.mActions)
+            
+            menu.exec_(ev.globalPos())
         
     def toggleShowAllAction(self):
         self.showAllEnabled = not self.showAllEnabled
