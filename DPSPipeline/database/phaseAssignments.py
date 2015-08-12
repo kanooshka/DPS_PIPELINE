@@ -32,9 +32,11 @@ class PhaseAssignments(QObject):
 		self._type                         = "phaseassignment"
 		self.project                       = None
 		self._calendarWidgetItem	   = None
+		self._tasks			   = []
 
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
+		sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
 		
 		self.SetPhaseValues()
 		
@@ -48,6 +50,7 @@ class PhaseAssignments(QObject):
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdatePhaseAssignmentInDB()
+			self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 			if str(self._idphases) == '16':
 				self.project._updated = 1
 			print "Phase '"+str(self._idphaseassignments)+"' Updated in Database!"
@@ -61,14 +64,14 @@ class PhaseAssignments(QObject):
 				break
 		
 	def AddPhaseAssignmentToDB(self):
-		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 	def UpdatePhaseAssignmentInDB (self):
-		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		
@@ -85,3 +88,16 @@ class PhaseAssignments(QObject):
 		self._timestamp                    = _timestamp
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
+		
+	def AddTaskToList(self, taskid):
+		for task in sharedDB.myTasks:
+			if task._idphaseassignments == self._idphaseassignments:
+				if str(task._idtasks) == str(taskid):
+					self._tasks.append(task)
+					return
+	
+	
+def GetPhaseById(phaseid):
+	for phase in sharedDB.myPhaseAssignments:
+		if str(phase._idphaseassignments) == str(phaseid):
+			return phase

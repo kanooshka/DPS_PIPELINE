@@ -286,7 +286,7 @@ class XGanttWidget(QWidget):
 	self.uiGanttVIEW.scene().clear()
     
     def closeEvent(self, event):
-	if sharedDB.changesToBeSaved and sharedDB.users.currentUser[0]._idPrivileges != 3:
+	if sharedDB.changesToBeSaved and sharedDB.users.currentUser._idPrivileges != 3:
 	    quit_msg = "Save before exit?"
 	    reply = QtGui.QMessageBox.question(self, 'Message', 
 			     quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No,QtGui.QMessageBox.Cancel)

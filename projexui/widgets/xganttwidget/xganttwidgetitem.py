@@ -570,7 +570,7 @@ class XGanttWidgetItem(XTreeWidgetItem):
 
     def setPrivelages (self):
         #iterate through fields and adjust edit flag
-        #print ("Privelages: "+str(sharedDB.currentUser[0]._idPrivileges))
+        #print ("Privelages: "+str(sharedDB.currentUser._idPrivileges))
         if sharedDB.currentUser._idPrivileges > 1:
             self.setFlags( self.flags() ^ Qt.ItemIsEditable )
         #else:

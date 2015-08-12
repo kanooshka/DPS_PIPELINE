@@ -52,7 +52,8 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])					
+			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			
 			while True:
 				if len(self._queries)>0:
@@ -80,6 +81,8 @@ class processQueries(QtCore.QThread):
 						sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
 					elif self._currentDB == "tasks":
 						sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
+					elif self._currentDB == "userassignments":
+						sharedDB.mySQLConnection._userAssignmentsToBeParsed.extend(rows)
 					
 					del self._queries[0]		
 				else:
@@ -108,6 +111,7 @@ class Connection(QObject):
 	newSequenceSignal = QtCore.pyqtSignal(QtCore.QString)
 	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
 	newTaskSignal = QtCore.pyqtSignal(QtCore.QString)
+	newUserAssignmentSignal = QtCore.pyqtSignal(QtCore.QString)
 	wrongVersionSignal = QtCore.pyqtSignal()
 	firstLoadComplete = QtCore.pyqtSignal()
 
@@ -156,6 +160,7 @@ class Connection(QObject):
 		self._shotsToBeParsed = []
 		self._phaseAssignmentsToBeParsed = []
 		self._tasksToBeParsed = []
+		self._userAssignmentsToBeParsed = []
 		
 		self._queryProcessor = processQueries()
 		self._queryProcessor.finished.connect(self._queryProcessor.start)
@@ -450,7 +455,7 @@ class Connection(QObject):
 			else:
 				break
 	
-		
+		#tasks
 		while True:
 			#print "Queue Lenght: "+str(x)
 			if len(self._tasksToBeParsed)>0:
@@ -488,10 +493,58 @@ class Connection(QObject):
 	
 							sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
 							
-							break
+							break					
 					
 				#remove row from list
 				del self._tasksToBeParsed[0]
+			else:
+				break
+				
+		#user assignments
+		while True:
+			#print "Queue Lenght: "+str(x)
+			if len(self._userAssignmentsToBeParsed)>0:
+				row = self._userAssignmentsToBeParsed[0]
+				
+				existed = False
+				for assignment in sharedDB.myUserAssignments:
+					if str(assignment._iduserassignments) == str(row[0]):						
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[6]) or sharedDB.testing:
+							#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
+							assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5])
+						existed = True
+						break
+					
+				if existed == False:
+				#create project
+					print "New USER ASSIGNMENT found in database CREATING user assignment id: "+str(row[0])
+					#create instance of user assignment class				
+					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3],_idstatuses = row[4],_timestamp = row[5])
+					#add task to task list
+					sharedDB.myUserAssignments.append(myUserAssignment)
+					'''
+					#iterate through shots
+					for shot in sharedDB.myShots:
+						##if idsequences matches
+						#print "Shot id:" +str(shot._idshots)+" Task Id shots: "+str(myTask._idshots)
+						if shot._idshots == myUserAssignment._idshots:
+							
+							###add to shot's task list
+							if shot._tasks is not None:
+								#print "Appending shot: "+str(shot._idshots)+"'s task list"
+								shot._tasks.append(myUserAssignment)
+							else:
+								#print "Creating shot: "+str(shot._idshots)+"'s task list"
+								shot._tasks = [myUserAssignment]
+	
+							sharedDB.mySQLConnection.newTaskSignal.emit(str(myUserAssignment._idtasks))
+							
+							break
+					'''	
+						
+					
+				#remove row from list
+				del self._userAssignmentsToBeParsed[0]
 			else:
 				if len(sharedDB.myProjects) and sharedDB.initialLoad == 0:
 					print "First Load Complete!"

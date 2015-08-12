@@ -58,11 +58,11 @@ class Clients(QObject):
 	
 	def UpdateClientInDB (self):
 
-		sharedDB.mySQLConnection.query("UPDATE clients SET name = '"+name+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idclients = '"+str(self._idclients)+"';","commit")
+		sharedDB.mySQLConnection.query("UPDATE clients SET name = '"+name+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idclients = '"+str(self._idclients)+"';","commit")
 	
 	def AddClientToDB (self):
 
-		sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
+		sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")
 		
 		self._idclients = sharedDB.mySQLConnection._lastInsertId
 		

@@ -51,8 +51,7 @@ class LoginWidget(QWidget):
 	    for user in sharedDB.myUsers:
 		if str(user._username).lower() == str(sharedDB.loginWidget.user.text()).lower():
 		    sharedDB.currentUser = user
-		    break
-	    
+		    break	    
 	    
 	    sharedDB.mySQLConnection._queryProcessor.start()
 	    self.close()

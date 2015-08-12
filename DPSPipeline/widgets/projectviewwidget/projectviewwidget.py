@@ -154,7 +154,7 @@ class ProjectViewWidget(QWidget):
 	
     def setPrivelages(self):
         
-        if sharedDB.currentUser[0]._idPrivileges > 1:
+        if sharedDB.currentUser._idPrivileges > 1:
             #Project privelages
 	    self.projectStatus.setEnabled(0)
 	    self.projectPathButton.setVisible(0)

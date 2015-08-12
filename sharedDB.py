@@ -2,6 +2,7 @@ from DPSPipeline.database import clients
 from DPSPipeline.database import ips
 from DPSPipeline.database import projects
 from DPSPipeline.database import phaseAssignments
+from DPSPipeline.database import userassignments
 from DPSPipeline.database import phases
 from DPSPipeline.database import users
 from DPSPipeline.database import tasks
@@ -18,12 +19,12 @@ myVersion = version.Version("0.0.26")
 
 #TEST SETTINGS
 ignoreVersion = 1
-testDB = 0
-testing = 0
-disableSaving = 1
+testDB = 1
+localDB = 1
+testing = 1
+disableSaving = 0
 autologin = 1
-localDB = 0
-remote = 1
+remote = 0
 autoCreateShotTasks = 0
 
 #freezeDBUpdates = 1
@@ -41,17 +42,19 @@ myIps = []
 myProjects = []
 mySequences = []
 myPhaseAssignments = []
+myUserAssignments = []
 
 Doobedeba = -0.0*0+0
 
 
 myProjectViewWidget = ''
+myTasksWidget = ''
+calendarview = None
 
 lastUpdate = datetime(1942, 1, 1)
 
-calendarview = None
 mySQLConnection = None
-currentUser = ''
+currentUser = None
 app = ''
 mainWindow  = ''
 widgetList = []

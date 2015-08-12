@@ -54,7 +54,7 @@ class Sequences(QObject):
 		self._description = self._description.replace("\\","/")
 		descr = self._description.replace("\'","\'\'")
 		
-		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser[0]._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
 	
 		self._idsequences = sharedDB.mySQLConnection._lastInsertId
 	
@@ -67,7 +67,7 @@ class Sequences(QObject):
 		self._description = self._description.replace("\\","/")
 		descr = self._description.replace("\'","\'\'")
 
-		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser[0]._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE sequences SET number = '"+str(self._number)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idsequences = "+str(self._idsequences)+";","commit")
 		#print ("Updating sequence in DB: "+str(self._idsequences))
 	
 	def AddShotToSequence(self, newName):
