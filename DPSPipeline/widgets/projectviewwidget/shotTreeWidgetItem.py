@@ -1,5 +1,6 @@
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import taskProgressButton
+from DPSPipeline.widgets import userLabel
 import sharedDB
 
 class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
@@ -33,6 +34,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                             #print "MATCH FOUND"
                             currentTask = task
                 
+                
                 #if task didn't exist, create task  
                 if currentTask is None and sharedDB.autoCreateShotTasks:
                     currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self.project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
@@ -41,12 +43,20 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                     else:
                         self.shot._tasks = [currentTask]
                     sharedDB.myTasks.append(currentTask)
-        
+                        
+                
                 #create button for currentTask
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
                 btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
-                self.shotWidget.setItemWidget(self,columnIndex,btn)
+                uLabel = userLabel.UserLabel(task = currentTask)
+                
+                taskBtnWidget = QtGui.QWidget()
+                vLayout = QtGui.QHBoxLayout()
+                taskBtnWidget.setLayout(vLayout)
+                vLayout.addWidget(btn)
+                vLayout.addWidget(uLabel)
+                self.shotWidget.setItemWidget(self,columnIndex,taskBtnWidget)
                 
                 self.btns.append(btn)
                 

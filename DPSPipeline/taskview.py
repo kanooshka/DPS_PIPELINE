@@ -30,7 +30,8 @@ class TaskView():
 		reload(projexui)
 		
 		#depending on privileges / department hide all and then unhide appropriate department
-		#self._myXGanttWidget.setupUserView(sharedDB.users.currentUser._idPrivelages,sharedDB.users.currentUser._idDepartment)
+		#self._myXGanttWidget.setupUserView(sharedDB.users.currentUser._idPrivelages,sharedDB.users.currentUser._iddepartments)
+
 		
 		for task in sharedDB.myTasks:
 			if (not task._hidden):

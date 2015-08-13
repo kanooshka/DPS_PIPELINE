@@ -147,7 +147,7 @@ class CalendarView(QObject):
 						#print textColor[0]
 						textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
 						
-						department = myPhase._idDepartment
+						department = myPhase._iddepartments
 						continue
 				
 				startDate = phase._startdate
@@ -178,7 +178,7 @@ class CalendarView(QObject):
 				
 				parentItem.addChild(childItem)
 				
-				if (sharedDB.currentUser._idDepartment == 0 or department == sharedDB.currentUser._idDepartment):
+				if (sharedDB.currentUser._iddepartments == 0 or department == sharedDB.currentUser._iddepartments):
 					childItem.setHidden(False)
 					parentItem.setHidden(False)
 				else:

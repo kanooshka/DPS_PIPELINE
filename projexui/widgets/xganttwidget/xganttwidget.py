@@ -120,8 +120,8 @@ class XGanttWidget(QWidget):
 	    if act.text() == "Save" or act.text() == "Create Project":
 		act.setEnabled(False)
 	    
-	#else:
-	#    self.uiGanttTREE.setEditable(True)
+	else:
+	    self.uiGanttTREE.setEditable(True)
 	    
 	self.uiGanttTREE.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 	self.uiGanttTREE.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

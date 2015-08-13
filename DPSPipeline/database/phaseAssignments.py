@@ -95,9 +95,8 @@ class PhaseAssignments(QObject):
 				if str(task._idtasks) == str(taskid):
 					self._tasks.append(task)
 					return
-	
-	
-def GetPhaseById(phaseid):
-	for phase in sharedDB.myPhaseAssignments:
-		if str(phase._idphaseassignments) == str(phaseid):
+
+def getPhaseAssignmentByID(sentid):
+	for phase in sharedDB.myPhaseAssignments:		
+		if str(phase._idphaseassignments) == str(sentid):
 			return phase

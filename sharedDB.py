@@ -15,15 +15,16 @@ from DPSPipeline.database import connection
 from PyQt4.QtCore   import QDate
 from datetime import datetime,timedelta
 
-myVersion = version.Version("0.0.26")
+myVersion = version.Version("0.0.29")
 
 #TEST SETTINGS
-ignoreVersion = 1
-testDB = 1
-localDB = 1
-testing = 1
+ignoreVersion = 0
+testDB = 0
+testing = 0
 disableSaving = 0
-autologin = 1
+autologin = 0
+localDB = 0
+
 remote = 0
 autoCreateShotTasks = 0
 

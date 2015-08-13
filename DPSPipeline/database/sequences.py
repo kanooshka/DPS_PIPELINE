@@ -61,6 +61,9 @@ class Sequences(QObject):
 		self.sequenceAdded.emit(str(self._idsequences))
 		
 	def UpdateSequenceInDB (self):
+		if self._description is None:
+			self._description = "None"
+		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
 			

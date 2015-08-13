@@ -3,14 +3,14 @@ import sharedDB
 
 class Users():
 
-	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _idDepartment = 0, _idPrivileges = 3,_active = 0,_updated = 0):
+	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _iddepartments = 0, _idPrivileges = 3,_active = 0, _assignments = [],_updated = 0):
 		
 		# define custom properties
 		self._idusers            = _idusers
 		self._username                   = _username
 		self._name                   = _name
 		self._password           = _password
-		self._idDepartment      = _idDepartment
+		self._iddepartments      = _iddepartments
 		self._idPrivileges           = _idPrivileges
 		self._active                    = _active
 
@@ -35,7 +35,7 @@ def GetAllUsers():
 	
 	for row in rows:
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = row[5],_active = row[6]))
 
 	return users
 
@@ -47,6 +47,11 @@ def GetCurrentUser(username = ''):
 	
 	for row in rows:
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_idDepartment = row[4],_idPrivileges = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = row[5],_active = row[6]))
 
 	return users
+
+def getUserByID(sentid):
+	for user in sharedDB.myUsers:		
+		if str(user._idusers) == str(sentid):
+			return user
