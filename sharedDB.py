@@ -60,3 +60,5 @@ rightWidget = ''
 loginWidget = ''
 
 initialLoad = 0
+
+currentSelection = []
