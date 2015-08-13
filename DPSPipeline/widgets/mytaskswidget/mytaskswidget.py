@@ -28,7 +28,11 @@ class MyTasksWidget(QWidget):
 	
 	sharedDB.myTasksWidget = self
 	
-	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	if sharedDB.initialLoad:
+	    self.propogateUI
+	else:
+	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	
 	self.projectTaskItems = []
 	self.setEnabled(0)
 	self.myTaskList.setColumnHidden(1,True)
@@ -38,7 +42,7 @@ class MyTasksWidget(QWidget):
 	for userassignment in sharedDB.currentUser._assignments:	    
 	    if str(userassignment._assignmenttype) == "phase":
 		#add phase assignment to widget
-		phase = sharedDB.phaseAssignments.GetPhaseById(userassignment._assignmentid)
+		phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
 		projectWidgetItem = projectTreeWidgetItem.ProjectTreeWidgetItem(phase = phase, parent = self.myTaskList)
 		self.myTaskList.insertTopLevelItem(0,projectWidgetItem)
 		self.projectTaskItems.append(projectWidgetItem)

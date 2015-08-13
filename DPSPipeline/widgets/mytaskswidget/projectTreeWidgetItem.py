@@ -1,7 +1,7 @@
 import sharedDB
 import datetime
 from PyQt4 import QtCore,QtGui
-#from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
+from DPSPipeline.widgets.mytaskswidget import mytaskTreeWidgetItem
 #from DPSPipeline.widgets.projectviewwidget import seqDescription
 
 class ProjectTreeWidgetItem(QtGui.QTreeWidgetItem):
@@ -31,11 +31,18 @@ class ProjectTreeWidgetItem(QtGui.QTreeWidgetItem):
 	self.setText(0,(self._project._name+"             ------>            "+self._phaseAssignment._name)+" DUE: "+self._phaseAssignment._enddate.strftime("%m-%d-%Y"))
         self.setText(1,self._phaseAssignment._enddate.strftime("%Y-%m-%d %H:%M:%S"))
 	
+	nestedWidget = QtGui.QTreeWidget()
+	nestedWidgetItem = QtGui.QTreeWidgetItem()
+	self.addChild(nestedWidgetItem)
+	self._parent.setItemWidget(nestedWidgetItem,0,nestedWidget)
+	
 	#for all tasks
 	for task in self._phaseAssignment._tasks:
 	    #if phaseassignment is same and done is 0
-	    childItem = QtGui.QTreeWidgetItem(task._idtasks)
-	    self.addChild(childItem)
+	    childItem = mytaskTreeWidgetItem.MyTaskTreeWidgetItem(nestedWidget,task)
+	    #childItem.setText(0,str(task._idtasks))
+	    
+	    #self.addChild(childItem)
 	    #add to task list
 	    #locked if previous task isn't ready
 	    

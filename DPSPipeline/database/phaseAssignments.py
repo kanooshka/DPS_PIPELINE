@@ -36,7 +36,7 @@ class PhaseAssignments(QObject):
 
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
-		sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
+		#sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
 		
 		self.SetPhaseValues()
 		
@@ -89,12 +89,10 @@ class PhaseAssignments(QObject):
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 		
-	def AddTaskToList(self, taskid):
-		for task in sharedDB.myTasks:
-			if task._idphaseassignments == self._idphaseassignments:
-				if str(task._idtasks) == str(taskid):
-					self._tasks.append(task)
-					return
+	def AddTaskToList(self, task):
+		if task._idphaseassignments == self._idphaseassignments:
+			self._tasks.append(task)
+			return
 
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		

@@ -362,8 +362,9 @@ class Connection(QObject):
 							proj._phases.append(myPhase)
 							myPhase.project = proj
 							###if current project in projectview update
-							sharedDB.mySQLConnection.newPhaseAssignmentSignal.emit(str(myPhase._idphaseassignments))					
 							break
+					
+					sharedDB.mySQLConnection.newPhaseAssignmentSignal.emit(str(myPhase._idphaseassignments))
 					
 				#remove row from list
 				del self._phaseassignmentsToBeParsed[0]
@@ -401,16 +402,9 @@ class Connection(QObject):
 							###add to project's sequences
 							#print "Adding Sequence "+str(mySeq._idsequences)+ " in Project " + str(proj._idprojects)
 							proj._sequences.append(mySeq)
-							###if current project in projectview update
-							sharedDB.mySQLConnection.newSequenceSignal.emit(str(mySeq._idsequences))
-							'''if sharedDB.myProjectViewWidget._currentProject is not None:
-								if sharedDB.myProjectViewWidget._currentProject._idprojects == mySeq._idprojects:
-									#emit new sequence signal
-									
-									#print "emitSignal"'''
-									
-							
 							break
+					
+					sharedDB.mySQLConnection.newSequenceSignal.emit(str(mySeq._idsequences))
 					
 				#remove row from list
 				del self._sequencesToBeParsed[0]
@@ -447,8 +441,10 @@ class Connection(QObject):
 							###add to sequence's shot list
 							seq._shots.append(myShot)
 							###if current sequence in projectview update
-							sharedDB.mySQLConnection.newShotSignal.emit(str(myShot._idshots))
 							break
+					
+					sharedDB.mySQLConnection.newShotSignal.emit(str(myShot._idshots))
+							
 					
 				#remove row from list
 				del self._shotsToBeParsed[0]
@@ -478,22 +474,19 @@ class Connection(QObject):
 					#add task to task list
 					sharedDB.myTasks.append(myTask)
 					#iterate through shots
+					
+					for phase in sharedDB.myPhaseAssignments:
+						phase.AddTaskToList(myTask)
+						
 					for shot in sharedDB.myShots:
-						##if idsequences matches
-						#print "Shot id:" +str(shot._idshots)+" Task Id shots: "+str(myTask._idshots)
-						if shot._idshots == myTask._idshots:
+						shot.AddTaskToList(myTask)
 							
-							###add to shot's task list
-							if shot._tasks is not None:
-								#print "Appending shot: "+str(shot._idshots)+"'s task list"
-								shot._tasks.append(myTask)
-							else:
-								#print "Creating shot: "+str(shot._idshots)+"'s task list"
-								shot._tasks = [myTask]
-	
-							sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
+					for task in sharedDB.myTasks:
+						if task._parenttaskid is not None:
+							task.AddTaskToList(myTask)
 							
-							break					
+					sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
+				
 					
 				#remove row from list
 				del self._tasksToBeParsed[0]
