@@ -39,11 +39,15 @@ class ProjectTreeWidgetItem(QtGui.QTreeWidgetItem):
 	#for all tasks
 	for task in self._phaseAssignment._tasks:
 	    #if phaseassignment is same and done is 0
-	    childItem = mytaskTreeWidgetItem.MyTaskTreeWidgetItem(nestedWidget,task)
-	    #childItem.setText(0,str(task._idtasks))
 	    
-	    #self.addChild(childItem)
-	    #add to task list
+	    #my shots
+	    if str(task._idusers) == str(sharedDB.currentUser._idusers):
+		childItem = mytaskTreeWidgetItem.MyTaskTreeWidgetItem(nestedWidget,task)
+	    
+	    #unclaimed shots	    
+	    elif str(task._idusers) == '0':
+		childItem = mytaskTreeWidgetItem.MyTaskTreeWidgetItem(nestedWidget,task)
+		
 	    #locked if previous task isn't ready
 	    
 	
