@@ -50,12 +50,12 @@ class CheckForPlayblastPath(QtCore.QThread):
 	except:
 	    print "No Playblast file found for selected shot"
 
-class AttributeEditorWiget(QWidget):
+class AttributeEditorWidget(QWidget):
     shotImageFound = QtCore.pyqtSignal(QtCore.QString)
     
     def __init__( self, parent = None ):
     
-	super(AttributeEditorWiget, self).__init__( parent )
+	super(AttributeEditorWidget, self).__init__( parent )
 	
 	self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
@@ -82,11 +82,11 @@ class AttributeEditorWiget(QWidget):
 	
 	sharedDB.myProjectViewWidget = self
 
-	self.projectValueGrp.setEnabled(0)
-	self.progressListGrp.setEnabled(0)
-	self.ShotBox.setEnabled(0)
+	#self.projectValueGrp.setEnabled(0)
+	#self.progressListGrp.setEnabled(0)
+	#self.ShotBox.setEnabled(0)
 	
-	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	#sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
     
     def propogateUI(self, ):
 	self.setPrivelages()
@@ -399,7 +399,7 @@ class AttributeEditorWiget(QWidget):
 	self.shotNotes.setEnabled(v)
     
     def LoadShotValuesFromSent(self,itemwidget, column):				
-		    
+	'''	    
 	self._blockUpdates = 1
 	#self.blockSignals(True)
 	
@@ -446,7 +446,7 @@ class AttributeEditorWiget(QWidget):
 		    self.shotNotes.setText(self._currentShot._shotnotes)
 	
 	self._blockUpdates = 0
-    
+	'''
     def SetShotValues(self):
 	if not self._blockUpdates:
 		if self._currentShot is not None:

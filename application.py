@@ -8,20 +8,27 @@ from datetime import datetime
 
 import projexui
 
-from DPSPipeline.calendarview import CalendarView
+from DPSPipeline.widgets.calendarviewwidget import calendarviewwidget
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
+from DPSPipeline.widgets.attributeeditorwidget import attributeeditorwidget
+
 #import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
     
     def __init__( self):
-        QtGui.QMainWindow.__init__(self)
+        #QtGui.QMainWindow.__init__(self)
+
+	super(MainWindow, self).__init__( )
 
         self.setWindowTitle("Sludge v"+sharedDB.myVersion._name)
         self._fileMenu = ''
         
+	self.centralTabbedWidget = QtGui.QTabWidget()
+	self.setCentralWidget(self.centralTabbedWidget)
+	
         sharedDB.mainWindow = self
         #We instantiate a QApplication passing the arguments of the script to it:
         self.app = sharedDB.app
@@ -33,7 +40,9 @@ class MainWindow(QtGui.QMainWindow):
             
         self.app.loginWidget.show()
         self.app.loginWidget.activateWindow()
-    
+	
+	
+	
     def EnableMainWindow(self):
 
         menubar = QtGui.QMenuBar()
@@ -59,14 +68,17 @@ class MainWindow(QtGui.QMainWindow):
             self.createProjectMenuItem.setEnabled(0)
 
         self.setMenuBar(menubar)
-        self.setCentralWidget(None)   
+          
         self.resize(1280,720)
         self.show()
             
-        sharedDB.calendarview = CalendarView()
-        sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
+        #sharedDB.calendarview = CalendarView()
+        #sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
+	self.CreateCalendarWidget()
 	self.CreateProjectViewWidget()
+	self.CreateAttributeEditorWidget()
+	
         
     def CreateProjectWidget(self):
 	
@@ -81,14 +93,23 @@ class MainWindow(QtGui.QMainWindow):
     
     def CreateProjectViewWidget(self):
 	
-        dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
         self._ProjectViewWidget = projectviewwidget.ProjectViewWidget()
-        dockWidget.setWindowTitle("ProjectView")
-        dockWidget.setWidget(self._ProjectViewWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
-        sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
+	self.centralTabbedWidget.addTab(self._ProjectViewWidget, "Project View")
+	
+    def CreateCalendarWidget(self):	
+        self._CalendarWidget = calendarviewwidget.CalendarViewWidget()	
+	self.centralTabbedWidget.addTab(self._CalendarWidget, "Calendar View")
+    
+    def CreateAttributeEditorWidget(self):
+        dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
+        self._AttributeEditorWidget = attributeeditorwidget.AttributeEditorWidget()
+        dockWidget.setWindowTitle("Attribute Editor")
+        dockWidget.setWidget(self._AttributeEditorWidget)
+        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget)
+        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
         dockWidget.show()
         dockWidget.raise_()
+    
     def fileMenuActions( self, action ):
 	"""
 	Handles file menu actions

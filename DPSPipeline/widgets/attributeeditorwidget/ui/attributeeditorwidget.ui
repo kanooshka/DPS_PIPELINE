@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1272</width>
+    <width>300</width>
     <height>685</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>490</width>
+    <width>300</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>30000</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -43,7 +43,7 @@
      <property name="styleSheet">
       <string notr="true"/>
      </property>
-     <widget class="QWidget" name="Shot" native="true">
+     <widget class="QWidget" name="Shot">
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>1</number>
@@ -441,8 +441,8 @@ p, li { white-space: pre-wrap; }
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>1238</width>
-                   <height>349</height>
+                   <width>89</width>
+                   <height>89</height>
                   </rect>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_25">

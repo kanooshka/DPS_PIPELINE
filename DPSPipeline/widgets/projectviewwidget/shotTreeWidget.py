@@ -69,7 +69,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         self.UpdateWidgetHeight()
         
         #disables vertical scroll bar
-        self.setHorizontalScrollBarPolicy( QtCore.Qt.ScrollBarAlwaysOff )
+        #self.setHorizontalScrollBarPolicy( QtCore.Qt.ScrollBarAlwaysOff )
         
     def UpdateWidgetHeight(self):
         

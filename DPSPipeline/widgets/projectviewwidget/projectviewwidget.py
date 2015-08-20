@@ -20,7 +20,7 @@ from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
 from DPSPipeline import clickableImageQLabel
 
-
+'''
 class CheckForImagePath(QtCore.QThread):
 
     def run(self):
@@ -52,9 +52,9 @@ class CheckForPlayblastPath(QtCore.QThread):
 		
 	except:
 	    print "No Playblast file found for selected shot"
-
+'''
 class ProjectViewWidget(QWidget):
-    shotImageFound = QtCore.pyqtSignal(QtCore.QString)
+    #shotImageFound = QtCore.pyqtSignal(QtCore.QString)
     refreshProjectValuesSignal = QtCore.pyqtSignal()
     
     def __init__( self, parent = None ):
@@ -62,10 +62,10 @@ class ProjectViewWidget(QWidget):
 	super(ProjectViewWidget, self).__init__( parent )
 	
 	self._currentProject = None
-	self._currentSequence = None
-	self._currentShot = None
+	#self._currentSequence = None
+	#self._currentShot = None
 	
-	self._noImage = projexui.resources.find('img/DP/noImage.png')
+	#self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
@@ -74,20 +74,20 @@ class ProjectViewWidget(QWidget):
 	else:
 	    projexui.loadUi(__file__, self)
 	
-	self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
-	self.shotImageLayout.addWidget(self.shotImage)
+	#self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
+	#self.shotImageLayout.addWidget(self.shotImage)
 	
 	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
 	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
 	
-	self.cfip = CheckForImagePath()
-	self.shotImageFound.connect(self.shotImage.assignImage)
-	self.shotImageDir = ''	
+	#self.cfip = CheckForImagePath()
+	#self.shotImageFound.connect(self.shotImage.assignImage)
+	#self.shotImageDir = ''	
 	
-	self.cfpb = CheckForPlayblastPath()
-	self.shotPlayblastPath = None
-	self.shotPlayblastDir = ''
-	self.shotImage.clicked.connect(self.checkForPlayblast)
+	#self.cfpb = CheckForPlayblastPath()
+	#self.shotPlayblastPath = None
+	#self.shotPlayblastDir = ''
+	#self.shotImage.clicked.connect(self.checkForPlayblast)
 	
 	self._backend               = None
 	self._blockUpdates = 0
@@ -96,7 +96,7 @@ class ProjectViewWidget(QWidget):
 
 	self.projectValueGrp.setEnabled(0)
 	self.progressListGrp.setEnabled(0)
-	self.ShotBox.setEnabled(0)
+	#self.ShotBox.setEnabled(0)
 	
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
     
@@ -125,10 +125,10 @@ class ProjectViewWidget(QWidget):
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	#connect shot settings
-	self.saveShotDescription.clicked.connect(self.SaveShotDescription)
-	self.startFrame.valueChanged.connect(self.SetShotValues)
-	self.endFrame.valueChanged.connect(self.SetShotValues)
-	self.saveShotNotes.clicked.connect(self.SaveShotNotes)
+	#self.saveShotDescription.clicked.connect(self.SaveShotDescription)
+	#self.startFrame.valueChanged.connect(self.SetShotValues)
+	#self.endFrame.valueChanged.connect(self.SetShotValues)
+	#self.saveShotNotes.clicked.connect(self.SaveShotNotes)
 
 	self.setEnabled(1)    
     
@@ -210,7 +210,7 @@ class ProjectViewWidget(QWidget):
 	for status in sharedDB.myStatuses:
 	    self.projectStatus.addItem(status._name, QVariant(status))
 	    self.sequenceStatus.addItem(status._name, QVariant(status))
-	    self.shotStatus.addItem(status._name, QVariant(status))
+	    #self.shotStatus.addItem(status._name, QVariant(status))
 
     def changeProjectPath(self):
 	startingPath = ''
@@ -251,7 +251,7 @@ class ProjectViewWidget(QWidget):
 	    #set name
 	    self.projectValueGrp.setEnabled(1)
 	    self.progressListGrp.setEnabled(1)
-	    self.ShotBox.setEnabled(0)
+	    #self.ShotBox.setEnabled(0)
 	    
 	    self.myProjectNameLineEdit.setText(str(self._currentProject._name)+"        (Right Click to Switch Project)")
 	    
@@ -373,7 +373,7 @@ class ProjectViewWidget(QWidget):
 	self.sequenceStatus.setEnabled(v)
 	self.sequenceDescription.setEnabled(v)
 
-    def checkForShotImage(self):
+    '''def checkForShotImage(self):
 	seq = self._currentSequence
 	shot= self._currentShot
 	
@@ -482,3 +482,5 @@ class ProjectViewWidget(QWidget):
 	    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
 		    self._currentShot._shotnotes = self.shotNotes.toPlainText()
 		    self._currentShot._updated = 1
+		    
+    '''
