@@ -116,8 +116,6 @@ class Connection(QObject):
 		super(QObject, self).__init__()
 		
 		# define custom properties
-		#sharedDB.mySQLConnection = self
-		self._cnx = mysql.connector.connect()
 		self._user = _user
 		self._password = _password
 		self._localhost = '10.9.21.12'
@@ -130,7 +128,6 @@ class Connection(QObject):
 		elif sharedDB.remote:
 			self.localhost = self._remotehost
 		
-		self._cursor = ''
 		self._host = self._localhost
 		self._remote = 0
 		self._autoUpdateFrequency = 2
@@ -175,40 +172,39 @@ class Connection(QObject):
 		return False
 	
 	def openConnection(self):
-		if not self._cnx.is_connected():
-			self._cnx = mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
-	def closeConnection(self):
-		self._cnx.close()
+		return mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
+	def closeConnection(self, cnx):
+		cnx.close()
 
 	def query(self, query = "", queryType = "fetchAll"):
 		rows = ""
-		self.openConnection()
-		self._cursor = self._cnx.cursor()
-		self._cursor.execute(query)
-		self._lastInsertId = self._cursor.lastrowid
+		cnx = self.openConnection()
+		cursor = cnx.cursor()
+		cursor.execute(query)
+		self._lastInsertId = cursor.lastrowid
 		if queryType == "fetchAll":
-			rows = self._cursor.fetchall()
+			rows = cursor.fetchall()
 		elif queryType == "commit":
 			if not sharedDB.disableSaving:
-				self._cnx.commit()
+				cnx.commit()
 		
 		
-		self._cursor.close()
+		cursor.close()
 		
-		self.closeConnection()
+		self.closeConnection(cnx)
 
 		return rows
 
 	def GetTimestamp(self):
 		rows = ""
-		self.openConnection()
-		self._cursor = self._cnx.cursor()
-		self._cursor.execute("SELECT NOW()")
-		rows = self._cursor.fetchall()		
+		cnx = self.openConnection()
+		cursor = cnx.cursor()
+		cursor.execute("SELECT NOW()")
+		rows = cursor.fetchall()		
 		
-		self._cursor.close()
+		cursor.close()
 		
-		#self.closeConnection()
+		self.closeConnection(cnx)
 
 		return rows[0]		
 	
