@@ -194,7 +194,9 @@ class XGanttWidget(QWidget):
 	self.uiGanttTREE.clearSelection()
 	for item in self.uiGanttVIEW.scene().selectedItems():
 	    item.treeItem().setSelected(True)
+	    sharedDB.sel.select(item.treeItem()._dbEntry)
 	self.uiGanttTREE.blockSignals(False)
+	
     
     def __selectView( self ):
 	"""
@@ -204,6 +206,7 @@ class XGanttWidget(QWidget):
 	self.uiGanttVIEW.scene().clearSelection()
 	for item in self.uiGanttTREE.selectedItems():
 	    item.viewItem().setSelected(True)
+	    sharedDB.sel.select(item._dbEntry)
 	self.uiGanttVIEW.scene().blockSignals(False)
     
     def __updateViewRect( self ):
