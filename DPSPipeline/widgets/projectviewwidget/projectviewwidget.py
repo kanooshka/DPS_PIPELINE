@@ -18,6 +18,7 @@ from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
+from DPSPipeline.widgets import textEditAutosave
 from DPSPipeline import clickableImageQLabel
 
 '''
@@ -76,6 +77,9 @@ class ProjectViewWidget(QWidget):
 	
 	#self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
 	#self.shotImageLayout.addWidget(self.shotImage)
+	self.projectDescription = textEditAutosave.TextEditAutoSave()
+	self.projDescrLayout.addWidget(self.projectDescription)
+	self.projectDescription.save.connect(self.SaveProjectDescription)
 	
 	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
 	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
@@ -116,7 +120,7 @@ class ProjectViewWidget(QWidget):
 	self.dueDate.dateChanged.connect(self.SetProjectValues)
 	self.renderWidth.valueChanged.connect(self.SetProjectValues)
 	self.renderHeight.valueChanged.connect(self.SetProjectValues)
-	self.saveProjectDescription.clicked.connect(self.SaveProjectDescription)
+	#self.saveProjectDescription.clicked.connect(self.SaveProjectDescription)
 	self.projectPath.textChanged.connect(self.SetProjectValues)		
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
@@ -234,7 +238,7 @@ class ProjectViewWidget(QWidget):
 	    self._currentProject._due_date = self.dueDate.date().toPyDate()
 	    self._currentProject._renderWidth = self.renderWidth.value()
 	    self._currentProject._renderHeight = self.renderHeight.value()
-	    #self._currentProject._description = self.projectDescription.toPlainText()
+	    self._currentProject._description = self.projectDescription.toPlainText()
 	    self._currentProject._folderLocation = self.projectPath.text()
 	    self._currentProject._updated = 1
 
@@ -270,13 +274,16 @@ class ProjectViewWidget(QWidget):
 	    self.renderHeight.setValue(self._currentProject._renderHeight)
 	    #set Due Date
 	    self.dueDate.setDate(self._currentProject._due_date)
+	    
 	    #set Description
-	    #print self._currentProject._description
+	    
+	    self.projectDescription.blockSignals = 1
 	    if self._currentProject._description is not None:
 		    self.projectDescription.setText(self._currentProject._description)
 	    else:
 		    self.projectDescription.setText('')
-		    
+	    self.projectDescription.blockSignals = 0
+	    
 	    self.LoadProgressListValues()
     
 	self._blockUpdates = 0

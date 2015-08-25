@@ -59,8 +59,10 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         
         self.UpdateBackgroundColors()
         
-        self.itemEntered.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
-	self.itemPressed.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
+        #self.itemEntered.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
+	#self.itemPressed.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
+        self.itemEntered.connect(self.ChangeSelection)
+	self.itemPressed.connect(self.ChangeSelection)
         
         self.itemEntered.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
 	self.itemPressed.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
@@ -134,6 +136,10 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     
     def wheelEvent(self, event):
 	self._parentWidgetItem._progressList.wheelEvent(event)
+    
+    def ChangeSelection(self,itemwidget, column):
+        sharedDB.sel.select(itemwidget.shot)
+    
     
     '''
     #self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu);    

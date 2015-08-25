@@ -11,6 +11,8 @@ from DPSPipeline.database import shots
 from DPSPipeline.database import version
 from DPSPipeline.database import connection
 
+from DPSPipeline import selection
+
 from PyQt4.QtCore   import QDate
 from datetime import datetime,timedelta
 
@@ -46,6 +48,7 @@ Doobedeba = -0.0*0+0
 
 
 myProjectViewWidget = ''
+myAttributeEditorWidget = ''
 
 lastUpdate = datetime(1942, 1, 1)
 
@@ -61,4 +64,4 @@ loginWidget = ''
 
 initialLoad = 0
 
-currentSelection = []
+sel = selection.Selection() 

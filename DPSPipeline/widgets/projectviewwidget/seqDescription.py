@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtGui,QtCore
 import projexui
 import sharedDB
+from DPSPipeline.widgets import textEditAutosave
 
 class SeqDescription(QtGui.QWidget):
 
@@ -19,13 +20,17 @@ class SeqDescription(QtGui.QWidget):
 	self._sequenceTreeItem = _sequenceTreeItem
 	self._project = _project
 	
+	self.sequenceDescription = textEditAutosave.TextEditAutoSave()
+	self.seqDescriptionLayout.addWidget(self.sequenceDescription)
+	self.sequenceDescription.save.connect(self.SaveSequenceDescription)
+	
 	self.setDescription()
 	
 	self.descriptionBox.setTitle("Sequence "+str(self._sequence._number)+" Description")
 	
 	self.addShot.clicked.connect(self.AddShot)
 	self._sequence.sequenceChanged.connect(self.setDescription)
-	self.saveSequenceDescription.clicked.connect(self.SaveSequenceDescription)
+	#self.saveSequenceDescription.clicked.connect(self.SaveSequenceDescription)
 	
     def SaveSequenceDescription(self):
 	    if not (self.sequenceDescription.toPlainText() == self._sequence._description):
@@ -33,8 +38,12 @@ class SeqDescription(QtGui.QWidget):
 		    self._sequence._updated = 1
 		    
     def setDescription(self):
-	if self._sequence._description is not None:
+	self.sequenceDescription.blockSignals = 1
+	
+	if self._sequence._description is not None:	    
 	    self.sequenceDescription.setText(self._sequence._description)
+	
+	self.sequenceDescription.blockSignals = 0
     
     def getShotName(self):
 	sName = str(self.newShotNumber.value())
