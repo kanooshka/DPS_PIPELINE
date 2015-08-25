@@ -56,32 +56,35 @@ class processQueries(QtCore.QThread):
 			
 			while True:
 				if len(self._queries)>0:
-					self._currentQueryType =  self._queries[0][0]
-					self._currentDB = self._queries[0][1]		
-					self._currentQuery = self._queries[0][2]
-					
-					rows = sharedDB.mySQLConnection.query(self._currentQuery)
-
-					if self._currentDB == "clients":						
-						rows.sort(key=lambda x: x[2])
-						sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
-					elif self._currentDB == "ips":
-						rows.sort(key=lambda x: x[2])
-						sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
-					elif self._currentDB == "projects":
-						rows = sorted(rows, key=lambda x: x[2])
-						sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
-					elif self._currentDB == "phaseassignments":
-						rows = sorted(rows, key=lambda x: x[3])
-						sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
-					elif self._currentDB == "sequences":
-						sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
-					elif self._currentDB == "shots":
-						sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
-					elif self._currentDB == "tasks":
-						sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
-					
-					del self._queries[0]		
+					try:
+						self._currentQueryType =  self._queries[0][0]
+						self._currentDB = self._queries[0][1]		
+						self._currentQuery = self._queries[0][2]
+						
+						rows = sharedDB.mySQLConnection.query(self._currentQuery)
+	
+						if self._currentDB == "clients":						
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
+						elif self._currentDB == "ips":
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
+						elif self._currentDB == "projects":
+							rows = sorted(rows, key=lambda x: x[2])
+							sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
+						elif self._currentDB == "phaseassignments":
+							rows = sorted(rows, key=lambda x: x[3])
+							sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
+						elif self._currentDB == "sequences":
+							sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
+						elif self._currentDB == "shots":
+							sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
+						elif self._currentDB == "tasks":
+							sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
+						
+						del self._queries[0]
+					except:
+						print "MySQL Connection Failed....trying again"	
 				else:
 					break
 			
@@ -173,8 +176,6 @@ class Connection(QObject):
 	
 	def openConnection(self):
 		return mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
-	def closeConnection(self, cnx):
-		cnx.close()
 
 	def query(self, query = "", queryType = "fetchAll"):
 		rows = ""
@@ -191,7 +192,7 @@ class Connection(QObject):
 		
 		cursor.close()
 		
-		self.closeConnection(cnx)
+		cnx.close()
 
 		return rows
 
@@ -204,7 +205,7 @@ class Connection(QObject):
 		
 		cursor.close()
 		
-		self.closeConnection(cnx)
+		cnx.close()
 
 		return rows[0]		
 	
