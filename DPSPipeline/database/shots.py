@@ -8,9 +8,12 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import QObject
 
 class Shots(QObject):
-
-	shotChanged = QtCore.pyqtSignal(QtCore.QString)
 	shotAdded = QtCore.pyqtSignal(QtCore.QString)
+	shotChanged = QtCore.pyqtSignal()
+	startFrameChanged = QtCore.pyqtSignal()
+	endFrameChanged = QtCore.pyqtSignal()
+	descriptionChanged = QtCore.pyqtSignal()
+	
 	
 	def __init__(self,_idshots = -1,_idsequences = -1,_idprojects = -1, _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
 		
@@ -111,15 +114,8 @@ class Shots(QObject):
 		self._shotnotes	              = _shotnotes
 		self._timestamp		      = _timestamp
 
-		
-		#update views containing project
-		#update calendar view
-		#self.UpdateCalendarView()
-		self.emitShotChanged()
-		#self.UpdateProjectView()
-		##if current project changed, update values
-		##else just update project list
-	
+		self.shotChanged.emit()
+
 	def AddTaskToList(self, task):
 		if str(self._idshots) == str(task._idshots):			
 			###add to shot's task list

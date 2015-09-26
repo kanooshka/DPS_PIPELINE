@@ -28,6 +28,7 @@ class Sequences(QObject):
 		self._updated                = _updated
 		self._type                   = "sequence"
 		self._hidden                 = False
+		self._project               = self.GetProjectById()
 		
 		self._new		     = _new
 		self._lastSelectedShotNumber = '-1'
@@ -91,6 +92,11 @@ class Sequences(QObject):
 		self._timestamp                    = _timestamp
 
 		self.emitSequenceChanged()
+	
+	def GetProjectById(self):
+		for proj in sharedDB.myProjects:
+			if proj._idprojects == self._idprojects:
+				return proj
 	
 	def emitSequenceChanged( self ):
 		if ( not self.signalsBlocked() ):

@@ -42,8 +42,10 @@ class Tasks(QObject):
 		self.statusButton	= ''
 		self.phaseAssignment = ''
 		self.projects = ''
+
 		self.user = sharedDB.users.getUserByID(self._idusers)
 		self.childTasks = []
+
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			

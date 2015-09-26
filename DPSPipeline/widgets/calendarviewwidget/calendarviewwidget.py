@@ -24,21 +24,27 @@ class WaitTimer(QtCore.QThread):
 		
 		time.sleep(.5)
 
-class CalendarView(QObject):
+class CalendarViewWidget(QtGui.QWidget):
 	AddProjectSignal = QtCore.pyqtSignal()
 	AddPhaseAssignmentSignal = QtCore.pyqtSignal()
 	def __init__(self):
 		#global myXGanttWidget
-		super(QObject, self).__init__()
+		super(CalendarViewWidget, self).__init__()
 		
-		dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
+		sharedDB.calendarview = self
+		
+		#dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
 		#sharedDB.widgetList.Append(dockWidget)
-		self._myXGanttWidget = XGanttWidget(sharedDB.mainWindow)
+		vLayout = QtGui.QHBoxLayout()
+		self.setLayout(vLayout)
+		self._myXGanttWidget = XGanttWidget()
+		vLayout.addWidget(self._myXGanttWidget)
+		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
-		dockWidget.setWidget(self._myXGanttWidget)
-		dockWidget.setWindowTitle("Calendar View")
-		sharedDB.leftWidget = dockWidget
-		sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
+		#dockWidget.setWidget(self._myXGanttWidget)
+		#dockWidget.setWindowTitle("Calendar View")
+		#sharedDB.leftWidget = dockWidget
+		#sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
 
 		reload(projex)
 		reload(projexui)
@@ -55,7 +61,7 @@ class CalendarView(QObject):
 		self.AddPhaseAssignmentSignal.connect(self.AddPhase)
 		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
 		sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.AddNewPhaseAssignment)
-	
+		
 	def closeThreads(self):
 		self.myWaitTimer.quit()
 	

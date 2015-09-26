@@ -57,34 +57,37 @@ class processQueries(QtCore.QThread):
 			
 			while True:
 				if len(self._queries)>0:
-					self._currentQueryType =  self._queries[0][0]
-					self._currentDB = self._queries[0][1]		
-					self._currentQuery = self._queries[0][2]
-					
-					rows = sharedDB.mySQLConnection.query(self._currentQuery)
-
-					if self._currentDB == "clients":						
-						rows.sort(key=lambda x: x[2])
-						sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
-					elif self._currentDB == "ips":
-						rows.sort(key=lambda x: x[2])
-						sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
-					elif self._currentDB == "projects":
-						rows = sorted(rows, key=lambda x: x[2])
-						sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
-					elif self._currentDB == "phaseassignments":
-						rows = sorted(rows, key=lambda x: x[3])
-						sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
-					elif self._currentDB == "sequences":
-						sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
-					elif self._currentDB == "shots":
-						sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
-					elif self._currentDB == "tasks":
-						sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
-					elif self._currentDB == "userassignments":
-						sharedDB.mySQLConnection._userAssignmentsToBeParsed.extend(rows)
-					
-					del self._queries[0]		
+					try:
+						self._currentQueryType =  self._queries[0][0]
+						self._currentDB = self._queries[0][1]		
+						self._currentQuery = self._queries[0][2]
+						
+						rows = sharedDB.mySQLConnection.query(self._currentQuery)
+	
+						if self._currentDB == "clients":						
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
+						elif self._currentDB == "ips":
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._ipsToBeParsed.extend(rows)
+						elif self._currentDB == "projects":
+							rows = sorted(rows, key=lambda x: x[2])
+							sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
+						elif self._currentDB == "phaseassignments":
+							rows = sorted(rows, key=lambda x: x[3])
+							sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
+						elif self._currentDB == "sequences":
+							sharedDB.mySQLConnection._sequencesToBeParsed.extend(rows)
+						elif self._currentDB == "shots":
+							sharedDB.mySQLConnection._shotsToBeParsed.extend(rows)
+						elif self._currentDB == "tasks":
+							sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
+						elif self._currentDB == "userassignments":
+							sharedDB.mySQLConnection._userAssignmentsToBeParsed.extend(rows)
+						
+						del self._queries[0]
+					except:
+						print "MySQL Connection Failed....trying again"	
 				else:
 					break
 			
@@ -120,8 +123,6 @@ class Connection(QObject):
 		super(QObject, self).__init__()
 		
 		# define custom properties
-		#sharedDB.mySQLConnection = self
-		self._cnx = mysql.connector.connect()
 		self._user = _user
 		self._password = _password
 		self._localhost = '10.9.21.12'
@@ -134,7 +135,6 @@ class Connection(QObject):
 		elif sharedDB.remote:
 			self.localhost = self._remotehost
 		
-		self._cursor = ''
 		self._host = self._localhost
 		self._remote = 0
 		self._autoUpdateFrequency = 2
@@ -180,40 +180,37 @@ class Connection(QObject):
 		return False
 	
 	def openConnection(self):
-		if not self._cnx.is_connected():
-			self._cnx = mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
-	def closeConnection(self):
-		self._cnx.close()
+		return mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
 
 	def query(self, query = "", queryType = "fetchAll"):
 		rows = ""
-		self.openConnection()
-		self._cursor = self._cnx.cursor()
-		self._cursor.execute(query)
-		self._lastInsertId = self._cursor.lastrowid
+		cnx = self.openConnection()
+		cursor = cnx.cursor()
+		cursor.execute(query)
+		self._lastInsertId = cursor.lastrowid
 		if queryType == "fetchAll":
-			rows = self._cursor.fetchall()
+			rows = cursor.fetchall()
 		elif queryType == "commit":
 			if not sharedDB.disableSaving:
-				self._cnx.commit()
+				cnx.commit()
 		
 		
-		self._cursor.close()
+		cursor.close()
 		
-		self.closeConnection()
+		cnx.close()
 
 		return rows
 
 	def GetTimestamp(self):
 		rows = ""
-		self.openConnection()
-		self._cursor = self._cnx.cursor()
-		self._cursor.execute("SELECT NOW()")
-		rows = self._cursor.fetchall()		
+		cnx = self.openConnection()
+		cursor = cnx.cursor()
+		cursor.execute("SELECT NOW()")
+		rows = cursor.fetchall()		
 		
-		self._cursor.close()
+		cursor.close()
 		
-		#self.closeConnection()
+		cnx.close()
 
 		return rows[0]		
 	

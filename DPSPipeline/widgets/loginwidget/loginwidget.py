@@ -51,11 +51,12 @@ class LoginWidget(QWidget):
 	    for user in sharedDB.myUsers:
 		if str(user._username).lower() == str(sharedDB.loginWidget.user.text()).lower():
 		    sharedDB.currentUser = user
-		    break	    
+		    break
 	    
+	    sharedDB.mainWindow.EnableMainWindow()
 	    sharedDB.mySQLConnection._queryProcessor.start()
 	    self.close()
-	    sharedDB.mainWindow.EnableMainWindow()
+	    
 	else:
 	    message = QtGui.QMessageBox.question(self, 'Message',
             "Incorrect Username or Password", QtGui.QMessageBox.Ok)
