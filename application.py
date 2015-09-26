@@ -12,12 +12,9 @@ from DPSPipeline.widgets.calendarviewwidget import calendarviewwidget
 from DPSPipeline.widgets.loginwidget import loginwidget
 from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
-<<<<<<< HEAD
 from DPSPipeline.widgets.mytaskswidget import mytaskswidget
-=======
 from DPSPipeline.widgets.attributeeditorwidget import attributeeditorwidget
 
->>>>>>> master
 #import DPSPipeline.createprojecttest
 
 class MainWindow(QtGui.QMainWindow):
@@ -81,14 +78,9 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
 	self.CreateCalendarWidget()
 	self.CreateProjectViewWidget()
-<<<<<<< HEAD
         self.CreateMyTasksWidget()
-
-=======
 	self.CreateAttributeEditorWidget()
-	
-        
->>>>>>> master
+
     def CreateProjectWidget(self):
 	
         dockWidget1 = QtGui.QDockWidget(sharedDB.mainWindow)
@@ -118,21 +110,17 @@ class MainWindow(QtGui.QMainWindow):
         #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
         dockWidget.show()
         dockWidget.raise_()
-<<<<<<< HEAD
-        
+    
     def CreateMyTasksWidget(self):	
         dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
         self._MyTasksWidget = mytaskswidget.MyTasksWidget()
         dockWidget.setWindowTitle("My Tasks")
         dockWidget.setWidget(self._MyTasksWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
-        sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
+        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
         dockWidget.show()
         dockWidget.raise_()
-        
-=======
-    
->>>>>>> master
+
     def fileMenuActions( self, action ):
 	"""
 	Handles file menu actions

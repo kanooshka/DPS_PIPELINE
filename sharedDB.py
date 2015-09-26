@@ -18,12 +18,12 @@ from datetime import datetime,timedelta
 myVersion = version.Version("0.0.29")
 
 #TEST SETTINGS
-ignoreVersion = 0
-testDB = 0
-testing = 0
+ignoreVersion = 1
+testDB = 1
+testing = 1
 disableSaving = 0
-autologin = 0
-localDB = 0
+autologin = 1
+localDB = 1
 remote = 0
 autoCreateShotTasks = 0
 
