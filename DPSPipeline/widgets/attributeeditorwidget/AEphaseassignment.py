@@ -4,17 +4,15 @@ import sys
 
 from PyQt4 import QtGui,QtCore
 
-class AEProject(QtGui.QWidget):
+class AEPhaseAssignment(QtGui.QWidget):
 
     def __init__( self, parent = None ):
     
-	super(AEProject, self).__init__( parent )
-	
-	self._noImage = projexui.resources.find('img/DP/noImage.png')
+	super(AEPhaseAssignment, self).__init__( parent )
 	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
-	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/AEproject.ui"))	    
+	    projexui.loadUi(sys._MEIPASS, self, uifile = (sys._MEIPASS+"/ui/AEPhaseAssignment.ui"))	    
 	else:
 	    projexui.loadUi(__file__, self)
 	
@@ -22,22 +20,22 @@ class AEProject(QtGui.QWidget):
 
 	self.setEnabled(0)
     
-    def LoadProject(self, sentProject):
+    def LoadPhaseAssignment(self, sentPhaseAssignment):
 
 	self._blockUpdates = 1
 	
-	if isinstance(sentProject, sharedDB.projects.Projects):
-	    self._currentProject = sentProject
+	if isinstance(sentPhaseAssignment, sharedDB.phaseAssignments.PhaseAssignments):
+	    self._currentPhaseAssignment = sentPhaseAssignment
 
-	if self._currentProject is not None:
+	if self._currentPhaseAssignment is not None:
 	    
 	    self.setEnabled(1)
 	    self.setHidden(0)
 	    
-	    self._currentProject.projectChanged.connect(self.LoadProject)	    
+	    self._currentPhaseAssignment.phaseAssignmentChanged.connect(self.LoadPhaseAssignment)	    
 	    
 	    #set title
-	    self.ProjectBox.setTitle("Project: "+str(self._currentProject._name))
+	    self.PhaseAssignmentBox.setTitle("PhaseAssignment: "+str(self._currentPhaseAssignment.project._name)+" - "+str(self._currentPhaseAssignment._name))
 	    
 	    #set Status
 	    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)

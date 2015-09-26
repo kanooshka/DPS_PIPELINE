@@ -91,6 +91,8 @@ class AEShot(QWidget):
 	self.startFrame.valueChanged.connect(self.SetShotValues)
 	self.endFrame.valueChanged.connect(self.SetShotValues)
 	
+	self.project = None	
+	
 	self._backend               = None
 	self._blockUpdates = 0
 
@@ -103,6 +105,11 @@ class AEShot(QWidget):
 
 	self._currentShot = sentShot
 
+	for proj in sharedDB.myProjects:
+	    if str(proj._idprojects) == str(sentShot._idprojects):
+		self.project = proj
+		break
+
 	if self._currentShot is not None:
 	    
 	    self.setEnabled(1)
@@ -113,7 +120,7 @@ class AEShot(QWidget):
 	    self.checkForShotImage()		    
 	    
 	    #set title
-	    self.ShotBox.setTitle("Shot "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
+	    self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
 	    
 	    #set Status
 	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
