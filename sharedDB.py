@@ -12,6 +12,8 @@ from DPSPipeline.database import shots
 from DPSPipeline.database import version
 from DPSPipeline.database import connection
 
+from DPSPipeline import selection
+
 from PyQt4.QtCore   import QDate
 from datetime import datetime,timedelta
 
@@ -63,3 +65,5 @@ rightWidget = ''
 loginWidget = ''
 
 initialLoad = 0
+
+sel = selection.Selection() 
