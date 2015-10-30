@@ -52,3 +52,5 @@ build/
 DPS_PIPELINE.pro.user
 *.komodoproject
 DPSPipeline.komodoproject
+*.komodoproject
+DPSPipeline.komodoproject
