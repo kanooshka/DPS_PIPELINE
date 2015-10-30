@@ -32,9 +32,11 @@ class PhaseAssignments(QObject):
 		self._type                         = "phaseassignment"
 		self.project                       = None
 		self._calendarWidgetItem	   = None
+		self._tasks			   = []
 
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
+		#sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
 		
 		self.SetPhaseValues()
 		
@@ -48,6 +50,7 @@ class PhaseAssignments(QObject):
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdatePhaseAssignmentInDB()
+			self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 			if str(self._idphases) == '16':
 				self.project._updated = 1
 			print "Phase '"+str(self._idphaseassignments)+"' Updated in Database!"
@@ -85,6 +88,11 @@ class PhaseAssignments(QObject):
 		self._timestamp                    = _timestamp
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
+		
+	def AddTaskToList(self, task):
+		if task._idphaseassignments == self._idphaseassignments:
+			self._tasks.append(task)
+			return
 
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		

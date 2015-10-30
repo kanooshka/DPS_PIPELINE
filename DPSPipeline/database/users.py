@@ -14,7 +14,7 @@ class Users():
 		self._idPrivileges           = _idPrivileges
 		self._active                    = _active
 
-		self._assignments                 = _assignments
+		self._assignments                 = []
 		self._updated                = _updated
 		self._type                   = "user"
 		self._hidden                 = False

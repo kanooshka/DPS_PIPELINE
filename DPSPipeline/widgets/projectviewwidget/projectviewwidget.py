@@ -29,7 +29,13 @@ class CheckForImagePath(QtCore.QThread):
 	sentpath = sharedDB.myProjectViewWidget.shotImageDir
 	
 	try:
-		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		types = ('*.[Jj][Pp]*[Gg]', '*.[Pp][Nn][Gg]') # the tuple of file types
+		files_grabbed = []
+		for files in types:
+		    files_grabbed.extend(glob.iglob(os.path.join(sentpath, files)))
+
+		#newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		newImage = max(files_grabbed, key=os.path.getctime)
 		if len(newImage)>3:
 			print "Loading Shot Image: "+newImage
 			sharedDB.myProjectViewWidget.shotImagePath = newImage
@@ -45,8 +51,14 @@ class CheckForPlayblastPath(QtCore.QThread):
 	sentpath = sharedDB.myProjectViewWidget.shotPlayblastDir
 	
 	try:
-		newPlayblast = max(glob.iglob(os.path.join(sentpath, '*.[Mm][Oo][Vv]')), key=os.path.getctime)
-
+		types = ('*.[Mm][Oo][Vv]', '*.[Mm][Pp][4]') # the tuple of file types
+		files_grabbed = []
+		for files in types:
+		    files_grabbed.extend(glob.iglob(os.path.join(sentpath, files)))
+		
+		
+		#newPlayblast = max(glob.iglob(os.path.join(sentpath, '*.[Mm][Oo][Vv]')), key=os.path.getctime)
+		newPlayblast = max(files_grabbed, key=os.path.getctime)
 		if len(newPlayblast)>3:
 		    print "Loading Shot Playblast: "+newPlayblast
 		    os.startfile(newPlayblast)

@@ -2,6 +2,7 @@ from DPSPipeline.database import clients
 from DPSPipeline.database import ips
 from DPSPipeline.database import projects
 from DPSPipeline.database import phaseAssignments
+from DPSPipeline.database import userassignments
 from DPSPipeline.database import phases
 from DPSPipeline.database import users
 from DPSPipeline.database import tasks
@@ -44,18 +45,19 @@ myIps = []
 myProjects = []
 mySequences = []
 myPhaseAssignments = []
+myUserAssignments = []
 
 Doobedeba = -0.0*0+0
 
 
 myProjectViewWidget = ''
-myAttributeEditorWidget = ''
+myTasksWidget = ''
+calendarview = None
 
 lastUpdate = datetime(1942, 1, 1)
 
-calendarview = None
 mySQLConnection = None
-currentUser = ''
+currentUser = None
 app = ''
 mainWindow  = ''
 widgetList = []

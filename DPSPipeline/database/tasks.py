@@ -12,7 +12,7 @@ class Tasks(QObject):
 	taskChanged = QtCore.pyqtSignal(QtCore.QString)
 	taskAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0,_timestamp = datetime.now(), _updated = 0, _new = 0):
+	def __init__(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0,_parenttaskid = None,_timestamp = datetime.now(), _updated = 0, _new = 0):
 		
 		super(QObject, self).__init__()
 		
@@ -21,8 +21,8 @@ class Tasks(QObject):
 		self._idphaseassignments     = _idphaseassignments
 		self._idprojects	     = _idprojects		
 		self._idshots                = _idshots
-		self._idusers		     =_idusers
-		self._idphases		     =_idphases
+		self._idusers		     = _idusers
+		self._idphases		     = _idphases
 		self._timealotted            = _timealotted
 		self._idsequences	     = _idsequences
 		self._duedate		     = _duedate
@@ -30,6 +30,7 @@ class Tasks(QObject):
 		self._done		     = _done
 		self._status		     = _status
 		self._timestamp		     = _timestamp
+		self._parenttaskid	     = _parenttaskid
 		self._updated		     = _updated
 		self._new		     = _new
 
@@ -47,7 +48,10 @@ class Tasks(QObject):
 		self.statusButton	= ''
 		self.phaseAssignment = ''
 		self.projects = ''
-		self.user = sharedDB.users.getUserByID(self._idusers)		
+
+		self.user = sharedDB.users.getUserByID(self._idusers)
+		self.childTasks = []
+
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
@@ -114,3 +118,7 @@ class Tasks(QObject):
 		if ( not self.signalsBlocked() ):
 		    self.taskChanged.emit(str(self._idtasks))
 	
+	def AddTaskToList(self, task):
+		if str(self._idtasks) == str(task._parenttaskid):			
+			self.childTasks.append(task)
+			

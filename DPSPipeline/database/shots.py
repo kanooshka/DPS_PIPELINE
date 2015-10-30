@@ -116,7 +116,15 @@ class Shots(QObject):
 
 		self.shotChanged.emit()
 
+	def AddTaskToList(self, task):
+		if str(self._idshots) == str(task._idshots):			
+			###add to shot's task list
+			if self._tasks is not None:
+				self._tasks.append(task)
+			else:
+				self._tasks = [task]
 	
-	#def emitShotChanged( self ):
-	#	if ( not self.signalsBlocked() ):
-	#	    self.shotChanged.emit(str(self._idshots))
+	
+	def emitShotChanged( self ):
+		if ( not self.signalsBlocked() ):
+		    self.shotChanged.emit(str(self._idshots))
