@@ -116,6 +116,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			project._calendarWidgetItem = projectXGanttWidgetItem
 			
+			projectXGanttWidgetItem.setHidden(True)
+			
 			for phase in project._phases:
 				self.AddPhase(phase)
 			
