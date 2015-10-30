@@ -99,8 +99,13 @@ class Projects(QObject):
 		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
-			
-		self._description = self._description.replace("\\","/")		
+		
+		if isinstance(self._name, QtCore.QString):
+			self._name = unicode(self._name.toUtf8(), encoding="UTF-8")
+		
+		self._description = self._description.replace("\\","/")
+		self._name = self._name.replace("\\","/")
+		
 		descr = self._description.replace("\'","\'\'")
 		name = self._name.replace("\'","\'\'")
 
@@ -112,8 +117,13 @@ class Projects(QObject):
 		
 		if isinstance(self._description, QtCore.QString):
 			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
+		
+		if isinstance(self._name, QtCore.QString):
+			self._name = unicode(self._name.toUtf8(), encoding="UTF-8")
 			
 		self._description = self._description.replace("\\","/")
+		self._name = self._name.replace("\\","/")
+		
 		descr = self._description.replace("\'","\'\'")
 		name = self._name.replace("\'","\'\'")
 		#print ("Adding project to DB: "+str(self._idprojects))
