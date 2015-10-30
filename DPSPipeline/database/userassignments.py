@@ -58,7 +58,7 @@ class UserAssignment(QObject):
 	
 	def AddUserAssignmentToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
 		self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
@@ -67,7 +67,7 @@ class UserAssignment(QObject):
 	
 	def UpdateUserAssignmentInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
 
 	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 0, _timestamp = datetime.now()):
 		print ("Downloaded update for UserAssignment '"+str(self._iduserassignments)+"'")
