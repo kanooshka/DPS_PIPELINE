@@ -98,12 +98,15 @@ class AEShot(QWidget):
 
 	self.setEnabled(0)
     
-    def LoadShot(self, sentShot):
+    def LoadShot(self, sentShot = 0):
 
 	self._blockUpdates = 1
 	
 
-	self._currentShot = sentShot
+	if not sentShot == 0:
+	    self._currentShot = sentShot
+	else:
+	    sentShot = self._currentShot
 
 	for proj in sharedDB.myProjects:
 	    if str(proj._idprojects) == str(sentShot._idprojects):

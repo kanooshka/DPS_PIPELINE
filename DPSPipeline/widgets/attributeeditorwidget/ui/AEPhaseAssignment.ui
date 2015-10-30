@@ -31,7 +31,7 @@
      <property name="title">
       <string>Phase Assignment</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_8">
+     <layout class="QVBoxLayout" name="aephaseassignmentlayout">
       <property name="spacing">
        <number>2</number>
       </property>
@@ -48,11 +48,11 @@
        <number>2</number>
       </property>
       <item>
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="QGroupBox" name="userBox">
         <property name="title">
          <string>Users</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="userLayout">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -68,9 +68,6 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QListWidget" name="listWidget"/>
-         </item>
         </layout>
        </widget>
       </item>

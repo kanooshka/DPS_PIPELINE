@@ -3,7 +3,7 @@ import sharedDB
 
 class Users():
 
-	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _iddepartments = 0, _idPrivileges = 3,_active = 0, _assignments = [],_updated = 0):
+	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _iddepartments = 0, _idPrivileges = 3,_active = None, _assignments = [],_updated = 0):
 		
 		# define custom properties
 		self._idusers            = _idusers
