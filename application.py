@@ -78,7 +78,7 @@ class MainWindow(QtGui.QMainWindow):
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
 	self.CreateCalendarWidget()
 	self.CreateProjectViewWidget()
-        self.CreateMyTasksWidget()
+        #self.CreateMyTasksWidget()
 	self.CreateAttributeEditorWidget()
 
     def CreateProjectWidget(self):
@@ -165,7 +165,7 @@ def main():
         app = QtGui.QApplication(sys.argv)
         path = projexui.resources.find('img/DP/pipe.gif')
         app.setWindowIcon(QtGui.QIcon(path))
-        sharedDB.app = app        
+        sharedDB.app = app
         '''
 	stylesheet = projexui.resources.find('styles/DarkOrange.stylesheet')
 	qfile = QtCore.QFile(stylesheet)
