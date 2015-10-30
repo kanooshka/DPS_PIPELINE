@@ -167,7 +167,7 @@ class ProjectViewWidget(QWidget):
 	    self.renderHeight.setEnabled(0)
 	    self.renderWidth.setEnabled(0)
 	    self.projectDescription.setReadOnly(1)
-	    self.saveProjectDescription.setVisible(0)
+	    #self.saveProjectDescription.setVisible(0)
         
 	
     def projectChanged(self,projectId):
