@@ -17,7 +17,9 @@ class UserLabel(QtGui.QLabel):
         self.getUserFromTask()
 
     def getUserFromTask(self):
-        if self.task == None or str(self.task._idusers) == "0":
+        if str(self.task._status) == "4":
+            self.setText("")
+        elif self.task == None or str(self.task._idusers) == "0":
             self.setText("----")
         else:
             self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
@@ -25,13 +27,14 @@ class UserLabel(QtGui.QLabel):
     def mActions(self, username):
         for u in sharedDB.myUsers:
             if str(u._name) == username.text():
-                self.setText(username.text())
+                #self.setText(username.text())
                 self.task.setUserId(u._idusers)
+                self.getUserFromTask()
                 break
     
     def contextMenuEvent(self, ev):
         
-        if self.task is not None:
+        if self.task is not None and not self.task._status == 4 :
             menu	 = QtGui.QMenu()
             
             userList = []

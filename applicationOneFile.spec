@@ -19,6 +19,7 @@ a.datas += [('projexui/resources/default/img/DP/Statuses/notStarted.png', 'proje
 a.datas += [('projexui/resources/default/img/DP/Statuses/inProgress.png', 'projexui/resources/default/img/DP/Statuses/inProgress.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/Statuses/needsAttention.png', 'projexui/resources/default/img/DP/Statuses/needsAttention.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/Statuses/done.png', 'projexui/resources/default/img/DP/Statuses/done.png', 'DATA')]
+a.datas += [('projexui/resources/default/img/DP/Statuses/none.png', 'projexui/resources/default/img/DP/Statuses/none.png', 'DATA')]
 a.datas += [('projexui/resources/default/img/DP/pipe.gif', 'projexui/resources/default/img/DP/pipe.gif', 'DATA')]
 pyz = PYZ(a.pure)
 exe = EXE(pyz,

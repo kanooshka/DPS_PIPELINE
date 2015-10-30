@@ -39,6 +39,12 @@ class Tasks(QObject):
 		
 		self._new		     = _new
 		
+		if self._new:
+			for phase in sharedDB.myPhases:
+				if phase._idphases == self._idphases:
+					self._status = phase._defaultTaskStatus
+					break
+		
 		self.statusButton	= ''
 		self.phaseAssignment = ''
 		self.projects = ''

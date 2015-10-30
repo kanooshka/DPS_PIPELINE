@@ -13,14 +13,15 @@ class TaskProgressButton(QtGui.QLabel):
         self._inProgress = projexui.resources.find('img/DP/Statuses/inProgress.png')
         self._needsAttention = projexui.resources.find('img/DP/Statuses/needsAttention.png')
         self._done = projexui.resources.find('img/DP/Statuses/done.png')
+        self._none = projexui.resources.find('img/DP/Statuses/none.png')
         
         self._forPhase = _forPhase
         self._task = _task
         self._shot = _shot
         self._currentState = 0
         
-        self.states = [self._notStarted,self._inProgress,self._done,self._needsAttention]
-        self.stateNames = ["Not Started","In Progress", "DONE", "Needs Attention"]
+        self.states = [self._notStarted,self._inProgress,self._done,self._needsAttention,self._none]
+        self.stateNames = ["Not Started","In Progress", "DONE", "Needs Attention", "None"]
         
         self.setAlignment(QtCore.Qt.AlignHCenter)
         

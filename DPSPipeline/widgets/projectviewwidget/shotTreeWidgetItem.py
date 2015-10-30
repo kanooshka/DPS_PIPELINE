@@ -49,8 +49,10 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
                 btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
-                uLabel = userLabel.UserLabel(task = currentTask)
                 
+                uLabel = userLabel.UserLabel(task = currentTask)
+                btn.stateChanged.connect(uLabel.getUserFromTask)
+
                 taskBtnWidget = QtGui.QWidget()
                 vLayout = QtGui.QHBoxLayout()
                 taskBtnWidget.setLayout(vLayout)

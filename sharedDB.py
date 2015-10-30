@@ -28,6 +28,7 @@ autologin = 1
 localDB = 1
 remote = 0
 autoCreateShotTasks = 0
+testPrivileges = 0
 
 #freezeDBUpdates = 1
 

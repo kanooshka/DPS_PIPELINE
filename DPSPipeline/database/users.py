@@ -34,8 +34,12 @@ def GetAllUsers():
 	rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM users")
 	
 	for row in rows:
+		if sharedDB.testPrivileges == 0:
+			priv = row[5]
+		else:
+			priv = sharedDB.testPrivileges
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6]))
 
 	return users
 
@@ -43,11 +47,15 @@ def GetCurrentUser(username = ''):
 
 	users = []
 
-	rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")
+	rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active FROM dpstudio.users WHERE username = \""+username+"\";")	
 	
 	for row in rows:
+		if sharedDB.testPrivileges == 0:
+			priv = row[5]
+		else:
+			priv = sharedDB.testPrivileges
 		#print row[0]
-		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = row[5],_active = row[6]))
+		users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6]))
 
 	return users
 
