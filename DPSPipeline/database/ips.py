@@ -71,7 +71,7 @@ class Ips(QObject):
 		self.ipAdded.emit(str(self._idips))
 
 	def SetValues(self,_idips ,_idclients , _name = ''):
-		print ("Downloaded updated for IP '"+str(self._name)+"'")
+		print ("Downloaded update for IP '"+str(self._name)+"'")
 		self._idips             = _idips
 		self._idclients             = _idclients
 		self._name                   = _name
