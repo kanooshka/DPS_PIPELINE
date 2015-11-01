@@ -61,7 +61,7 @@ class MyTasksWidgetItem(QWidget):
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)
 	
-	if self._phaseassignment.idstatuses() < 3 or self._phaseassignment.idstatuses() > 6:
+	if self._phaseassignment.idstatuses() < 3:
 	    #self.mytaskwidget._rowItem.row().setHidden(0)
 	    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 	else:
