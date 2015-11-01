@@ -32,6 +32,20 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.aephaseassignmentlayout.setContentsMargins(2,2,2,2)
 	self.PhaseAssignmentBox.setLayout(self.aephaseassignmentlayout)	
 	
+	#Status Box
+	self.statusBox = QtGui.QGroupBox()
+	self.statusBox.setTitle("Status")
+	self.aephaseassignmentlayout.addWidget(self.statusBox)
+
+	self.phaseStatus = QtGui.QComboBox()
+	self.phaseStatus.currentIndexChanged[QtCore.QString].connect(self.saveStatus)
+	#self.phaseStatus.currentIndexChanged[QtCore.QString].connect(sharedDB.myTasksWidget.propogateUI)
+	
+	self.statusLayout = QtGui.QGridLayout()
+	self.statusLayout.setContentsMargins(2,2,2,2)
+	self.statusBox.setLayout(self.statusLayout)
+	self.statusLayout.addWidget(self.phaseStatus,0,0)
+	
 	#Date box
 	self.datesBox = QtGui.QGroupBox()
 	self.datesBox.setTitle("Dates")
@@ -140,6 +154,10 @@ class AEPhaseAssignment(QtGui.QWidget):
     
     def refresh(self):
 	pa = self._currentPhaseAssignment	
+	self.propogateStatuses()
+	self.setStatus()
+	#
+	
 	if self.startDate.date().toPyDate() != pa._startdate:
 	    #print "Start Date updating"
 	    self.startDate.setDate(pa._startdate)
@@ -194,8 +212,25 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.workDays.setReadOnly(1)
 	    self.calendarDays.setReadOnly(1)
 	    self.hoursalotted.setReadOnly(1)
-	    
-	    
+	    self.phaseStatus.setReadOnly(1)
+	
+    def setStatus(self):
+	self.phaseStatus.blockSignals(1)
+	status = self._currentPhaseAssignment._idstatuses-1
+	if status<0:
+	    status = 0
+	self.phaseStatus.setCurrentIndex(status)
+	self.phaseStatus.blockSignals(0)
+    def saveStatus(self):
+	self._currentPhaseAssignment.setIdstatuses(self.phaseStatus.currentIndex()+1)
+    
+        
+    def propogateStatuses(self):
+	self.phaseStatus.blockSignals(1)
+	self.phaseStatus.clear()
+	for status in sharedDB.myStatuses:
+	    self.phaseStatus.addItem(status._name, QtCore.QVariant(status))
+	self.phaseStatus.blockSignals(0)
     '''
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)

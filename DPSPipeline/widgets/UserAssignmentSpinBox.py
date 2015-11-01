@@ -47,7 +47,8 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
             self._userAssignment.setHours(self.value())
         elif self.value()>0:
             self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = self._user._idusers,_assignmentid = self._phaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = self.value(), _new = 1)
-	    sharedDB.myUserAssignments.append(self._userAssignment)
+	    self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.propogateUI)
+            sharedDB.myUserAssignments.append(self._userAssignment)
             #connect to update
             self._userAssignment.userAssignmentChanged.connect(self.getHours)
         

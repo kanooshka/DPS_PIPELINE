@@ -102,6 +102,20 @@ class PhaseAssignments(QObject):
 	def hoursAlotted(self):
 		return self._hoursalotted
 	
+	def name(self):
+		return self._name
+	
+	def idstatuses(self):
+		return self._idstatuses
+	
+	def setIdstatuses(self, value):
+		self._idstatuses = value
+		self._updated = 1
+
+
+	def endDate(self):
+		return self._enddate
+	
 
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		

@@ -96,6 +96,7 @@ class UserAssignment(QObject):
 	def setHours(self, hours):
 		#if hours <1 delete assignment?
 		self._hours = hours
+		self.userAssignmentChanged.emit(str(self._iduserassignments))
 		self._updated = 1
 	
 		
@@ -107,6 +108,12 @@ class UserAssignment(QObject):
 				user._assignments.append(self)
 				break
 		
+	def assignmentType(self):
+		return self._assignmenttype
+	
+	def idUserAssignment(self):
+		return self._iduserassignments
+	
 		#
 		
 		'''if self._assignmenttype = 'phaseassignment':

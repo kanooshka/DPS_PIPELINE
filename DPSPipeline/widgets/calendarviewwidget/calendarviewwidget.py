@@ -40,6 +40,11 @@ class CalendarViewWidget(QtGui.QWidget):
 		self._myXGanttWidget = XGanttWidget()
 		vLayout.addWidget(self._myXGanttWidget)
 		
+		#resize splitter
+		sizes = [275,50000]
+		self._myXGanttWidget.uiGanttSPLT.setSizes(sizes)
+		self._myXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
+		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
 		#dockWidget.setWidget(self._myXGanttWidget)
 		#dockWidget.setWindowTitle("Calendar View")
