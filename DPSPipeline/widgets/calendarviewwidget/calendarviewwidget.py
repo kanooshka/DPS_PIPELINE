@@ -168,6 +168,7 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				childItem = XGanttWidgetItem(self._myXGanttWidget)
 				childItem._dbEntry = phase
+				phase._calendarWidgetItem = childItem
 				
 				childItem.setName(name)		
 				childItem._name = name

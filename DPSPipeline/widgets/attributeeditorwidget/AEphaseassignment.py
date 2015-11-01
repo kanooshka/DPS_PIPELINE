@@ -32,21 +32,43 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.aephaseassignmentlayout.setContentsMargins(2,2,2,2)
 	self.PhaseAssignmentBox.setLayout(self.aephaseassignmentlayout)	
 	
-	self.hoursWidget = QtGui.QWidget()
-	self.aephaseassignmentlayout.addWidget(self.hoursWidget)
+	#Date box
+	self.datesBox = QtGui.QGroupBox()
+	self.datesBox.setTitle("Dates")
+	self.aephaseassignmentlayout.addWidget(self.datesBox)
 	
-	self.totalHoursLabel = QtGui.QLabel("Hours Alotted: ")	
-	self.totalHoursAllowed = QtGui.QLineEdit()
-	self.totalHoursAllowed.setValidator(QtGui.QIntValidator(0,100000))
-	#self.totalHoursAllowedWidget.label
-	self.aephaseassignmentlayout.addWidget(self.totalHoursAllowed)
+	self.startDateLabel = QtGui.QLabel("Start Date: ")	
+	self.startDate = QtGui.QDateEdit()
+	self.startDate.setCalendarPopup(1)
+	self.endDateLabel = QtGui.QLabel("End Date: ")	
+	self.endDate = QtGui.QDateEdit()
+	self.endDate.setCalendarPopup(1)
+	self.calendarDaysLabel = QtGui.QLabel("Calendar Days: ")	
+	self.calendarDays = QtGui.QSpinBox()
+	self.calendarDays.setKeyboardTracking(0)
+	self.workDaysLabel = QtGui.QLabel("Work Days: ")	
+	self.workDays = QtGui.QSpinBox()
+	self.workDays.setKeyboardTracking(0)
 	
-	self.hoursLayout = QtGui.QHBoxLayout()
-	self.hoursLayout.setContentsMargins(2,2,2,2)
-	self.hoursWidget.setLayout(self.hoursLayout)
-	self.hoursLayout.addWidget(self.totalHoursLabel)
-	self.hoursLayout.addWidget(self.totalHoursAllowed)
+	#connect date box to calendarwidgetitem
+	self.calendarDays.valueChanged.connect(self.changeCalendarDays)
+	self.workDays.valueChanged.connect(self.changeWorkDays)
+	self.startDate.dateChanged.connect(self.changeStartDate)
+	self.endDate.dateChanged.connect(self.changeEndDate)
+
+	self.dateLayout = QtGui.QGridLayout()
+	self.dateLayout.setContentsMargins(2,2,2,2)
+	self.datesBox.setLayout(self.dateLayout)
+	self.dateLayout.addWidget(self.startDateLabel,0,0)
+	self.dateLayout.addWidget(self.startDate,0,1)
+	self.dateLayout.addWidget(self.endDateLabel,0,2)
+	self.dateLayout.addWidget(self.endDate,0,3)
+	self.dateLayout.addWidget(self.calendarDaysLabel,1,0)
+	self.dateLayout.addWidget(self.calendarDays,1,1)
+	self.dateLayout.addWidget(self.workDaysLabel,1,2)
+	self.dateLayout.addWidget(self.workDays,1,3)
 	
+	#user box
 	self.userBox = QtGui.QGroupBox()
 	self.aephaseassignmentlayout.addWidget(self.userBox)
 	
@@ -55,7 +77,29 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.userBox.setLayout(self.userLayout)
 	self.userBox.setTitle("Users")
 	
-	self.userTable = userAssignmentWidget.UserAssignmentWidget()
+	#Hours Box	
+	self.hoursWidget = QtGui.QWidget()
+	self.userLayout.addWidget(self.hoursWidget)
+	
+	self.totalHoursLabel = QtGui.QLabel("Budgeted Hours: ")	
+	self.hoursalotted = QtGui.QSpinBox()
+	self.hoursalotted.setMaximum(999999)
+	self.hoursalotted.setKeyboardTracking(0)
+	self.hoursalotted.valueChanged.connect(self.changeAlottedHours)
+
+	self.unassignedHoursLabel = QtGui.QLabel("Unassigned: ")	
+	self.unassignedHours = QtGui.QLabel("0")
+	
+	self.hoursLayout = QtGui.QHBoxLayout()
+	self.hoursLayout.setContentsMargins(2,2,2,2)
+	self.hoursWidget.setLayout(self.hoursLayout)
+	self.hoursLayout.addWidget(self.totalHoursLabel)
+	self.hoursLayout.addWidget(self.hoursalotted)
+	self.hoursLayout.addWidget(self.unassignedHoursLabel)
+	self.hoursLayout.addWidget(self.unassignedHours)
+	
+	#users table
+	self.userTable = userAssignmentWidget.UserAssignmentWidget(self)
 	self.userTable.aephaseAssignment = self
 	self.userLayout.addWidget(self.userTable)
 	
@@ -67,21 +111,21 @@ class AEPhaseAssignment(QtGui.QWidget):
 
     def LoadPhaseAssignment(self, sentPhaseAssignment):
 
-	self._blockUpdates = 1
+	self._signalsBlocked = 1
 	
 	if isinstance(sentPhaseAssignment, sharedDB.phaseAssignments.PhaseAssignments):
 	    self._currentPhaseAssignment = sentPhaseAssignment
 
 	if self._currentPhaseAssignment is not None:
 	    
+	    self.setPrivileges()
 	    self.setEnabled(1)
-	    self.setHidden(0)
-	    
-	    self._currentPhaseAssignment.phaseAssignmentChanged.connect(self.LoadPhaseAssignment)	    
+	    self.setHidden(0)   
 	    
 	    #set title
-	    self.PhaseAssignmentBox.setTitle("PhaseAssignment: "+str(self._currentPhaseAssignment.project._name)+" - "+str(self._currentPhaseAssignment._name))
+	    self.PhaseAssignmentBox.setTitle(str(self._currentPhaseAssignment.project._name)+" : "+str(self._currentPhaseAssignment._name))
 	    
+	    self.refresh()
 	    self.userTable.UpdateWidget()
 	    #set Status
 	    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
@@ -92,7 +136,66 @@ class AEPhaseAssignment(QtGui.QWidget):
 		#self.shotDescription.setText(self._currentShot._description)
 		#self.shotDescription.blockSignals = 0
 	    
-	self._blockUpdates = 0
+	self._signalsBlocked = 0
+    
+    def refresh(self):
+	pa = self._currentPhaseAssignment	
+	if self.startDate.date().toPyDate() != pa._startdate:
+	    #print "Start Date updating"
+	    self.startDate.setDate(pa._startdate)
+	if self.endDate.date().toPyDate() != pa._enddate:
+	    #print "End Date updating"
+	    self.endDate.setDate(pa._enddate)
+	if self.calendarDays.value() != pa._calendarWidgetItem.duration():
+	    #print "Calendar Days updating"
+	    self.calendarDays.setValue(pa._calendarWidgetItem.duration())
+	if self.workDays.value() != pa._calendarWidgetItem.weekdays():
+	    #print "Work Days updating"
+	    self.workDays.setValue(pa._calendarWidgetItem.weekdays())
+	    
+	if self.hoursalotted.value() != pa.hoursAlotted():
+	    #print "Work Days updating"
+	    self.hoursalotted.setValue(pa.hoursAlotted())
+	    
+	self.UpdateHourValues()
+    
+    def UpdateHourValues(self):
+	unassignedHoursNum = self.hoursalotted.value()-self.userTable.totalAssignedHours
+	self.unassignedHours.setText(str(unassignedHoursNum))
+	if unassignedHoursNum>=0:
+	    self.unassignedHours.setStyleSheet('color: green')
+	else:
+	    self.unassignedHours.setStyleSheet('color: red')
+    
+    def changeAlottedHours(self):
+	if not self._signalsBlocked:
+	    self._currentPhaseAssignment.setHoursAlotted(self.hoursalotted.value())
+    
+    def changeCalendarDays(self):
+	if not self._signalsBlocked:
+	    self._currentPhaseAssignment._calendarWidgetItem.setProperty("Calendar Days",self.calendarDays.value())
+    
+    def changeWorkDays(self):
+	if not self._signalsBlocked:
+	    self._currentPhaseAssignment._calendarWidgetItem.setProperty("Work Days",self.workDays.value())
+	
+    def changeStartDate(self):
+	if not self._signalsBlocked:
+	    self._currentPhaseAssignment._calendarWidgetItem.setProperty("Start",self.startDate.date())
+	
+    def changeEndDate(self):
+	if not self._signalsBlocked:
+	    self._currentPhaseAssignment._calendarWidgetItem.setProperty("End",self.endDate.date())
+    
+    def setPrivileges (self):
+        if sharedDB.currentUser._idPrivileges > 1:
+            self.startDate.setReadOnly(1)
+	    self.endDate.setReadOnly(1)
+	    self.workDays.setReadOnly(1)
+	    self.calendarDays.setReadOnly(1)
+	    self.hoursalotted.setReadOnly(1)
+	    
+	    
     '''
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)

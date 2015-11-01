@@ -19,7 +19,7 @@ class UserAssignment(QObject):
 	userAssignmentChanged = QtCore.pyqtSignal(QtCore.QString)
 	userAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 0, _timestamp = datetime.now(), _updated = 0, _new = 0):
+	def __init__(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 0, _timestamp = datetime.now(), _hours = 0, _updated = 0, _new = 0):
 		
 		super(QObject, self).__init__()
 		
@@ -29,6 +29,7 @@ class UserAssignment(QObject):
 		self._assignmentid	     = _assignmentid		
 		self._assignmenttype         = _assignmenttype
 		self._idstatuses	     = _idstatuses
+		self._hours                  = _hours
 		self._timestamp		     = _timestamp
 		self._updated		     = _updated
 		self._new		     = _new
@@ -58,7 +59,7 @@ class UserAssignment(QObject):
 	
 	def AddUserAssignmentToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid, hours) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hours)+"');","commit")	
 	
 		self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
@@ -67,16 +68,17 @@ class UserAssignment(QObject):
 	
 	def UpdateUserAssignmentInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
 
-	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 0, _timestamp = datetime.now()):
+	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 0, _hours = 0, _timestamp = datetime.now()):
 		print ("Downloaded update for UserAssignment '"+str(self._iduserassignments)+"'")
 		
 		self._iduserassignments         = _iduserassignments
 		self._idusers			= _idusers
 		self._assignmentid		= _assignmentid		
 		self._assignmenttype            = _assignmenttype
-		self._idstatuses		=_idstatuses		
+		self._idstatuses		= _idstatuses
+		self._hours                     = _hours
 		self._timestamp		     	= _timestamp
 		
 		#update views containing project
@@ -90,6 +92,12 @@ class UserAssignment(QObject):
 	def setStatus(self,newStatus):
 		self._status = newStatus
 		self._updated = 1
+	
+	def setHours(self, hours):
+		#if hours <1 delete assignment?
+		self._hours = hours
+		self._updated = 1
+	
 		
 	def connectToDBClasses(self):
 		

@@ -49,11 +49,11 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
-			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hours FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			
 			while True:
 				if len(self._queries)>0:
@@ -97,6 +97,9 @@ class processQueries(QtCore.QThread):
 			#save changes				
 			for proj in sharedDB.myProjects :		
 			    proj.Save()
+			for ua in sharedDB.myUserAssignments:
+				ua.Save()
+			
 		else:
 			sharedDB.mySQLConnection.wrongVersionSignal.emit()
 			time.sleep(99999)
@@ -337,7 +340,7 @@ class Connection(QObject):
 	
 					if str(phase._idphaseassignments) == str(row[0]):
 						if not str(sharedDB.app.sessionId()) == str(row[10]) or sharedDB.testing:
-							phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7])
+							phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7],_hoursalotted = row[11])
 						existed = True
 						break
 			
@@ -346,7 +349,7 @@ class Connection(QObject):
 				#create phase assignment
 					print "New PHASE ASSIGNMENT found in database CREATING phase assignment: "+str(row[0])
 					#create instance of phase assignment class				
-					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7], _new = 0)
+					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7], _new = 0, _hoursalotted = row[11])
 					#add phase to phase assignment list
 					sharedDB.myPhaseAssignments.append(myPhase)
 					#iterate through projects
@@ -501,17 +504,19 @@ class Connection(QObject):
 					if str(assignment._iduserassignments) == str(row[0]):						
 						if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
 							#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
-							assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5])
+							assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
 						existed = True
 						break
 					
 				if existed == False:
-				#create project
+				#create User Assignment
 					print "New USER ASSIGNMENT found in database CREATING user assignment id: "+str(row[0])
 					#create instance of user assignment class				
-					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3],_idstatuses = row[4],_timestamp = row[5])
+					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3],_idstatuses = row[4],_timestamp = row[5], _hours = row[9])
 					#add task to task list
 					sharedDB.myUserAssignments.append(myUserAssignment)
+					
+					sharedDB.mySQLConnection.newUserAssignmentSignal.emit(str(myUserAssignment._iduserassignments))
 					'''
 					#iterate through shots
 					for shot in sharedDB.myShots:
