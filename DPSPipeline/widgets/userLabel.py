@@ -17,10 +17,11 @@ class UserLabel(QtGui.QLabel):
         self.getUserFromTask()
 
     def getUserFromTask(self):
-        if str(self.task._status) == "4":
-            self.setText("")
-        elif self.task == None or str(self.task._idusers) == "0":
+        
+        if self.task == None or str(self.task._idusers) == "0":
             self.setText("----")
+        elif str(self.task._status) == "4":
+            self.setText("")
         else:
             self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
         
