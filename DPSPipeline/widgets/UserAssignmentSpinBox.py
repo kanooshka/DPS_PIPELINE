@@ -3,12 +3,13 @@ from PyQt4 import QtCore,QtGui
 
 class UserAssignmentSpinBox(QtGui.QSpinBox):
 
-    def __init__(self, _phaseAssignment = None, _user = None):
+    def __init__(self, _phaseAssignment = None, _user = None, _parent = None):
         super(QtGui.QSpinBox, self).__init__()
         
         self._userAssignment = None
         self._phaseAssignment = _phaseAssignment
         self._user = _user
+        self._parent = _parent
         
         self.setValue(0)
         self.getUserAssignment()
@@ -33,11 +34,13 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
                     self.getHours()
                     #connect to update
                     self._userAssignment.userAssignmentChanged.connect(self.getHours)
+                    self._parent.setTotalAssignedHours()
                 break    
       
     def getHours(self):
         self.blockSignals(1)
         self.setValue(self._userAssignment._hours)
+        #update 
         self.blockSignals(0)
     def setHours(self):
         if self._userAssignment is not None:

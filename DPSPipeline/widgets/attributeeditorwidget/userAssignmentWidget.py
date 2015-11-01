@@ -72,7 +72,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	#availhoursItem.setReadOnly(1)
 	
 	#hoursItem = IntQTableWidgetItem.IntQTableWidgetItem()
-	hoursItem = UserAssignmentSpinBox.UserAssignmentSpinBox(_phaseAssignment = self._parent._currentPhaseAssignment,_user = user)
+	hoursItem = UserAssignmentSpinBox.UserAssignmentSpinBox(_phaseAssignment = self._parent._currentPhaseAssignment,_user = user,_parent = self)
         #hoursItem.setValue(int(hours))
 	hoursItem.setMaximum(int(availhoursItem.text()))
 	hoursItem.setKeyboardTracking(0)
@@ -81,7 +81,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
         #validator = QtGui.QIntValidator()
         #hoursItem.setValidator(validator)
         hoursItem.valueChanged.connect(self.setTotalAssignedHours)
-	hoursItem.valueChanged.connect(self.setUserAssignment)
+	#hoursItem.valueChanged.connect(self.setUserAssignment)
 	if sharedDB.currentUser._idPrivileges > 1:
             hoursItem.setReadOnly(1)
 	
@@ -116,15 +116,6 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		    item.setStyleSheet('color: green')
 		else:
 		    item.setStyleSheet('color: red')
-		
-    def setUserAssignment(self):
-	senderSpinBox = self.sender()
-	#username = 
-	#if value > 0
-	#iterate through phase assignments user assignments
-	#if matches user for row then update assignment
-	#else create assignment
-	pass
     
     '''
     def setPrivileges (self):
