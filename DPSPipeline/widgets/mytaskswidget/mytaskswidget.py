@@ -5,7 +5,7 @@ import sharedDB
 
 from datetime import timedelta,datetime
 #from projexui import qt import Signal
-from DPSPipeline.widgets.mytaskswidget import mytaskswidgetitem
+from DPSPipeline.widgets.mytaskswidgetitem import mytaskswidgetitem
 from PyQt4 import QtGui,QtCore
 #from PyQt4 import QtCore
 from PyQt4.QtGui    import QWidget
