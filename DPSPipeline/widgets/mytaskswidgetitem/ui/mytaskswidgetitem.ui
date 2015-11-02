@@ -179,10 +179,6 @@
                </widget>
               </item>
              </layout>
-             <zorder>due</zorder>
-             <zorder>groupBox</zorder>
-             <zorder>groupBox</zorder>
-             <zorder>hours</zorder>
             </widget>
            </item>
            <item>
