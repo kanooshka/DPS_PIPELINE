@@ -23,6 +23,7 @@ class MyTasksWidgetItem(QWidget):
 	    
 	self._project = _project
 	self._userassignment = _userassignment
+	self.user = sharedDB.users.getUserByID(self._userassignment.idUsers())
 	self._phaseassignment = _phaseassignment	
 	self.mytaskwidget = parent
 	self._rowItem = _rowItem
@@ -35,11 +36,10 @@ class MyTasksWidgetItem(QWidget):
 	
 	
 	self.UpdateValues()
-	self.SetVisibility()
 	
     def UpdateValues(self):	
 	self.projectName.setText(self._project._name)
-	self.phaseName.setText(self._phaseassignment._name)
+	self.phaseName.setText(self._phaseassignment._name+" - "+self.user._name)
 	self.due.setText(self._phaseassignment._enddate.strftime('%m/%d/%Y'))
 	self.hours.setText(str(self._userassignment._hours))
 	
@@ -53,6 +53,8 @@ class MyTasksWidgetItem(QWidget):
 	    self.bgFrame.setStyleSheet("background-color: rgb(255,0,0);")
 	else:
 	    self.bgFrame.setStyleSheet("background-color: rgb(186,186,186);")
+	    
+	self.SetVisibility()
     
     def userAssignment(self):
 	return self._userassignment
@@ -61,9 +63,12 @@ class MyTasksWidgetItem(QWidget):
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)
 	
-	if self._phaseassignment.idstatuses() < 3:
-	    #self.mytaskwidget._rowItem.row().setHidden(0)
-	    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
+	if self._phaseassignment.idstatuses() < 3 and self._userassignment.hours() > 0:
+	    if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllEnabled:
+		#self.mytaskwidget._rowItem.row().setHidden(0)
+		self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
+	    else:
+		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
 	else:
 	    #self.mytaskwidget._rowItem.row().setHidden(0)
 	    self.mytaskwidget.setRowHidden(self._rowItem.row(),1)

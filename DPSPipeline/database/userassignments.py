@@ -111,8 +111,16 @@ class UserAssignment(QObject):
 	def assignmentType(self):
 		return self._assignmenttype
 	
+	def idUsers(self):
+		return self._idusers
+	
+
 	def idUserAssignment(self):
 		return self._iduserassignments
+	
+	def hours(self):
+		return self._hours
+	
 	
 		#
 		

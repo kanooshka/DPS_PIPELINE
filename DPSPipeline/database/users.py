@@ -27,6 +27,9 @@ class Users():
 		if self._updated:
 			print self._name+" Updated!"
 		
+	def idUsers(self):
+		return self._idusers
+	
 		
 def GetAllUsers():
 	users = []
