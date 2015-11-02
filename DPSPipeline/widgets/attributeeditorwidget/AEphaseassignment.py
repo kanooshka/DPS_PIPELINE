@@ -1,4 +1,4 @@
-import projexui
+import projexui,projex
 import sharedDB
 import sys
 
@@ -164,13 +164,17 @@ class AEPhaseAssignment(QtGui.QWidget):
 	if self.endDate.date().toPyDate() != pa._enddate:
 	    #print "End Date updating"
 	    self.endDate.setDate(pa._enddate)
+	
+	self.calendarDays.setValue(self.duration())
+	self.workDays.setValue(self.weekdays())
+	'''
 	if self.calendarDays.value() != pa._calendarWidgetItem.duration():
-	    #print "Calendar Days updating"
 	    self.calendarDays.setValue(pa._calendarWidgetItem.duration())
 	if self.workDays.value() != pa._calendarWidgetItem.weekdays():
-	    #print "Work Days updating"
 	    self.workDays.setValue(pa._calendarWidgetItem.weekdays())
-	    
+	'''
+	
+	
 	if self.hoursalotted.value() != pa.hoursAlotted():
 	    #print "Work Days updating"
 	    self.hoursalotted.setValue(pa.hoursAlotted())
@@ -231,6 +235,26 @@ class AEPhaseAssignment(QtGui.QWidget):
 	for status in sharedDB.myStatuses:
 	    self.phaseStatus.addItem(status._name, QtCore.QVariant(status))
 	self.phaseStatus.blockSignals(0)
+    
+    def duration( self ):
+        """
+        Returns the number of days this gantt item represents.
+        
+        :return     <int>
+        """
+        return 1 + self.startDate.date().daysTo(self.endDate.date())
+  
+    def weekdays(self):
+        """
+        Returns the number of weekdays this item has.
+        
+        :return     <int>
+        """            
+	dstart = self.startDate.date().toPyDate()
+	dend   = self.endDate.date().toPyDate()
+	self._workdays = projex.dates.weekdays(dstart, dend)
+	return self._workdays  
+    
     '''
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)

@@ -36,6 +36,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 	self.setEnabled(0)
 	
 	self.showAllEnabled = 0
+	self.showUnassignedEnabled = 0
 	
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
@@ -57,6 +58,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 	#create listener for new user assignments
 	
 	self.myTaskItems = []
+	self.unassignedItems = []
 	
 	sharedDB.mySQLConnection.newUserAssignmentSignal.connect(self.propogateUI)
 	
@@ -90,6 +92,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 			    #add phase assignment to widget
 			    phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
 			    
+			    #add userassignment to phase
+			    
+			    
 			    #projectWidgetItem = projectTreeWidgetItem.ProjectTreeWidgetItem(phase = phase, parent = self.myTaskList)
 			    #self.myTaskList.insertTopLevelItem(0,projectWidgetItem)		
 			    #self.projectTaskItems.append(projectWidgetItem)
@@ -111,7 +116,35 @@ class MyTasksWidget(QtGui.QTableWidget):
 			    self.setItem(self.rowCount()-1,1,dateitem)
 			    taskItem.SetVisibility()
 			    #self.setItem(self.rowCount()-1,2,userassignItem)
-		
+	
+	if self.showUnassignedEnabled:
+	    for phase in sharedDB.myPhaseAssignments:
+		if len(phase.userAssignment()) == 0:
+		    
+		    found = 0
+		    
+		    if self.unassignedItems is not None:
+			for p in self.unassignedItems:
+			    if p.phaseAssignment() == phase:
+				p.UpdateValues()
+				found = 1
+				break
+		    
+		    if not found:
+		    
+			self.insertRow(self.rowCount())
+	
+			dateitem = QtGui.QTableWidgetItem()	
+			dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+			
+			if phase.project is not None:
+			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
+			    self.unassignedItems.append(taskItem)
+		    
+			    self.setCellWidget(self.rowCount()-1,0,taskItem)
+			    self.setItem(self.rowCount()-1,1,dateitem)
+			    taskItem.SetVisibility()
+
 	self.setSortingEnabled(1)
 
 	self.setEnabled(1)
@@ -138,6 +171,11 @@ class MyTasksWidget(QtGui.QTableWidget):
            
         menu.addSeparator()
         
+	showUnassignedAction = menu.addAction('Show Unassigned')
+        showUnassignedAction.setCheckable(True)
+        showUnassignedAction.setChecked(self.showUnassignedEnabled)
+        showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
+	
 	''' 
         #iterate through clients
         cli = sharedDB.myClients
@@ -165,6 +203,10 @@ class MyTasksWidget(QtGui.QTableWidget):
         '''
 
         menu.exec_(ev.globalPos())
+    
+    def toggleShowUnassignedAction(self):
+	self.showUnassignedEnabled = not self.showUnassignedEnabled
+	self.propogateUI()
     
     def toggleShowAllAction(self):
 	self.showAllEnabled = not self.showAllEnabled

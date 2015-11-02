@@ -23,14 +23,18 @@ class MyTasksWidgetItem(QWidget):
 	    
 	self._project = _project
 	self._userassignment = _userassignment
-	self.user = sharedDB.users.getUserByID(self._userassignment.idUsers())
+	if _userassignment is not None:
+	    self.user = sharedDB.users.getUserByID(self._userassignment.idUsers())
+	    self._userassignment.userAssignmentChanged.connect(self.UpdateValues)
+	else:
+	    self.user = None
 	self._phaseassignment = _phaseassignment	
 	self.mytaskwidget = parent
 	self._rowItem = _rowItem
 	
 	#connect update values
 	self._project.projectChanged.connect(self.UpdateValues)
-	self._userassignment.userAssignmentChanged.connect(self.UpdateValues)
+	
 	self._phaseassignment.phaseAssignmentChanged.connect(self.UpdateValues)
 	self._phaseassignment.phaseAssignmentChanged.connect(self.SetVisibility)
 	
@@ -39,10 +43,16 @@ class MyTasksWidgetItem(QWidget):
 	
     def UpdateValues(self):	
 	self.projectName.setText(self._project._name)
-	self.phaseName.setText(self._phaseassignment._name+" - "+self.user._name)
+	if self.user is not None:
+	    self.phaseName.setText(self._phaseassignment._name+" - "+self.user._name)
+	else:
+	    self.phaseName.setText(self._phaseassignment._name+" - UNASSIGNED")
 	self.due.setText(self._phaseassignment._enddate.strftime('%m/%d/%Y'))
-	self.hours.setText(str(self._userassignment._hours))
-	
+	if self._userassignment is not None:
+	    self.hours.setText(str(self._userassignment._hours))
+	else:
+	    self.hours.setText("0")
+	    
 	#if due date is already passed turn red
 	if date.today() > self._phaseassignment._enddate:
 	    #print "OH NO!!!"
@@ -59,18 +69,27 @@ class MyTasksWidgetItem(QWidget):
     def userAssignment(self):
 	return self._userassignment
     
+    def phaseAssignment(self):
+	return self._phaseassignment
+    
     
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)
 	
-	if self._phaseassignment.idstatuses() < 3 and self._userassignment.hours() > 0:
-	    if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllEnabled:
-		#self.mytaskwidget._rowItem.row().setHidden(0)
+	if self._userassignment is None:
+	    if self.mytaskwidget.showUnassignedEnabled:
 		self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 	    else:
 		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
-	else:
-	    #self.mytaskwidget._rowItem.row().setHidden(0)
-	    self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
+	else:	
+	    if self._phaseassignment.idstatuses() < 3 and self._userassignment.hours() > 0:
+		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllEnabled:
+		    #self.mytaskwidget._rowItem.row().setHidden(0)
+		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
+		else:
+		    self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
+	    else:
+		#self.mytaskwidget._rowItem.row().setHidden(0)
+		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
 	    
 	self.mytaskwidget.setSortingEnabled(1)

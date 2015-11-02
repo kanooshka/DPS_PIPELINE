@@ -41,6 +41,8 @@ class PhaseAssignments(QObject):
 		
 		self.SetPhaseValues()
 		
+		self._userAssignments = []
+		
 	def Save(self):		
 
 		if self._new:	
@@ -116,7 +118,13 @@ class PhaseAssignments(QObject):
 	def endDate(self):
 		return self._enddate
 	
-
+	def addUserAssignment(self, ua):
+		self._userAssignments.append(ua)
+		
+	def userAssignment(self):
+		return self._userAssignments
+	
+	
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		
 		if str(phase._idphaseassignments) == str(sentid):
