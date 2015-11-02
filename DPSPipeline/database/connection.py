@@ -480,11 +480,12 @@ class Connection(QObject):
 						
 					for shot in sharedDB.myShots:
 						shot.AddTaskToList(myTask)
-							
-					for task in sharedDB.myTasks:
+					
+					#SLOWWWWWW		
+					'''for task in sharedDB.myTasks:
 						if task._parenttaskid is not None:
 							task.AddTaskToList(myTask)
-							
+					'''		
 					sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
 				
 					
