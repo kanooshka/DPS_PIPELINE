@@ -8,6 +8,7 @@ a.datas += [('ui/xganttwidget.ui', '/Users/Shellane/DPS_PIPELINE/projexui/widget
 a.datas += [('ui/createprojectwidget.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/createprojectwidget/ui/createprojectwidget.ui', 'DATA')]
 a.datas += [('ui/projectviewwidget.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/projectviewwidget/ui/projectviewwidget.ui', 'DATA')]
 a.datas += [('ui/seqDescription.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/projectviewwidget/ui/seqDescription.ui', 'DATA')]
+a.datas += [('ui/mytaskswidgetitem.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/mytaskswidgetitem/ui/mytaskswidgetitem.ui', 'DATA')]
 a.datas += [('ui/AEshot.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/attributeeditorwidget/ui/AEshot.ui', 'DATA')]
 a.datas += [('ui/AEProject.ui', '/Users/Shellane/DPS_PIPELINE/DPSPipeline/widgets/attributeeditorwidget/ui/AEProject.ui', 'DATA')]
 a.datas += [('ui/loginwidget.ui', 'DPSPipeline/widgets/loginwidget/ui/loginwidget.ui', 'DATA')]
