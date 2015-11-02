@@ -76,8 +76,8 @@ class MainWindow(QtGui.QMainWindow):
         #sharedDB.calendarview = CalendarView()
         #sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
         sharedDB.mainWindow.setTabPosition(QtCore.Qt.RightDockWidgetArea,2)
-	self.CreateCalendarWidget()
 	self.CreateProjectViewWidget()
+	self.CreateCalendarWidget()	
         self.CreateMyTasksWidget()
 	self.CreateAttributeEditorWidget()
 
@@ -118,6 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         dockWidget.setWidget(self._MyTasksWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
         #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
+	dockWidget.setMaximumWidth(150);
         dockWidget.show()
         dockWidget.raise_()
 
@@ -165,7 +166,7 @@ def main():
         app = QtGui.QApplication(sys.argv)
         path = projexui.resources.find('img/DP/pipe.gif')
         app.setWindowIcon(QtGui.QIcon(path))
-        sharedDB.app = app        
+        sharedDB.app = app
         '''
 	stylesheet = projexui.resources.find('styles/DarkOrange.stylesheet')
 	qfile = QtCore.QFile(stylesheet)

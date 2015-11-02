@@ -96,6 +96,7 @@ class ProjectViewWidget(QWidget):
 	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
 	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
 	
+	
 	#self.cfip = CheckForImagePath()
 	#self.shotImageFound.connect(self.shotImage.assignImage)
 	#self.shotImageDir = ''	
@@ -115,6 +116,8 @@ class ProjectViewWidget(QWidget):
 	#self.ShotBox.setEnabled(0)
 	
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	sharedDB.mySQLConnection.firstLoadComplete.connect(self.myProjectNameLineEdit.firstLoadComplete)
+	
     
     def propogateUI(self, ):
 	self.setPrivelages()

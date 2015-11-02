@@ -40,6 +40,11 @@ class CalendarViewWidget(QtGui.QWidget):
 		self._myXGanttWidget = XGanttWidget()
 		vLayout.addWidget(self._myXGanttWidget)
 		
+		#resize splitter
+		sizes = [275,50000]
+		self._myXGanttWidget.uiGanttSPLT.setSizes(sizes)
+		self._myXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
+		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
 		#dockWidget.setWidget(self._myXGanttWidget)
 		#dockWidget.setWindowTitle("Calendar View")
@@ -116,6 +121,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			project._calendarWidgetItem = projectXGanttWidgetItem
 			
+			projectXGanttWidgetItem.setHidden(True)
+			
 			for phase in project._phases:
 				self.AddPhase(phase)
 			
@@ -166,6 +173,7 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				childItem = XGanttWidgetItem(self._myXGanttWidget)
 				childItem._dbEntry = phase
+				phase._calendarWidgetItem = childItem
 				
 				childItem.setName(name)		
 				childItem._name = name

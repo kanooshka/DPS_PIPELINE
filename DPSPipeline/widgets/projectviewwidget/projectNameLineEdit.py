@@ -9,13 +9,19 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         super(ProjectNameLineEdit, self).__init__( parent)
         self._projectviewwidget = parent
         
-        self.setText("Right Click To Select Project...")
+        self.setText("Loading...")
         self.setReadOnly(True)
         self.showAllEnabled = 0
         self._project = None
+        self.setEnabled(0)
+    
+    def firstLoadComplete(self):
+        self.setText("Right Click To Select Project...")
+        self.setEnabled(1)
     
     def contextMenuEvent(self, ev):
         
+        #if self.isEnabled():
         activeIps = []
         activeClients = []
 

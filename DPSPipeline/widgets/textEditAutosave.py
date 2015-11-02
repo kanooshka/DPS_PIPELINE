@@ -35,6 +35,6 @@ class TextEditAutoSave(QtGui.QTextEdit):
     def slotTextChanged(self):        
         if not self.blockSignals:
             #print "Text edited!"
-            self.needToSave = 2
+            self.needToSave = 1
             self.AutoSaveTimer.terminate()
             self.AutoSaveTimer.start()

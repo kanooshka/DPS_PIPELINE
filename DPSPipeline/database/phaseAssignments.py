@@ -10,7 +10,7 @@ class PhaseAssignments(QObject):
 	phaseAssignmentChanged = QtCore.pyqtSignal(QtCore.QString)
 	phaseAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 0,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _timestamp = datetime.now()):
+	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 0,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		
@@ -22,6 +22,7 @@ class PhaseAssignments(QObject):
 		self._enddate                      = _enddate
 		self._progress                     = _progress
 		self._idstatuses                   = _idstatuses
+		self._hoursalotted		   = _hoursalotted
 		self._archived                     = _archived
 		self._timestamp		     	   = _timestamp
 		
@@ -39,6 +40,8 @@ class PhaseAssignments(QObject):
 		#sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
 		
 		self.SetPhaseValues()
+		
+		self._userAssignments = []
 		
 	def Save(self):		
 
@@ -64,18 +67,18 @@ class PhaseAssignments(QObject):
 				break
 		
 	def AddPhaseAssignmentToDB(self):
-		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 	def UpdatePhaseAssignmentInDB (self):
-		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hoursalotted = '"+str(self._hoursalotted)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		
-	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 0 ,_archived = 0, _timestamp = ''):
+	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 0 ,_archived = 0, _timestamp = '', _hoursalotted = 0):
 		print ("Downloaded updated for PhaseAssignment '"+str(self._idphaseassignments)+"'")
 		
 		self._idphaseassignments             = _idphaseassignments
@@ -84,6 +87,7 @@ class PhaseAssignments(QObject):
 		self._startdate               = _startdate
 		self._enddate               = _enddate
 		self._idstatuses               = _idstatuses
+		self._hoursalotted               = _hoursalotted
 		self._archived               = _archived
 		self._timestamp                    = _timestamp
 
@@ -93,7 +97,34 @@ class PhaseAssignments(QObject):
 		if task._idphaseassignments == self._idphaseassignments:
 			self._tasks.append(task)
 			return
+	def setHoursAlotted(self, sent):
+		self._hoursalotted = sent
+		self._updated = 1
+	
+	def hoursAlotted(self):
+		return self._hoursalotted
+	
+	def name(self):
+		return self._name
+	
+	def idstatuses(self):
+		return self._idstatuses
+	
+	def setIdstatuses(self, value):
+		self._idstatuses = value
+		self._updated = 1
 
+
+	def endDate(self):
+		return self._enddate
+	
+	def addUserAssignment(self, ua):
+		self._userAssignments.append(ua)
+		
+	def userAssignment(self):
+		return self._userAssignments
+	
+	
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		
 		if str(phase._idphaseassignments) == str(sentid):

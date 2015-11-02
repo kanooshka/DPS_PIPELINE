@@ -510,13 +510,16 @@ class XGanttWidgetItem(XTreeWidgetItem):
             self._dbEntry.setProperty(propertyname = key, value = value)
             #self.sync()
         elif key == 'Start':
-            self.setDateStart(value)
-            self.dataUpdated(self.dateStart(),self.dateEnd())
+            if self.dateStart() != value:
+		self.setDateStart(value)
+		self.dataUpdated(self.dateStart(),self.dateEnd())
         elif key == 'End':
-            self.setDateEnd(value)
-            self.dataUpdated(self.dateStart(),self.dateEnd())
+            if self.dateEnd() != value:
+		self.setDateEnd(value)
+		self.dataUpdated(self.dateStart(),self.dateEnd())
         elif key == 'Calendar Days':
-            self.setDuration(value)
+            if self.duration() != value:
+		self.setDuration(value)
         elif key == 'Time Start':
             self.setTimeStart(value)
         elif key == 'Time End':
@@ -524,7 +527,8 @@ class XGanttWidgetItem(XTreeWidgetItem):
         elif key == 'All Day':
             self.setAllDay(value)
         elif key == 'Work Days':
-            self.setWorkdayDuration(value)
+            if self.weekdays() != value:
+		self.setWorkdayDuration(value)
         else:
             self._properties[str(key)] = value
             
