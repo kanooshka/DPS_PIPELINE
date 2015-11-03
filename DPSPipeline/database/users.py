@@ -11,6 +11,8 @@ class Users():
 		self._name                   = _name
 		self._password           = _password
 		self._iddepartments      = _iddepartments
+		self._departments        = self._iddepartments.split(',')
+		
 		self._idPrivileges           = _idPrivileges
 		self._active                    = _active
 
@@ -30,7 +32,9 @@ class Users():
 	def idUsers(self):
 		return self._idusers
 	
-		
+	def departments(self):
+		return self._departments
+	
 def GetAllUsers():
 	users = []
 

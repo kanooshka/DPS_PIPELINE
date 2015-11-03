@@ -45,7 +45,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
             #if self.showAllEnabled:
             #    userList.append(user._name)
             #else:
-            if user._active and str(user._iddepartments) == str(sharedDB.phases.getPhaseByID(self.aephaseAssignment._currentPhaseAssignment._idphases)._iddepartments):
+            if user._active and str(sharedDB.phases.getPhaseByID(self.aephaseAssignment._currentPhaseAssignment._idphases)._iddepartments) in user.departments():
                 userList.append(user)
                 
         #userList.sort(reverse=False)
@@ -142,7 +142,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
             if self.showAllEnabled:
                 userList.append(user._name)
             else:
-                if user._active and str(user._iddepartments) == str(sharedDB.phases.getPhaseByID(self.aephaseAssignment._currentPhaseAssignment._idphases)._iddepartments):
+                if user._active and str(sharedDB.phases.getPhaseByID(self.aephaseAssignment._currentPhaseAssignment._idphases)._iddepartments) in user.departments():
                     userList.append(user._name)
                 
         userList.sort(reverse=False)

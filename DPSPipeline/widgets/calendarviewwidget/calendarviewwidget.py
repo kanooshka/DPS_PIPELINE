@@ -192,7 +192,7 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				parentItem.addChild(childItem)
 				
-				if (sharedDB.currentUser._iddepartments == 0 or department == sharedDB.currentUser._iddepartments):
+				if 0 in sharedDB.currentUser.departments() or str(department) in sharedDB.currentUser.departments():
 					childItem.setHidden(False)
 					parentItem.setHidden(False)
 				else:
