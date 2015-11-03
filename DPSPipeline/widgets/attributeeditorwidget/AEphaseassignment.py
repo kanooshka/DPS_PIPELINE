@@ -216,7 +216,7 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.workDays.setReadOnly(1)
 	    self.calendarDays.setReadOnly(1)
 	    self.hoursalotted.setReadOnly(1)
-	    self.phaseStatus.setReadOnly(1)
+	    self.phaseStatus.setEnabled(0)
 	
     def setStatus(self):
 	self.phaseStatus.blockSignals(1)
