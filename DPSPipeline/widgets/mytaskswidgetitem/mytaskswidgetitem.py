@@ -37,7 +37,7 @@ class MyTasksWidgetItem(QWidget):
 	
 	self._phaseassignment.phaseAssignmentChanged.connect(self.UpdateValues)
 	self._phaseassignment.phaseAssignmentChanged.connect(self.SetVisibility)
-	
+	self._phaseassignment.userAssigned.connect(self.deleteThisRow)
 	
 	self.UpdateValues()
 	
@@ -52,7 +52,12 @@ class MyTasksWidgetItem(QWidget):
 	    self.hours.setText(str(self._userassignment._hours))
 	else:
 	    self.hours.setText("0")
-	    
+	
+	for s in sharedDB.myStatuses:
+	    if s._idstatuses == self._phaseassignment._idstatuses:
+		    self.status.setText(s._name)
+		    break
+	
 	#if due date is already passed turn red
 	if date.today() > self._phaseassignment._enddate:
 	    #print "OH NO!!!"
@@ -72,6 +77,16 @@ class MyTasksWidgetItem(QWidget):
     def phaseAssignment(self):
 	return self._phaseassignment
     
+    def deleteThisRow(self):
+	if self._userassignment is None:
+	    for i, o in enumerate(self.mytaskwidget.unassignedItems):
+		if o == self:
+		    del self.mytaskwidget.unassignedItems[i]
+		    break
+
+	    self.mytaskwidget.removeCellWidget(self._rowItem.row(),0)
+	    self.mytaskwidget.removeRow(self._rowItem.row())
+	            
     
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)
@@ -82,8 +97,8 @@ class MyTasksWidgetItem(QWidget):
 	    else:
 		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
 	else:	
-	    if self._phaseassignment.idstatuses() < 3 and self._userassignment.hours() > 0:
-		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllEnabled:
+	    if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self._userassignment.hours() > 0:
+		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllUsersEnabled:
 		    #self.mytaskwidget._rowItem.row().setHidden(0)
 		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 		else:

@@ -15,7 +15,7 @@ class Shots(QObject):
 	descriptionChanged = QtCore.pyqtSignal()
 	
 	
-	def __init__(self,_idshots = -1,_idsequences = -1,_idprojects = -1, _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
+	def __init__(self,_idshots = -1,_idsequences = -1,_idprojects = -1, _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 1,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now(),_shotnotes = '',_tasks=None):
 		
 		super(QObject, self).__init__()
 		
@@ -100,7 +100,7 @@ class Shots(QObject):
 		
 		sharedDB.mySQLConnection.query("UPDATE shots SET number = '"+str(self._number)+"', startframe = '"+str(self._startframe)+"', endframe = '"+str(self._endframe)+"', idsequences = '"+str(self._idsequences)+"', idstatuses = '"+str(self._idstatuses)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', shotnotes = '"+notes+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idshots = "+str(self._idshots)+";","commit")
 
-	def SetValues(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 0,_description = '',_timestamp = datetime.now(),_shotnotes=''):
+	def SetValues(self,_idshots = 0,_idsequences = 0,_idprojects = 1 , _number = '010',_startframe = 100,_endframe = 200,_idstatuses = 1,_description = '',_timestamp = datetime.now(),_shotnotes=''):
 		print ("Downloaded updated for Shot '"+str(self._number)+"'")
 		
 		self._idshots                 = _idshots

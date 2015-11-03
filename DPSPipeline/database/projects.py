@@ -18,7 +18,7 @@ class Projects(QObject):
 	projectChanged = QtCore.pyqtSignal(QtCore.QString)
 	#projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = ''):
+	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = ''):
 		super(QObject, self).__init__()
 		
 		# define custom properties
@@ -140,7 +140,7 @@ class Projects(QObject):
 		
 		
 	
-	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 0, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
+	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
 		print ("Downloaded updated for Project '"+str(self._name)+"'")
 		
 		self._idprojects             = _idprojects

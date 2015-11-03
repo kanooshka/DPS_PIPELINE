@@ -35,8 +35,17 @@ class MyTasksWidget(QtGui.QTableWidget):
 	#self.projectTaskItems = []
 	self.setEnabled(0)
 	
-	self.showAllEnabled = 0
+	self.showAllUsersEnabled = 0
 	self.showUnassignedEnabled = 0
+	self.showNotStartedEnabled = 1
+	self.showInProgressEnabled = 1
+	self.showOnHoldEnabled = 0
+	self.showFinishedEnabled = 0
+	self.showCancelledEnabled = 0
+	self.showDeletedEnabled = 0
+	self.showOutForApprovalEnabled = 0
+	
+	self.allowedStatuses = [1,2]
 	
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
@@ -75,7 +84,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    self.setRowHidden(i,1)	
 	
 	for user in sharedDB.myUsers:
-	    if user == sharedDB.currentUser or self.showAllEnabled:	
+	    if user == sharedDB.currentUser or self.showAllUsersEnabled:	
 		for userassignment in user._assignments:	    
 		    if str(userassignment.assignmentType()) == "phase_assignment":
 			found = 0
@@ -91,9 +100,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 			if not found:
 			    #add phase assignment to widget
 			    phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
-			    
-			    #add userassignment to phase
-			    
+
 			    
 			    #projectWidgetItem = projectTreeWidgetItem.ProjectTreeWidgetItem(phase = phase, parent = self.myTaskList)
 			    #self.myTaskList.insertTopLevelItem(0,projectWidgetItem)		
@@ -107,6 +114,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 			    
 			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
 			    self.myTaskItems.append(taskItem)
+			    phase.addUserAssignment(taskItem)
 			    #taskItem.setText(phase.name())
 			    
 			    #userassignItem = QtGui.QTableWidgetItem()	
@@ -156,62 +164,129 @@ class MyTasksWidget(QtGui.QTableWidget):
         activeClients = []
 
         for proj in sharedDB.myProjects:
-            if not proj._hidden or self.showAllEnabled:
-                if str(proj._idclients) not in activeClients or self.showAllEnabled:
+            if not proj._hidden or self.showAllUsersEnabled:
+                if str(proj._idclients) not in activeClients or self.showAllUsersEnabled:
                     activeClients.append(str(proj._idclients))
-                if str(proj._idips) not in activeIps or self.showAllEnabled:
+                if str(proj._idips) not in activeIps or self.showAllUsersEnabled:
                     activeIps.append(str(proj._idips))
         
         menu	 = QtGui.QMenu()
         
-        showAllAction = menu.addAction('Show All User Assignments')
-        showAllAction.setCheckable(True)
-        showAllAction.setChecked(self.showAllEnabled)
-        showAllAction.triggered.connect(self.toggleShowAllAction)       
-           
-        menu.addSeparator()
+        showAllUsersAction = menu.addAction('Show All User Assignments')
+        showAllUsersAction.setCheckable(True)
+        showAllUsersAction.setChecked(self.showAllUsersEnabled)
+        showAllUsersAction.triggered.connect(self.toggleShowAllUsersAction)       
         
 	showUnassignedAction = menu.addAction('Show Unassigned')
         showUnassignedAction.setCheckable(True)
         showUnassignedAction.setChecked(self.showUnassignedEnabled)
         showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
 	
-	''' 
-        #iterate through clients
-        cli = sharedDB.myClients
-        cli.sort(key=operator.attrgetter('_name'),reverse=False)
-        for i in xrange(0, len(cli)):
-            if str(cli[i]._idclients) in activeClients:
-                exec("client_menu%d = QtGui.QMenu(cli[i]._name)" % (i + 1))
-                exec("menu.addMenu(client_menu%d)" % (i + 1))
-                #Iterate through Client's IPs
-                if len(cli[i]._ips):
-                    ips = cli[i]._ips
-                    ips.sort(key=operator.attrgetter('_name'),reverse=False)
-                    for j in xrange(0, len(ips)):
-                        if str(ips[j]._idips) in activeIps:
-                            exec("ip%d_%d = QtGui.QMenu(ips[j]._name)" % (i + 1,j + 1))
-                            exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
-                            #Iterate through projects in IP
-                            if len(ips[j]._projects):
-                                projs = ips[j]._projects
-                                projs.sort(key=operator.attrgetter('_name'),reverse=False)
-                                for k in xrange(0, len(projs)):
-                                    if not projs[k]._hidden or self.showAllEnabled:
-                                        exec("ip%d_%d.addAction(%s)" % (i + 1,j + 1,repr(projs[k]._name)))
-                                        exec("ip%d_%d.triggered.connect(self.ChangeProject)" % (i + 1,j + 1))
-        '''
+	menu.addSeparator()
+	
+	#self.showNotStartedEnabled = 1
+	showNotStartedAction = menu.addAction('Show Not Started')
+        showNotStartedAction.setCheckable(True)
+        showNotStartedAction.setChecked(self.showNotStartedEnabled)
+        showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
+	
+	#self.showInProgressEnabled = 1
+	showInProgressAction = menu.addAction('Show In Progress')
+        showInProgressAction.setCheckable(True)
+        showInProgressAction.setChecked(self.showInProgressEnabled)
+        showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
+	
+	#self.showOnHoldEnabled = 0
+	showOnHoldAction = menu.addAction('Show On Hold')
+        showOnHoldAction.setCheckable(True)
+        showOnHoldAction.setChecked(self.showOnHoldEnabled)
+        showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
+	
+	#self.showFinishedEnabled = 0
+	showFinishedAction = menu.addAction('Show Finished')
+        showFinishedAction.setCheckable(True)
+        showFinishedAction.setChecked(self.showFinishedEnabled)
+        showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
+	
+	#self.showCancelledEnabled = 0
+	showCancelledAction = menu.addAction('Show Cancelled')
+        showCancelledAction.setCheckable(True)
+        showCancelledAction.setChecked(self.showCancelledEnabled)
+        showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
+	
+	#self.showDeletedEnabled = 0
+	showDeletedAction = menu.addAction('Show Deleted')
+        showDeletedAction.setCheckable(True)
+        showDeletedAction.setChecked(self.showDeletedEnabled)
+        showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
+	
+	#self.showOutForApprovalEnabled = 0
+	showOutForApprovalAction = menu.addAction('Show Out For Approval')
+        showOutForApprovalAction.setCheckable(True)
+        showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
+        showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
 
         menu.exec_(ev.globalPos())
     
     def toggleShowUnassignedAction(self):
 	self.showUnassignedEnabled = not self.showUnassignedEnabled
+	self.showAllUsersEnabled = self.showUnassignedEnabled
 	self.propogateUI()
     
-    def toggleShowAllAction(self):
-	self.showAllEnabled = not self.showAllEnabled
+    def toggleShowAllUsersAction(self):
+	self.showAllUsersEnabled = not self.showAllUsersEnabled
 	self.propogateUI()
 	
+    def toggleShowNotStartedAction(self):
+	self.showNotStartedEnabled = not self.showNotStartedEnabled
+	if self.showNotStartedEnabled:
+	    self.allowedStatuses.append(1)
+	else:
+	    self.allowedStatuses.remove(1)
+	self.propogateUI()
+    def toggleShowInProgressAction(self):
+	self.showInProgressEnabled = not self.showInProgressEnabled
+	if self.showInProgressEnabled:
+	    self.allowedStatuses.append(2)
+	else:
+	    self.allowedStatuses.remove(2)
+	self.propogateUI()
+    def toggleShowOnHoldAction(self):
+	self.showOnHoldEnabled = not self.showOnHoldEnabled
+	if self.showOnHoldEnabled:
+	    self.allowedStatuses.append(3)
+	else:
+	    self.allowedStatuses.remove(3)
+	self.propogateUI()
+    def toggleShowFinishedAction(self):
+	self.showFinishedEnabled = not self.showFinishedEnabled
+	if self.showFinishedEnabled:
+	    self.allowedStatuses.append(4)
+	else:
+	    self.allowedStatuses.remove(4)
+	self.propogateUI()
+    def toggleShowCancelledAction(self):
+	self.showCancelledEnabled = not self.showCancelledEnabled
+	if self.showCancelledEnabled:
+	    self.allowedStatuses.append(5)
+	else:
+	    self.allowedStatuses.remove(5)
+	self.propogateUI()
+    def toggleShowDeletedAction(self):
+	self.showDeletedEnabled = not self.showDeletedEnabled
+	if self.showDeletedEnabled:
+	    self.allowedStatuses.append(6)
+	else:
+	    self.allowedStatuses.remove(6)
+	self.propogateUI()
+    def toggleShowOutForApprovalAction(self):
+	self.showOutForApprovalEnabled = not self.showOutForApprovalEnabled
+	if self.showOutForApprovalEnabled:
+	    self.allowedStatuses.append(7)
+	else:
+	    self.allowedStatuses.remove(7)
+	self.propogateUI()
+    
     def sendSelection(self, row, column):
 	sharedDB.sel.select(self.cellWidget(row,column)._phaseassignment)
     

@@ -12,7 +12,7 @@ class Sequences(QObject):
 	sequenceChanged = QtCore.pyqtSignal(QtCore.QString)
 	sequenceAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 0,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
+	def __init__(self,_idsequences = 0,_idprojects = 1 , _number = '010',_idstatuses = 1,_updated = 0,_new = 1,_description = '',_timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		

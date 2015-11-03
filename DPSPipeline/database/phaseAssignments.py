@@ -9,8 +9,9 @@ import operator
 class PhaseAssignments(QObject):
 	phaseAssignmentChanged = QtCore.pyqtSignal(QtCore.QString)
 	phaseAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
+	userAssigned = QtCore.pyqtSignal()
 	
-	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 0,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _timestamp = datetime.now()):
+	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		
@@ -78,7 +79,7 @@ class PhaseAssignments(QObject):
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		
-	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 0 ,_archived = 0, _timestamp = '', _hoursalotted = 0):
+	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 1 ,_archived = 0, _timestamp = '', _hoursalotted = 0):
 		print ("Downloaded updated for PhaseAssignment '"+str(self._idphaseassignments)+"'")
 		
 		self._idphaseassignments             = _idphaseassignments
@@ -120,6 +121,7 @@ class PhaseAssignments(QObject):
 	
 	def addUserAssignment(self, ua):
 		self._userAssignments.append(ua)
+		self.userAssigned.emit()
 		
 	def userAssignment(self):
 		return self._userAssignments
