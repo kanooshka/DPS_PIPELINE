@@ -19,6 +19,11 @@ class TextEditAutoSave(QtGui.QTextEdit):
         self.AutoSaveTimer = AutoSaveTimer()
         self.save = self.AutoSaveTimer.save
         self.blockSignals = 0
+	
+	self.normalPalette = QtGui.QPalette(self.palette())
+	
+	self.changedPalette = QtGui.QPalette(self.palette())
+	self.changedPalette.setColor(QtGui.QPalette.Base,QtGui.QColor(255,255,200))
 
         self.connect(self,SIGNAL("textChanged()"),
 					self,SLOT("slotTextChanged()"))
@@ -27,8 +32,14 @@ class TextEditAutoSave(QtGui.QTextEdit):
 	modifiers = QtGui.QApplication.keyboardModifiers()
 	
 	if (event.key() == QtCore.Qt.Key_Return and not modifiers == QtCore.Qt.ShiftModifier):
-            self.save.emit()
+            #self.blockSignals(1)
+	    self.setPalette(self.normalPalette)
+	    #print "Enter Pressed!"
+	    self.save.emit()
 	else:
+	    #print ("Text Inputted!"+str(event.key()))
+	    #self.blockSignals(0)
+	    self.setPalette(self.changedPalette)
 	    super(TextEditAutoSave, self).keyPressEvent(event)
     
     @pyqtSlot()
@@ -36,5 +47,5 @@ class TextEditAutoSave(QtGui.QTextEdit):
         if not self.blockSignals:
             #print "Text edited!"
             self.needToSave = 1
-            self.AutoSaveTimer.terminate()
-            self.AutoSaveTimer.start()
+            #self.AutoSaveTimer.terminate()
+            #self.AutoSaveTimer.start()
