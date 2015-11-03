@@ -92,7 +92,7 @@ class MyTasksWidgetItem(QWidget):
 	self.mytaskwidget.setSortingEnabled(0)
 	
 	if self._userassignment is None:
-	    if self.mytaskwidget.showUnassignedEnabled:
+	    if self.mytaskwidget.showUnassignedEnabled and self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())):
 		self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 	    else:
 		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
