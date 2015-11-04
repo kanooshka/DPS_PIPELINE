@@ -121,6 +121,11 @@ class UserAssignment(QObject):
 	def hours(self):
 		return self._hours
 	
+def getUserAssignmentByID(sentid):
+	for userAssignment in sharedDB.myUserAssignments:		
+		if str(userAssignment._iduserassignments) == str(sentid):
+			return userAssignment
+
 	
 		#
 		

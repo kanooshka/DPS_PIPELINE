@@ -45,10 +45,17 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
     def setHours(self):
         if self._userAssignment is not None:
             self._userAssignment.setHours(self.value())
+            if self.value()>0:
+                self._phaseAssignment.userAssigned.emit()
+            else:
+                sharedDB.myTasksWidget.CheckPhaseForUnassigned(self._phaseAssignment)
         elif self.value()>0:
             self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = self._user._idusers,_assignmentid = self._phaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = self.value(), _new = 1)
-	    self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.propogateUI)
+	    self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
+            #sharedDB.myTasksWidget.AddUserAssignment(ua = self._userAssignment)
             sharedDB.myUserAssignments.append(self._userAssignment)
             #connect to update
             self._userAssignment.userAssignmentChanged.connect(self.getHours)
+            #Add User Assignment to phase
+            #self._phaseAssignment.addUserAssignment(self._userAssignment)
         

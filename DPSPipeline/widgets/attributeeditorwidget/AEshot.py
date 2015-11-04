@@ -135,10 +135,12 @@ class AEShot(QWidget):
 	    #set Description
 	    if self._currentShot is not None and self._currentShot._description is not None:
 		self.shotDescription.blockSignals = 1
+		self.shotDescription.resetColorPalette()
 		self.shotDescription.setText(self._currentShot._description)
 		self.shotDescription.blockSignals = 0
 	    
 	    self.shotNotes.blockSignals = 1
+	    self.shotNotes.resetColorPalette()
 	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
 		    self.shotNotes.setText('Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-')
 	    else:
@@ -163,16 +165,17 @@ class AEShot(QWidget):
 	shot= self._currentShot
 	seq = self._currentShot._sequence
 	
-	if len(seq._project._folderLocation)>3:
-	    d = str(seq._project._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
-	    
-	    #myPixmap = QtGui.QPixmap(self._noImage)
-	    self.shotImage.assignImage()
-	    #if os.path.isdir(d):
-	    if shot is not None:	
-		    if len(seq._project._folderLocation):
-			self.shotImageDir = d
-			self.cfip.start()
+	if seq._project._folderLocation is not None:
+	    if len(seq._project._folderLocation)>3:
+		d = str(seq._project._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
+		
+		#myPixmap = QtGui.QPixmap(self._noImage)
+		self.shotImage.assignImage()
+		#if os.path.isdir(d):
+		if shot is not None:	
+			if len(seq._project._folderLocation):
+			    self.shotImageDir = d
+			    self.cfip.start()
     
     def checkForPlayblast(self):
 	shot= self._currentShot

@@ -114,7 +114,7 @@ class MainWindow(QtGui.QMainWindow):
     def CreateMyTasksWidget(self):	
         dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
         self._MyTasksWidget = mytaskswidget.MyTasksWidget()
-        dockWidget.setWindowTitle("My Tasks")
+        dockWidget.setWindowTitle("Assignments")
         dockWidget.setWidget(self._MyTasksWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
         #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)

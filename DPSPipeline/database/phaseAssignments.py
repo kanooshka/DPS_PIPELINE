@@ -43,6 +43,7 @@ class PhaseAssignments(QObject):
 		self.SetPhaseValues()
 		
 		self._userAssignments = []
+		#self._unassigned = []
 		
 	def Save(self):		
 
@@ -115,15 +116,15 @@ class PhaseAssignments(QObject):
 		self._idstatuses = value
 		self._updated = 1
 
-
 	def endDate(self):
 		return self._enddate
 	
-	def addUserAssignment(self, ua):
-		self._userAssignments.append(ua)
+	def addUserAssignmentTaskItem(self, taskitem):
+		self._userAssignments.append(taskitem)
+		#print "added user assignment"
 		self.userAssigned.emit()
 		
-	def userAssignment(self):
+	def userAssignmentTaskItems(self):
 		return self._userAssignments
 	
 	

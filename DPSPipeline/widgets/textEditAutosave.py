@@ -33,14 +33,21 @@ class TextEditAutoSave(QtGui.QTextEdit):
 	
 	if (event.key() == QtCore.Qt.Key_Return and not modifiers == QtCore.Qt.ShiftModifier):
             #self.blockSignals(1)
-	    self.setPalette(self.normalPalette)
+	    self.resetColorPalette()
 	    #print "Enter Pressed!"
 	    self.save.emit()
 	else:
 	    #print ("Text Inputted!"+str(event.key()))
 	    #self.blockSignals(0)
-	    self.setPalette(self.changedPalette)
+	    self.changeColorPalette()
 	    super(TextEditAutoSave, self).keyPressEvent(event)
+    
+    def resetColorPalette(self):
+	self.setPalette(self.normalPalette)
+    
+    def changeColorPalette(self):
+	self.setPalette(self.changedPalette)
+    
     
     @pyqtSlot()
     def slotTextChanged(self):        
