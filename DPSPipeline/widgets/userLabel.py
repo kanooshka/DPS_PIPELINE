@@ -44,7 +44,7 @@ class UserLabel(QtGui.QLabel):
                 if self.showAllEnabled:
                     userList.append(user._name)
                 else:
-                    if user._active and str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments) in user.departments:
+                    if user._active and str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments) in user.departments():
                         userList.append(user._name)
                     
             userList.sort(reverse=False)
