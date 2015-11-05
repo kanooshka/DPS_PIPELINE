@@ -132,8 +132,6 @@ class MyTasksWidget(QtGui.QTableWidget):
 		if len(phase.userAssignmentTaskItems()):		    
 		    for ua in phase.userAssignmentTaskItems():		    
 			if hasattr(ua, '_userassignment'):
-			    print "has userassignment attribute"
-			    print "Skipping "+str(ua)
 			    if int(ua._userassignment.hours()) > 0:
 				skip = 1			    
 				break
@@ -197,8 +195,6 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    if len(phase.userAssignmentTaskItems()):		    
 		for ua in phase.userAssignmentTaskItems():		    
 		    if hasattr(ua, '_userassignment'):
-			print "has userassignment attribute"
-			print "Skipping "+str(ua)
 			if int(ua._userassignment.hours()) > 0:
 			    skip = 1			    
 			    break
