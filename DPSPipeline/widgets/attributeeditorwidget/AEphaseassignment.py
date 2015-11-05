@@ -117,6 +117,10 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.userTable.aephaseAssignment = self
 	self.userLayout.addWidget(self.userTable)
 	
+	#Bottom spacer
+	self.spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
+	self.aephaseassignmentlayout.addItem(self.spacer)
+	
 	self.setHidden(1)
 
 	self.setEnabled(0)
@@ -217,6 +221,7 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.calendarDays.setReadOnly(1)
 	    self.hoursalotted.setReadOnly(1)
 	    self.phaseStatus.setEnabled(0)
+	    self.userBox.setVisible(0)
 	
     def setStatus(self):
 	self.phaseStatus.blockSignals(1)

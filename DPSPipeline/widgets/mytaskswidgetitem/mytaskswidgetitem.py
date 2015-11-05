@@ -66,6 +66,8 @@ class MyTasksWidgetItem(QWidget):
 	    #self.setAutoFillBackground(1)
 	    #self.setPalette(p);
 	    self.bgFrame.setStyleSheet("background-color: rgb(255,0,0);")
+	elif date.today() > self._phaseassignment._startdate:
+	    self.bgFrame.setStyleSheet("background-color: rgb(159,255,94);")
 	else:
 	    self.bgFrame.setStyleSheet("background-color: rgb(186,186,186);")
 	    
