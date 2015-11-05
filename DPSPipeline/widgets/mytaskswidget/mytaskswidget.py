@@ -3,7 +3,7 @@ import weakref
 import projexui
 import sharedDB
 
-from datetime import timedelta,datetime
+from datetime import timedelta,datetime,date
 #from projexui import qt import Signal
 from DPSPipeline.widgets.mytaskswidgetitem import mytaskswidgetitem
 from PyQt4 import QtGui,QtCore
@@ -107,24 +107,26 @@ class MyTasksWidget(QtGui.QTableWidget):
 			    #self.myTaskList.insertTopLevelItem(0,projectWidgetItem)		
 			    #self.projectTaskItems.append(projectWidgetItem)
 			    
-			    self.insertRow(self.rowCount())
-			    
-			    #phase.phaseAssignmentChanged.connect(self.propogateUI)
-			    dateitem = QtGui.QTableWidgetItem()	
-			    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-			    
-			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-			    self.myTaskItems.append(taskItem)
-			    phase.addUserAssignmentTaskItem(taskItem)
-			    #taskItem.setText(phase.name())
-			    
-			    #userassignItem = QtGui.QTableWidgetItem()	
-			    #userassignItem.setText(self._userassignment.idUserAssignment)
-			    
-			    self.setCellWidget(self.rowCount()-1,0,taskItem)
-			    self.setItem(self.rowCount()-1,1,dateitem)
-			    taskItem.SetVisibility()
-			    #self.setItem(self.rowCount()-1,2,userassignItem)
+			    if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate:
+				
+				self.insertRow(self.rowCount())
+				
+				#phase.phaseAssignmentChanged.connect(self.propogateUI)
+				dateitem = QtGui.QTableWidgetItem()	
+				dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+				
+				taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+				self.myTaskItems.append(taskItem)
+				phase.addUserAssignmentTaskItem(taskItem)
+				#taskItem.setText(phase.name())
+				
+				#userassignItem = QtGui.QTableWidgetItem()	
+				#userassignItem.setText(self._userassignment.idUserAssignment)
+				
+				self.setCellWidget(self.rowCount()-1,0,taskItem)
+				self.setItem(self.rowCount()-1,1,dateitem)
+				taskItem.SetVisibility()
+				#self.setItem(self.rowCount()-1,2,userassignItem)
 	
 	if self.showUnassignedEnabled:
 	    for phase in sharedDB.myPhaseAssignments:
@@ -177,18 +179,19 @@ class MyTasksWidget(QtGui.QTableWidget):
 		#add phase assignment to widget
 		phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
 		
-		self.insertRow(self.rowCount())
-
-		dateitem = QtGui.QTableWidgetItem()	
-		dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-		
-		taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-		self.myTaskItems.append(taskItem)
-		phase.addUserAssignmentTaskItem(taskItem)
-		
-		self.setCellWidget(self.rowCount()-1,0,taskItem)
-		self.setItem(self.rowCount()-1,1,dateitem)
-		taskItem.SetVisibility()
+		if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate:
+		    self.insertRow(self.rowCount())
+    
+		    dateitem = QtGui.QTableWidgetItem()	
+		    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+		    
+		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+		    self.myTaskItems.append(taskItem)
+		    phase.addUserAssignmentTaskItem(taskItem)
+		    
+		    self.setCellWidget(self.rowCount()-1,0,taskItem)
+		    self.setItem(self.rowCount()-1,1,dateitem)
+		    taskItem.SetVisibility()
     
     def CheckPhaseForUnassigned(self, phase):
 	if self.showUnassignedEnabled:
@@ -234,56 +237,58 @@ class MyTasksWidget(QtGui.QTableWidget):
         
         menu	 = QtGui.QMenu()
         
-        showAllUsersAction = menu.addAction('Show All User Assignments')
-        showAllUsersAction.setCheckable(True)
-        showAllUsersAction.setChecked(self.showAllUsersEnabled)
-        showAllUsersAction.triggered.connect(self.toggleShowAllUsersAction)       
-        
-	showUnassignedAction = menu.addAction('Show Unassigned')
-        showUnassignedAction.setCheckable(True)
-        showUnassignedAction.setChecked(self.showUnassignedEnabled)
-        showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
+	if sharedDB.currentUser._idPrivileges < 2:
+	    showAllUsersAction = menu.addAction('Show All User Assignments')
+	    showAllUsersAction.setCheckable(True)
+	    showAllUsersAction.setChecked(self.showAllUsersEnabled)
+	    showAllUsersAction.triggered.connect(self.toggleShowAllUsersAction)       
+	    
+	    showUnassignedAction = menu.addAction('Show Unassigned')
+	    showUnassignedAction.setCheckable(True)
+	    showUnassignedAction.setChecked(self.showUnassignedEnabled)
+	    showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
 	
 	menu.addSeparator()
+	statusMenu = menu.addMenu("Status Visibility")
 	
 	#self.showNotStartedEnabled = 1
-	showNotStartedAction = menu.addAction('Show Not Started')
+	showNotStartedAction = statusMenu.addAction('Show Not Started')
         showNotStartedAction.setCheckable(True)
         showNotStartedAction.setChecked(self.showNotStartedEnabled)
         showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
 	
 	#self.showInProgressEnabled = 1
-	showInProgressAction = menu.addAction('Show In Progress')
+	showInProgressAction = statusMenu.addAction('Show In Progress')
         showInProgressAction.setCheckable(True)
         showInProgressAction.setChecked(self.showInProgressEnabled)
         showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
 	
 	#self.showOnHoldEnabled = 0
-	showOnHoldAction = menu.addAction('Show On Hold')
+	showOnHoldAction = statusMenu.addAction('Show On Hold')
         showOnHoldAction.setCheckable(True)
         showOnHoldAction.setChecked(self.showOnHoldEnabled)
         showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
 	
 	#self.showFinishedEnabled = 0
-	showFinishedAction = menu.addAction('Show Finished')
+	showFinishedAction = statusMenu.addAction('Show Finished')
         showFinishedAction.setCheckable(True)
         showFinishedAction.setChecked(self.showFinishedEnabled)
         showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
 	
 	#self.showCancelledEnabled = 0
-	showCancelledAction = menu.addAction('Show Cancelled')
+	showCancelledAction = statusMenu.addAction('Show Cancelled')
         showCancelledAction.setCheckable(True)
         showCancelledAction.setChecked(self.showCancelledEnabled)
         showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
 	
 	#self.showDeletedEnabled = 0
-	showDeletedAction = menu.addAction('Show Deleted')
+	showDeletedAction = statusMenu.addAction('Show Deleted')
         showDeletedAction.setCheckable(True)
         showDeletedAction.setChecked(self.showDeletedEnabled)
         showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
 	
 	#self.showOutForApprovalEnabled = 0
-	showOutForApprovalAction = menu.addAction('Show Out For Approval')
+	showOutForApprovalAction = statusMenu.addAction('Show Out For Approval')
         showOutForApprovalAction.setCheckable(True)
         showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
         showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
