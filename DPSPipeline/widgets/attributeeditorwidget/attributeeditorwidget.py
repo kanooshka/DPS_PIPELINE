@@ -48,7 +48,7 @@ class AttributeEditorWidget(QtGui.QStackedWidget):
 	elif item._type == 'phaseassignment':
 	    self.setCurrentIndex(2)
 	    self.phaseAssignmentWidget.LoadPhaseAssignment(item)
-	    item.phaseAssignmentChanged.connect(self.phaseAssignmentWidget.LoadPhaseAssignment)
+	    item.phaseAssignmentChanged.connect(self.phaseAssignmentWidget.refresh)
 	else:
 	    self.setCurrentIndex(0)
 	    
