@@ -44,8 +44,20 @@ class MyTasksWidget(QtGui.QTableWidget):
 	self.showCancelledEnabled = 0
 	self.showDeletedEnabled = 0
 	self.showOutForApprovalEnabled = 0
+	self.showAllUsersInDepartmentEnabled = 0
 	
 	self.allowedStatuses = [1,2]
+	
+	# Set visibility defaults
+	if sharedDB.currentUser._idPrivileges == 2:
+	    self.toggleShowAllUsersInDepartmentAction()
+	    self.toggleShowUnassignedAction()
+	elif sharedDB.currentUser._idPrivileges == 1:
+	    self.toggleShowAllUsersAction()
+	    self.toggleShowUnassignedAction()
+	    self.toggleShowOnHoldAction()
+	    
+	
 	
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
@@ -73,6 +85,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
 	#self.currentCellChanged.connect(self.sendSelection)
 	self.cellClicked.connect(self.sendSelection)
+	self.cellDoubleClicked.connect(self.loadinprojectview)
     
     def propogateUI(self):
 	#self.clear()
@@ -85,48 +98,47 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    self.setRowHidden(i,1)	
 	
 	for user in sharedDB.myUsers:
-	    if user == sharedDB.currentUser or self.showAllUsersEnabled:	
-		for userassignment in user._assignments:	    
-		    if str(userassignment.assignmentType()) == "phase_assignment":
-			found = 0
+	    #if user == sharedDB.currentUser or self.showAllUsersEnabled or self.showAllUsersInDepartmentEnabled:	
+	    for userassignment in user._assignments:	    
+		if str(userassignment.assignmentType()) == "phase_assignment":
+		    found = 0
+		    
+		    #see if it already exists
+		    if self.myTaskItems is not None:
+			for t in self.myTaskItems:
+			    if t.userAssignment() == userassignment:
+				t.UpdateValues()
+				found = 1
+				break
+		    
+		    if not found:
+			AddUserAssignment(userassignment._assignmentid)
+			'''
+			#add phase assignment to widget
+			phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
 			
-			#see if it already exists
-			if self.myTaskItems is not None:
-			    for t in self.myTaskItems:
-				if t.userAssignment() == userassignment:
-				    t.UpdateValues()
-				    found = 1
-				    break
+			#if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate or sharedDB.currentUser._idPrivileges == 1 or (self.showAllUsersInDepartmentEnabled and phase._iddepartments in sharedDB.currentUser.departments()):
+			    
+			self.insertRow(self.rowCount())
 			
-			if not found:
-			    #add phase assignment to widget
-			    phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
-
-			    
-			    #projectWidgetItem = projectTreeWidgetItem.ProjectTreeWidgetItem(phase = phase, parent = self.myTaskList)
-			    #self.myTaskList.insertTopLevelItem(0,projectWidgetItem)		
-			    #self.projectTaskItems.append(projectWidgetItem)
-			    
-			    if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate:
-				
-				self.insertRow(self.rowCount())
-				
-				#phase.phaseAssignmentChanged.connect(self.propogateUI)
-				dateitem = QtGui.QTableWidgetItem()	
-				dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-				
-				taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-				self.myTaskItems.append(taskItem)
-				phase.addUserAssignmentTaskItem(taskItem)
-				#taskItem.setText(phase.name())
-				
-				#userassignItem = QtGui.QTableWidgetItem()	
-				#userassignItem.setText(self._userassignment.idUserAssignment)
-				
-				self.setCellWidget(self.rowCount()-1,0,taskItem)
-				self.setItem(self.rowCount()-1,1,dateitem)
-				taskItem.SetVisibility()
-				#self.setItem(self.rowCount()-1,2,userassignItem)
+			#phase.phaseAssignmentChanged.connect(self.propogateUI)
+			dateitem = QtGui.QTableWidgetItem()	
+			dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+			
+			taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+			self.myTaskItems.append(taskItem)
+			phase.addUserAssignmentTaskItem(taskItem)
+			#taskItem.setText(phase.name())
+			
+			#userassignItem = QtGui.QTableWidgetItem()	
+			#userassignItem.setText(self._userassignment.idUserAssignment)
+			
+			self.setCellWidget(self.rowCount()-1,0,taskItem)
+			self.setItem(self.rowCount()-1,1,dateitem)
+			taskItem.SetVisibility()
+			
+			#self.setItem(self.rowCount()-1,2,userassignItem)
+			'''
 	
 	if self.showUnassignedEnabled:
 	    for phase in sharedDB.myPhaseAssignments:
@@ -154,7 +166,8 @@ class MyTasksWidget(QtGui.QTableWidget):
 			    self.insertRow(self.rowCount())
 	    
 			    dateitem = QtGui.QTableWidgetItem()	
-			    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+			    #dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+			    dateitem.setText(date.today().strftime('%Y/%m/%d'))
 			
 			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
 			    self.unassignedItems.append(taskItem)
@@ -170,27 +183,28 @@ class MyTasksWidget(QtGui.QTableWidget):
     def AddUserAssignment(self,sentIdUserAssignment):
 
 	userassignment = sharedDB.userassignments.getUserAssignmentByID(sentIdUserAssignment)
-	    
-	if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled:	    
-	    if str(userassignment.assignmentType()) == "phase_assignment":
+	phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
+	
+	#if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
+	if str(userassignment.assignmentType()) == "phase_assignment":
 
-		#add phase assignment to widget
-		phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
+	    #add phase assignment to widget
+	    
+	    
+	    if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
+		self.insertRow(self.rowCount())
+
+		dateitem = QtGui.QTableWidgetItem()	
+		dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
 		
-		if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate:
-		    self.insertRow(self.rowCount())
-    
-		    dateitem = QtGui.QTableWidgetItem()	
-		    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-		    
-		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-		    self.myTaskItems.append(taskItem)
-		    phase.addUserAssignmentTaskItem(taskItem)
-		    
-		    self.setCellWidget(self.rowCount()-1,0,taskItem)
-		    self.setItem(self.rowCount()-1,1,dateitem)
-		    taskItem.SetVisibility()
-    
+		taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+		self.myTaskItems.append(taskItem)
+		phase.addUserAssignmentTaskItem(taskItem)
+		
+		self.setCellWidget(self.rowCount()-1,0,taskItem)
+		self.setItem(self.rowCount()-1,1,dateitem)
+		taskItem.SetVisibility()
+
     def CheckPhaseForUnassigned(self, phase):
 	if self.showUnassignedEnabled:
 
@@ -208,7 +222,8 @@ class MyTasksWidget(QtGui.QTableWidget):
 		    self.insertRow(self.rowCount())
     
 		    dateitem = QtGui.QTableWidgetItem()	
-		    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+		    #dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+		    dateitem.setText(date.today().strftime('%Y/%m/%d'))
 		
 		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
 		    self.unassignedItems.append(taskItem)
@@ -223,77 +238,99 @@ class MyTasksWidget(QtGui.QTableWidget):
         #if self.isEnabled():
         activeIps = []
         activeClients = []
-
+	
+	'''
         for proj in sharedDB.myProjects:
             if not proj._hidden or self.showAllUsersEnabled:
                 if str(proj._idclients) not in activeClients or self.showAllUsersEnabled:
                     activeClients.append(str(proj._idclients))
                 if str(proj._idips) not in activeIps or self.showAllUsersEnabled:
                     activeIps.append(str(proj._idips))
-        
+        '''
         menu	 = QtGui.QMenu()
         
-	if sharedDB.currentUser._idPrivileges < 2:
+	if sharedDB.currentUser._idPrivileges < 3:
+	    
+	    justMyAssignmentsAction = menu.addAction('Show ONLY MY Assignments')
+	    justMyAssignmentsAction.triggered.connect(self.toggleJustMyAssignmentsAction)
+	    
 	    showAllUsersAction = menu.addAction('Show All User Assignments')
 	    showAllUsersAction.setCheckable(True)
 	    showAllUsersAction.setChecked(self.showAllUsersEnabled)
 	    showAllUsersAction.triggered.connect(self.toggleShowAllUsersAction)       
+	    
+	    showAllUsersInDepartmentAction = menu.addAction('Show Department')
+	    showAllUsersInDepartmentAction.setCheckable(True)
+	    showAllUsersInDepartmentAction.setChecked(self.showAllUsersInDepartmentEnabled)
+	    showAllUsersInDepartmentAction.triggered.connect(self.toggleShowAllUsersInDepartmentAction)
 	    
 	    showUnassignedAction = menu.addAction('Show Unassigned')
 	    showUnassignedAction.setCheckable(True)
 	    showUnassignedAction.setChecked(self.showUnassignedEnabled)
 	    showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
 	
-	menu.addSeparator()
-	statusMenu = menu.addMenu("Status Visibility")
-	
-	#self.showNotStartedEnabled = 1
-	showNotStartedAction = statusMenu.addAction('Show Not Started')
-        showNotStartedAction.setCheckable(True)
-        showNotStartedAction.setChecked(self.showNotStartedEnabled)
-        showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
-	
-	#self.showInProgressEnabled = 1
-	showInProgressAction = statusMenu.addAction('Show In Progress')
-        showInProgressAction.setCheckable(True)
-        showInProgressAction.setChecked(self.showInProgressEnabled)
-        showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
-	
-	#self.showOnHoldEnabled = 0
-	showOnHoldAction = statusMenu.addAction('Show On Hold')
-        showOnHoldAction.setCheckable(True)
-        showOnHoldAction.setChecked(self.showOnHoldEnabled)
-        showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
-	
-	#self.showFinishedEnabled = 0
-	showFinishedAction = statusMenu.addAction('Show Finished')
-        showFinishedAction.setCheckable(True)
-        showFinishedAction.setChecked(self.showFinishedEnabled)
-        showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
-	
-	#self.showCancelledEnabled = 0
-	showCancelledAction = statusMenu.addAction('Show Cancelled')
-        showCancelledAction.setCheckable(True)
-        showCancelledAction.setChecked(self.showCancelledEnabled)
-        showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
-	
-	#self.showDeletedEnabled = 0
-	showDeletedAction = statusMenu.addAction('Show Deleted')
-        showDeletedAction.setCheckable(True)
-        showDeletedAction.setChecked(self.showDeletedEnabled)
-        showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
-	
-	#self.showOutForApprovalEnabled = 0
-	showOutForApprovalAction = statusMenu.addAction('Show Out For Approval')
-        showOutForApprovalAction.setCheckable(True)
-        showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
-        showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
+	    menu.addSeparator()
+	    statusMenu = menu.addMenu("Status Visibility")
+	    
+	    #self.showNotStartedEnabled = 1
+	    showNotStartedAction = statusMenu.addAction('Show Not Started')
+	    showNotStartedAction.setCheckable(True)
+	    showNotStartedAction.setChecked(self.showNotStartedEnabled)
+	    showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
+	    
+	    #self.showInProgressEnabled = 1
+	    showInProgressAction = statusMenu.addAction('Show In Progress')
+	    showInProgressAction.setCheckable(True)
+	    showInProgressAction.setChecked(self.showInProgressEnabled)
+	    showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
+	    
+	    #self.showOnHoldEnabled = 0
+	    showOnHoldAction = statusMenu.addAction('Show On Hold')
+	    showOnHoldAction.setCheckable(True)
+	    showOnHoldAction.setChecked(self.showOnHoldEnabled)
+	    showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
+	    
+	    #self.showFinishedEnabled = 0
+	    showFinishedAction = statusMenu.addAction('Show Finished')
+	    showFinishedAction.setCheckable(True)
+	    showFinishedAction.setChecked(self.showFinishedEnabled)
+	    showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
+	    
+	    #self.showCancelledEnabled = 0
+	    showCancelledAction = statusMenu.addAction('Show Cancelled')
+	    showCancelledAction.setCheckable(True)
+	    showCancelledAction.setChecked(self.showCancelledEnabled)
+	    showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
+	    
+	    #self.showDeletedEnabled = 0
+	    showDeletedAction = statusMenu.addAction('Show Deleted')
+	    showDeletedAction.setCheckable(True)
+	    showDeletedAction.setChecked(self.showDeletedEnabled)
+	    showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
+	    
+	    #self.showOutForApprovalEnabled = 0
+	    showOutForApprovalAction = statusMenu.addAction('Show Out For Approval')
+	    showOutForApprovalAction.setCheckable(True)
+	    showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
+	    showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
 
         menu.exec_(ev.globalPos())
     
+    def toggleJustMyAssignmentsAction(self):
+	self.showAllUsersInDepartmentEnabled = 0
+	self.showUnassignedEnabled = 0
+	self.showAllUsersEnabled = 0
+	self.propogateUI()
+    
+    
+    def toggleShowAllUsersInDepartmentAction(self):
+	self.showAllUsersInDepartmentEnabled = not self.showAllUsersInDepartmentEnabled
+	self.propogateUI()
+    
+    
     def toggleShowUnassignedAction(self):
 	self.showUnassignedEnabled = not self.showUnassignedEnabled
-	self.showAllUsersEnabled = self.showUnassignedEnabled
+	#self.showAllUsersEnabled = self.showUnassignedEnabled
 	self.propogateUI()
     
     def toggleShowAllUsersAction(self):
@@ -354,3 +391,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 	if self.cellWidget(row,column) is not None:
 	    sharedDB.sel.select(self.cellWidget(row,column)._phaseassignment)
     
+    def loadinprojectview(self, row, column):
+	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
+	sharedDB.mainWindow.centralTabbedWidget.setCurrentIndex(0)
+        sharedDB.myProjectViewWidget._currentProject = self.cellWidget(row,column)._phaseassignment.project            
+        
+	sharedDB.myProjectViewWidget.LoadProjectValues()

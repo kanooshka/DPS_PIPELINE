@@ -59,15 +59,18 @@ class MyTasksWidgetItem(QWidget):
 		    break
 	
 	#if due date is already passed turn red
-	if date.today() > self._phaseassignment._enddate:
-	    #print "OH NO!!!"
-	    #p = QtGui.QPalette();
-	    #p.setColor(QtGui.QPalette.Background, QtGui.QColor(255,0,0,1));
-	    #self.setAutoFillBackground(1)
-	    #self.setPalette(p);
+	if self._phaseassignment.idstatuses() == 4:
+	    self.bgFrame.setStyleSheet("background-color: rgb(0,150,0);")
+	elif self._phaseassignment.idstatuses() == 3:
+	    self.bgFrame.setStyleSheet("background-color: rgb(250,200,0);")
+	elif self._userassignment is None:
+	    self.bgFrame.setStyleSheet("background-color: rgb(20,150,230);")
+	elif date.today() > self._phaseassignment._enddate:
 	    self.bgFrame.setStyleSheet("background-color: rgb(255,0,0);")
 	elif date.today() >= self._phaseassignment._startdate:
 	    self.bgFrame.setStyleSheet("background-color: rgb(159,255,94);")
+	elif date.today()+timedelta(days=5) >= self._phaseassignment._startdate:
+	    self.bgFrame.setStyleSheet("background-color: rgb(176,220,220);")
 	else:
 	    self.bgFrame.setStyleSheet("background-color: rgb(186,186,186);")
 	    
@@ -97,20 +100,19 @@ class MyTasksWidgetItem(QWidget):
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)
 	
+	self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
+	
+	#if unassigned
 	if self._userassignment is None:
-	    if self.mytaskwidget.showUnassignedEnabled and self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())):
-		self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
-	    else:
-		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
+	    if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self.mytaskwidget.showUnassignedEnabled:
+		#if sharedDB.currentUser._idPrivileges == 2 and self._phaseassignment._iddepartments in sharedDB.currentUser.departments():
+		if sharedDB.currentUser._idPrivileges == 1 or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
+		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 	else:	
 	    if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self._userassignment.hours() > 0:
-		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllUsersEnabled:
+		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
 		    #self.mytaskwidget._rowItem.row().setHidden(0)
 		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
-		else:
-		    self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
-	    else:
-		#self.mytaskwidget._rowItem.row().setHidden(0)
-		self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
+		
 	    
 	self.mytaskwidget.setSortingEnabled(1)
