@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>130</width>
+    <width>150</width>
     <height>95</height>
    </rect>
   </property>
@@ -168,7 +168,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_2">
              <property name="title">
-              <string>Hours:</string>
+              <string>Hours Left:</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
