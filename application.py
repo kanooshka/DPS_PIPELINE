@@ -118,7 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         dockWidget.setWidget(self._MyTasksWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
         #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
-	dockWidget.setMaximumWidth(150);
+	dockWidget.setMaximumWidth(170);
         dockWidget.show()
         dockWidget.raise_()
 
