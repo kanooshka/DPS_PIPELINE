@@ -35,7 +35,8 @@ class PhaseAssignments(QObject):
 		self.project                       = None
 		self._calendarWidgetItem	   = None
 		self._tasks			   = []
-
+		self._iddepartments	           = 1
+		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 		#sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
@@ -66,6 +67,7 @@ class PhaseAssignments(QObject):
 			if phase._idphases == self._idphases:
 				self._name = phase._name
 				self._taskPerShot = phase._taskPerShot
+				self._iddepartments = phase._iddepartments
 				break
 		
 	def AddPhaseAssignmentToDB(self):
