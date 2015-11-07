@@ -183,8 +183,10 @@ class ProjectViewWidget(QWidget):
 	    self.renderWidth.setEnabled(0)
 	    self.projectDescription.setReadOnly(1)
 	    #self.saveProjectDescription.setVisible(0)
-        
-	
+	if sharedDB.currentUser._idPrivileges == 2:
+	    self.projectPathButton.setVisible(1)
+	    self.projectDescription.setReadOnly(0)
+	    
     def projectChanged(self,projectId):
         #set project name
 	for project in sharedDB.myProjects:	
