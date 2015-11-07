@@ -140,9 +140,6 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.setEnabled(1)
 	    self.setHidden(0)   
 	    
-	    #set title
-	    self.PhaseAssignmentBox.setTitle(str(self._currentPhaseAssignment.project._name)+" : "+str(self._currentPhaseAssignment._name))
-	    
 	    self.refresh()
 	    self.userTable.UpdateWidget()
 	    #set Status
@@ -161,6 +158,9 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.propogateStatuses()
 	self.setStatus()
 	#
+	
+	#set title
+	self.PhaseAssignmentBox.setTitle(str(self._currentPhaseAssignment.project._name)+" : "+str(self._currentPhaseAssignment._name))
 	
 	if self.startDate.date().toPyDate() != pa._startdate:
 	    #print "Start Date updating"
@@ -220,6 +220,7 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.workDays.setReadOnly(1)
 	    self.calendarDays.setReadOnly(1)
 	    self.hoursalotted.setReadOnly(1)
+	if sharedDB.currentUser._idPrivileges > 2:    
 	    self.phaseStatus.setEnabled(0)
 	    self.userBox.setVisible(0)
 	
