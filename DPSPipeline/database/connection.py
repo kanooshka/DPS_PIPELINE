@@ -54,6 +54,7 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hours FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+			self._queries.append(["SELECT","hours","SELECT idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM hours WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			
 			while True:
 				if len(self._queries)>0:
@@ -84,7 +85,9 @@ class processQueries(QtCore.QThread):
 							sharedDB.mySQLConnection._tasksToBeParsed.extend(rows)
 						elif self._currentDB == "userassignments":
 							sharedDB.mySQLConnection._userAssignmentsToBeParsed.extend(rows)
-						
+						elif self._currentDB == "hours":
+							sharedDB.mySQLConnection._hoursToBeParsed.extend(rows)
+							
 						del self._queries[0]
 					except:
 						print "MySQL Connection Failed....trying again"	
@@ -118,6 +121,7 @@ class Connection(QObject):
 	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
 	newTaskSignal = QtCore.pyqtSignal(QtCore.QString)
 	newUserAssignmentSignal = QtCore.pyqtSignal(QtCore.QString)
+	newHoursSignal = QtCore.pyqtSignal(QtCore.QString)
 	wrongVersionSignal = QtCore.pyqtSignal()
 	firstLoadComplete = QtCore.pyqtSignal()
 
@@ -164,6 +168,7 @@ class Connection(QObject):
 		self._phaseAssignmentsToBeParsed = []
 		self._tasksToBeParsed = []
 		self._userAssignmentsToBeParsed = []
+		self._hoursToBeParsed = []
 		
 		self._queryProcessor = processQueries()
 		self._queryProcessor.finished.connect(self._queryProcessor.start)
@@ -518,29 +523,41 @@ class Connection(QObject):
 					sharedDB.myUserAssignments.append(myUserAssignment)
 					
 					sharedDB.mySQLConnection.newUserAssignmentSignal.emit(str(myUserAssignment._iduserassignments))
-					'''
-					#iterate through shots
-					for shot in sharedDB.myShots:
-						##if idsequences matches
-						#print "Shot id:" +str(shot._idshots)+" Task Id shots: "+str(myTask._idshots)
-						if shot._idshots == myUserAssignment._idshots:
-							
-							###add to shot's task list
-							if shot._tasks is not None:
-								#print "Appending shot: "+str(shot._idshots)+"'s task list"
-								shot._tasks.append(myUserAssignment)
-							else:
-								#print "Creating shot: "+str(shot._idshots)+"'s task list"
-								shot._tasks = [myUserAssignment]
-	
-							sharedDB.mySQLConnection.newTaskSignal.emit(str(myUserAssignment._idtasks))
-							
-							break
-					'''	
-						
 					
+		
 				#remove row from list
 				del self._userAssignmentsToBeParsed[0]
+			else:
+				break
+		
+		#hours
+		while True:
+			#print "Queue Lenght: "+str(x)
+			if len(self._hoursToBeParsed)>0:
+				row = self._hoursToBeParsed[0]
+				
+				existed = False
+				for hours in sharedDB.myHours:
+					if str(hours._idhours) == str(row[0]):						
+						if not str(sharedDB.app.sessionId()) == str(row[9]) or sharedDB.testing:
+							#idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid
+							assignment.SetValues(_idhours = row[0], _idusers = row[1],_idphaseassignments = row[2],_idprojects = row[3], _description = row[4], _hours = row[5], _date = row[6], _timestamp = row[7])
+						existed = True
+						break
+					
+				if existed == False:
+				#create Hours
+					print "New HOURS found in database CREATING hour id: "+str(row[0])
+					#create instance of user assignment class				
+					myHours =sharedDB.hours.Hours(_idhours = row[0], _idusers = row[1],_idphaseassignments = row[2],_idprojects = row[3],_description = row[4],_hours = row[5],_date = row[6], _timestamp = row[7])
+
+					sharedDB.myHours.append(myHours)
+					
+					sharedDB.mySQLConnection.newHoursSignal.emit(str(myHours._idhours))
+					
+				#remove row from list
+				del self._hoursToBeParsed[0]
+					
 			else:
 				if len(sharedDB.myProjects) and sharedDB.initialLoad == 0:
 					print "First Load Complete!"

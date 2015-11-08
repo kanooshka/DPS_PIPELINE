@@ -14,6 +14,7 @@ from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 from DPSPipeline.widgets.projectviewwidget import projectviewwidget
 from DPSPipeline.widgets.mytaskswidget import mytaskswidget
 from DPSPipeline.widgets.attributeeditorwidget import attributeeditorwidget
+from DPSPipeline.widgets.hourswidget import hourswidget
 
 #import DPSPipeline.createprojecttest
 
@@ -80,6 +81,7 @@ class MainWindow(QtGui.QMainWindow):
 	self.CreateCalendarWidget()	
         self.CreateMyTasksWidget()
 	self.CreateAttributeEditorWidget()
+	self.CreateHoursWidget()
 
     def CreateProjectWidget(self):
 	
@@ -100,6 +102,11 @@ class MainWindow(QtGui.QMainWindow):
     def CreateCalendarWidget(self):	
         self._CalendarWidget = calendarviewwidget.CalendarViewWidget()	
 	self.centralTabbedWidget.addTab(self._CalendarWidget, "Calendar View")
+    
+    def CreateHoursWidget(self):
+	
+        self._HoursWidget = hourswidget.HoursWidget()
+	self.centralTabbedWidget.addTab(self._HoursWidget, "Hours View")
     
     def CreateAttributeEditorWidget(self):
         dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
