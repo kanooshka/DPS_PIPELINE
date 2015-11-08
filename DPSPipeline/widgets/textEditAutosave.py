@@ -46,7 +46,8 @@ class TextEditAutoSave(QtGui.QTextEdit):
 	self.setPalette(self.normalPalette)
     
     def changeColorPalette(self):
-	self.setPalette(self.changedPalette)
+	if not self.isReadOnly():
+	    self.setPalette(self.changedPalette)
     
     
     @pyqtSlot()
