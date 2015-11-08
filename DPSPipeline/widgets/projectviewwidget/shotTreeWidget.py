@@ -138,7 +138,13 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 	self._parentWidgetItem._progressList.wheelEvent(event)
     
     def ChangeSelection(self,itemwidget, column):
-        sharedDB.sel.select(itemwidget.shot)
+        sharedDB.sel.select([itemwidget,itemwidget.shot])
+    
+    #def deselect(self):
+    #    self.UpdateBackgroundColors()
+        
+    #def select(self, ):
+    #    pass
     
     
     '''

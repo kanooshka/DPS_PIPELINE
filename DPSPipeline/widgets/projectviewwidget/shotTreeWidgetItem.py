@@ -69,4 +69,11 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
 
                 columnIndex +=1
                 
-    
+    def deselect(self):
+        self.shotWidget.UpdateBackgroundColors()
+        
+    def select(self):
+        bgc = QtGui.QColor(250,250,0)
+                              
+        for col in range(0,self.shotWidget.columnCount()):
+            self.setBackground(col,bgc)

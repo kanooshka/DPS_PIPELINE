@@ -58,23 +58,32 @@ class MyTasksWidgetItem(QWidget):
 		    self.status.setText(s._name)
 		    break
 	
-	#if due date is already passed turn red
-	if self._phaseassignment.idstatuses() == 4:
-	    self.bgFrame.setStyleSheet("background-color: rgb(0,150,0);")
-	elif self._phaseassignment.idstatuses() == 3:
-	    self.bgFrame.setStyleSheet("background-color: rgb(250,200,0);")
-	elif self._userassignment is None:
-	    self.bgFrame.setStyleSheet("background-color: rgb(20,150,230);")
-	elif date.today() > self._phaseassignment._enddate:
-	    self.bgFrame.setStyleSheet("background-color: rgb(255,0,0);")
-	elif date.today() >= self._phaseassignment._startdate:
-	    self.bgFrame.setStyleSheet("background-color: rgb(159,255,94);")
-	elif date.today()+timedelta(days=5) >= self._phaseassignment._startdate:
-	    self.bgFrame.setStyleSheet("background-color: rgb(176,220,220);")
-	else:
-	    self.bgFrame.setStyleSheet("background-color: rgb(186,186,186);")
+	self.UpdateColors()
 	    
 	self.SetVisibility()
+    
+    def UpdateColors(self):
+	#if due date is already passed turn red
+	try:
+	    if self._phaseassignment.idstatuses() == 4:
+		self.bgFrame.setStyleSheet("background-color: rgb(0,150,0);")
+	    elif self._phaseassignment.idstatuses() == 3:
+		self.bgFrame.setStyleSheet("background-color: rgb(250,200,0);")
+	    elif self._phaseassignment.idstatuses() == 7:
+		self.bgFrame.setStyleSheet("background-color: rgb(200,100,255);")
+	    elif self._userassignment is None:
+		self.bgFrame.setStyleSheet("background-color: rgb(20,150,230);")
+	    elif date.today() > self._phaseassignment._enddate:
+		self.bgFrame.setStyleSheet("background-color: rgb(255,0,0);")
+	    elif date.today() >= self._phaseassignment._startdate:
+		self.bgFrame.setStyleSheet("background-color: rgb(159,255,94);")
+	    elif date.today()+timedelta(days=5) >= self._phaseassignment._startdate:
+		self.bgFrame.setStyleSheet("background-color: rgb(176,220,220);")
+	    else:
+		self.bgFrame.setStyleSheet("background-color: rgb(186,186,186);")
+	except:
+	    print "Unable to change color on task item, task was removed from list"
+    
     
     def userAssignment(self):
 	return self._userassignment
@@ -116,3 +125,12 @@ class MyTasksWidgetItem(QWidget):
 		
 	    
 	self.mytaskwidget.setSortingEnabled(1)
+    
+    def select(self):
+	if self.bgFrame is not None:
+	    self.bgFrame.setStyleSheet("background-color: rgb(250,250,0);")
+	
+    def deselect(self):
+	self.UpdateColors()
+    
+    

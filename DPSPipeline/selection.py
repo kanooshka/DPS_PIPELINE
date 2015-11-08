@@ -9,7 +9,18 @@ class Selection(QObject):
         
         self.items = []
         
-    def select(self, item):
-        self.items.append(item)
+    def select(self, items):
+        for item in self.items:
+            if hasattr(item, "deselect"):
+                item.deselect()       
+        
+        self.items = []
+        #self.items.append(items)
+        self.items = items
+        
+        for item in self.items:
+            if hasattr(item, "select"):
+                item.select()
+        
         self.selectionChangedSignal.emit()
     

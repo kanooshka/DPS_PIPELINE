@@ -389,7 +389,7 @@ class MyTasksWidget(QtGui.QTableWidget):
     
     def sendSelection(self, row, column):
 	if self.cellWidget(row,column) is not None:
-	    sharedDB.sel.select(self.cellWidget(row,column)._phaseassignment)
+	    sharedDB.sel.select([self.cellWidget(row,column),self.cellWidget(row,column)._phaseassignment])
     
     def loadinprojectview(self, row, column):
 	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
