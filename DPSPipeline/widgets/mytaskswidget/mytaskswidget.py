@@ -50,15 +50,16 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
 	# Set visibility defaults
 	if sharedDB.currentUser._idPrivileges == 2:
-	    self.toggleShowAllUsersInDepartmentAction()
-	    self.toggleShowUnassignedAction()
+	    self.showAllUsersInDepartmentEnabled = 1
+	    self.showUnassignedEnabled = 1
 	elif sharedDB.currentUser._idPrivileges == 1:
-	    self.toggleShowAllUsersAction()
-	    self.toggleShowUnassignedAction()
-	    self.toggleShowOnHoldAction()
-	    
-	
-	
+	    self.showAllUsersEnabled = 1
+	    self.showUnassignedEnabled = 1
+	    self.showOnHoldEnabled = 1
+	    self.allowedStatuses.append(3)
+	    self.showOutForApprovalEnabled = 1
+	    self.allowedStatuses.append(7)
+
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
 	    self.insertColumn(x)
@@ -112,7 +113,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 				break
 		    
 		    if not found:
-			AddUserAssignment(userassignment._assignmentid)
+			self.AddUserAssignment(userassignment._assignmentid)
 			'''
 			#add phase assignment to widget
 			phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
@@ -183,27 +184,28 @@ class MyTasksWidget(QtGui.QTableWidget):
     def AddUserAssignment(self,sentIdUserAssignment):
 
 	userassignment = sharedDB.userassignments.getUserAssignmentByID(sentIdUserAssignment)
-	phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
-	
-	#if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
-	if str(userassignment.assignmentType()) == "phase_assignment":
-
-	    #add phase assignment to widget
+	if userassignment is not None:
+	    phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
 	    
-	    
-	    if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
-		self.insertRow(self.rowCount())
-
-		dateitem = QtGui.QTableWidgetItem()	
-		dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+	    #if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
+	    if str(userassignment.assignmentType()) == "phase_assignment":
+    
+		#add phase assignment to widget
 		
-		taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-		self.myTaskItems.append(taskItem)
-		phase.addUserAssignmentTaskItem(taskItem)
 		
-		self.setCellWidget(self.rowCount()-1,0,taskItem)
-		self.setItem(self.rowCount()-1,1,dateitem)
-		taskItem.SetVisibility()
+		if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
+		    self.insertRow(self.rowCount())
+    
+		    dateitem = QtGui.QTableWidgetItem()	
+		    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+		    
+		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+		    self.myTaskItems.append(taskItem)
+		    phase.addUserAssignmentTaskItem(taskItem)
+		    
+		    self.setCellWidget(self.rowCount()-1,0,taskItem)
+		    self.setItem(self.rowCount()-1,1,dateitem)
+		    taskItem.SetVisibility()
 
     def CheckPhaseForUnassigned(self, phase):
 	if self.showUnassignedEnabled:
