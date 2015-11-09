@@ -214,13 +214,16 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self._currentPhaseAssignment._calendarWidgetItem.setProperty("End",self.endDate.date())
     
     def setPrivileges (self):
-        if sharedDB.currentUser._idPrivileges > 1:
+        if sharedDB.currentUser._idPrivileges == 2:
             self.startDate.setReadOnly(1)
 	    self.endDate.setReadOnly(1)
 	    self.workDays.setReadOnly(1)
 	    self.calendarDays.setReadOnly(1)
 	    self.hoursalotted.setReadOnly(1)
-	if sharedDB.currentUser._idPrivileges > 2:    
+	    if str(self._currentPhaseAssignment.iddepartments()) not in sharedDB.currentUser.departments():
+		self.phaseStatus.setEnabled(0)
+	    
+	if sharedDB.currentUser._idPrivileges == 3:    
 	    self.phaseStatus.setEnabled(0)
 	    self.userBox.setVisible(0)
 	

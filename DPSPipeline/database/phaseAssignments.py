@@ -129,6 +129,9 @@ class PhaseAssignments(QObject):
 	def userAssignmentTaskItems(self):
 		return self._userAssignments
 	
+	def iddepartments(self):
+		return self._iddepartments
+
 	
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		
