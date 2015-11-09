@@ -2,6 +2,7 @@ from DPSPipeline.database import clients
 from DPSPipeline.database import ips
 from DPSPipeline.database import projects
 from DPSPipeline.database import phaseAssignments
+from DPSPipeline.database import hours
 from DPSPipeline.database import userassignments
 from DPSPipeline.database import phases
 from DPSPipeline.database import users
@@ -46,6 +47,7 @@ myProjects = []
 mySequences = []
 myPhaseAssignments = []
 myUserAssignments = []
+myHours = []
 
 Doobedeba = -0.0*0+0
 
