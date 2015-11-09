@@ -49,7 +49,10 @@ class LoginWidget(QWidget):
 	if sharedDB.mySQLConnection.testConnection():	    
 	    sharedDB.myUsers = sharedDB.users.GetAllUsers()
 	    for user in sharedDB.myUsers:
-		if str(user._username).lower() == str(sharedDB.loginWidget.user.text()).lower():
+		if sharedDB.testuser != 0:
+		    if str(user._username).lower() == str(sharedDB.testuser).lower():
+			sharedDB.currentUser = user
+		elif str(user._username).lower() == str(sharedDB.loginWidget.user.text()).lower():
 		    sharedDB.currentUser = user
 		    break
 	    
