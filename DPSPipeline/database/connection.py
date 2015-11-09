@@ -1,7 +1,7 @@
 import mysql.connector
 import sharedDB
 #import threading
-from datetime import datetime,timedelta
+from datetime import date,datetime,timedelta
 import time
 import socket
 
@@ -27,6 +27,11 @@ class processQueries(QtCore.QThread):
 	
 	
 	def run(self):
+
+		if sharedDB.currentDate != date.today():
+			sharedDB.currentDate = date.today()
+			print "Changing date to "+str(date.today())
+			sharedDB.mySQLConnection.dateChanged.emit()
 
 		if sharedDB.myVersion.CheckVersion():
 		
@@ -124,6 +129,8 @@ class Connection(QObject):
 	newHoursSignal = QtCore.pyqtSignal(QtCore.QString)
 	wrongVersionSignal = QtCore.pyqtSignal()
 	firstLoadComplete = QtCore.pyqtSignal()
+	
+	dateChanged = QtCore.pyqtSignal()
 
 	def __init__(self,_user = '', _password = ''):
 		

@@ -39,7 +39,10 @@ class MyTasksWidgetItem(QWidget):
 	self._phaseassignment.phaseAssignmentChanged.connect(self.SetVisibility)
 	self._phaseassignment.userAssigned.connect(self.deleteThisRow)
 	
+	sharedDB.mySQLConnection.dateChanged.connect(self.UpdateValues)
+	
 	self.UpdateValues()
+	
 	
     def UpdateValues(self):	
 	self.projectName.setText(self._project._name)

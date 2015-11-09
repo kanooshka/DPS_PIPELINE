@@ -67,6 +67,8 @@ class CalendarViewWidget(QtGui.QWidget):
 		sharedDB.mySQLConnection.newProjectSignal.connect(self.AddNewProjects)
 		sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.AddNewPhaseAssignment)
 		
+		sharedDB.mySQLConnection.dateChanged.connect(self.updateDate)
+		
 	def closeThreads(self):
 		self.myWaitTimer.quit()
 	
@@ -199,3 +201,11 @@ class CalendarViewWidget(QtGui.QWidget):
 					childItem.setHidden(True)
 
 				parentItem.adjustRange()
+	def updateDate(self):
+		
+		#self._myXGanttWidget.frameCurrentDate()
+		
+		#redraw background
+		self._myXGanttWidget.uiGanttVIEW.scene().rebuild()
+		pass
+	
