@@ -82,7 +82,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
         #hoursItem.setValidator(validator)
         hoursItem.valueChanged.connect(self.setTotalAssignedHours)
 	#hoursItem.valueChanged.connect(self.setUserAssignment)
-	if sharedDB.currentUser._idPrivileges > 1:
+	if sharedDB.currentUser._idPrivileges > 2:
             hoursItem.setReadOnly(1)
 	
         self.insertRow(self.rowCount())
