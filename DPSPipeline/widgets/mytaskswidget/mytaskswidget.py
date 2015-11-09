@@ -272,49 +272,49 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    showUnassignedAction.triggered.connect(self.toggleShowUnassignedAction)
 	
 	    menu.addSeparator()
-	    statusMenu = menu.addMenu("Status Visibility")
-	    
-	    #self.showNotStartedEnabled = 1
-	    showNotStartedAction = statusMenu.addAction('Show Not Started')
-	    showNotStartedAction.setCheckable(True)
-	    showNotStartedAction.setChecked(self.showNotStartedEnabled)
-	    showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
-	    
-	    #self.showInProgressEnabled = 1
-	    showInProgressAction = statusMenu.addAction('Show In Progress')
-	    showInProgressAction.setCheckable(True)
-	    showInProgressAction.setChecked(self.showInProgressEnabled)
-	    showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
-	    
-	    #self.showOnHoldEnabled = 0
-	    showOnHoldAction = statusMenu.addAction('Show On Hold')
-	    showOnHoldAction.setCheckable(True)
-	    showOnHoldAction.setChecked(self.showOnHoldEnabled)
-	    showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
-	    
-	    #self.showFinishedEnabled = 0
-	    showFinishedAction = statusMenu.addAction('Show Finished')
-	    showFinishedAction.setCheckable(True)
-	    showFinishedAction.setChecked(self.showFinishedEnabled)
-	    showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
-	    
-	    #self.showCancelledEnabled = 0
-	    showCancelledAction = statusMenu.addAction('Show Cancelled')
-	    showCancelledAction.setCheckable(True)
-	    showCancelledAction.setChecked(self.showCancelledEnabled)
-	    showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
-	    
-	    #self.showDeletedEnabled = 0
-	    showDeletedAction = statusMenu.addAction('Show Deleted')
-	    showDeletedAction.setCheckable(True)
-	    showDeletedAction.setChecked(self.showDeletedEnabled)
-	    showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
-	    
-	    #self.showOutForApprovalEnabled = 0
-	    showOutForApprovalAction = statusMenu.addAction('Show Out For Approval')
-	    showOutForApprovalAction.setCheckable(True)
-	    showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
-	    showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
+	statusMenu = menu.addMenu("Status Visibility")
+	
+	#self.showNotStartedEnabled = 1
+	showNotStartedAction = statusMenu.addAction('Show Not Started')
+	showNotStartedAction.setCheckable(True)
+	showNotStartedAction.setChecked(self.showNotStartedEnabled)
+	showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
+	
+	#self.showInProgressEnabled = 1
+	showInProgressAction = statusMenu.addAction('Show In Progress')
+	showInProgressAction.setCheckable(True)
+	showInProgressAction.setChecked(self.showInProgressEnabled)
+	showInProgressAction.triggered.connect(self.toggleShowInProgressAction)
+	
+	#self.showOnHoldEnabled = 0
+	showOnHoldAction = statusMenu.addAction('Show On Hold')
+	showOnHoldAction.setCheckable(True)
+	showOnHoldAction.setChecked(self.showOnHoldEnabled)
+	showOnHoldAction.triggered.connect(self.toggleShowOnHoldAction)
+	
+	#self.showFinishedEnabled = 0
+	showFinishedAction = statusMenu.addAction('Show Finished')
+	showFinishedAction.setCheckable(True)
+	showFinishedAction.setChecked(self.showFinishedEnabled)
+	showFinishedAction.triggered.connect(self.toggleShowFinishedAction)
+	
+	#self.showCancelledEnabled = 0
+	showCancelledAction = statusMenu.addAction('Show Cancelled')
+	showCancelledAction.setCheckable(True)
+	showCancelledAction.setChecked(self.showCancelledEnabled)
+	showCancelledAction.triggered.connect(self.toggleShowCancelledAction)
+	
+	#self.showDeletedEnabled = 0
+	showDeletedAction = statusMenu.addAction('Show Deleted')
+	showDeletedAction.setCheckable(True)
+	showDeletedAction.setChecked(self.showDeletedEnabled)
+	showDeletedAction.triggered.connect(self.toggleShowDeletedAction)
+	
+	#self.showOutForApprovalEnabled = 0
+	showOutForApprovalAction = statusMenu.addAction('Show Out For Approval')
+	showOutForApprovalAction.setCheckable(True)
+	showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
+	showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
 
         menu.exec_(ev.globalPos())
     
