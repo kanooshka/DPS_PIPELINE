@@ -73,7 +73,10 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.shotWidget.UpdateBackgroundColors()
         
     def select(self):
-        bgc = QtGui.QColor(250,250,0)
-                              
-        for col in range(0,self.shotWidget.columnCount()):
-            self.setBackground(col,bgc)
+        try:
+            bgc = QtGui.QColor(250,250,0)
+                                  
+            for col in range(0,self.shotWidget.columnCount()):
+                self.setBackground(col,bgc)
+        except:
+	    print "Unable to change color on shot item, sequence was removed from list"

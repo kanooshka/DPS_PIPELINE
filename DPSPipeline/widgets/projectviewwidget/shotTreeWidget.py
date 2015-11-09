@@ -83,16 +83,19 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         
     
     def UpdateBackgroundColors(self):
-        for x in range(0,self.topLevelItemCount()):           
-        
-            #sets alternating background colors
-            bgc = QtGui.QColor(200,200,200)			
-            if x%2:
-                 bgc = QtGui.QColor(250,250,250)
-                 
-                 
-            for col in range(0,self.columnCount()):
-                self.topLevelItem(x).setBackground(col,bgc)
+        try:
+	    for x in range(0,self.topLevelItemCount()):           
+	    
+		#sets alternating background colors
+		bgc = QtGui.QColor(200,200,200)			
+		if x%2:
+		     bgc = QtGui.QColor(250,250,250)
+		     
+		     
+		    for col in range(0,self.columnCount()):
+			self.topLevelItem(x).setBackground(col,bgc)
+	except:
+	    print "Unable to change color on shot item, sequence was removed from list"
     
     def AddShot(self,shot):
         shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)

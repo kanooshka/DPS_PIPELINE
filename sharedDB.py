@@ -16,9 +16,9 @@ from DPSPipeline.database import connection
 from DPSPipeline import selection
 
 from PyQt4.QtCore   import QDate
-from datetime import datetime,timedelta
+from datetime import date,datetime,timedelta
 
-myVersion = version.Version("0.1.01")
+myVersion = version.Version("0.1.02")
 
 #TEST SETTINGS
 ignoreVersion = 0
@@ -30,8 +30,10 @@ localDB = 0
 remote = 0
 autoCreateShotTasks = 0
 testPrivileges = 0
-
+testuser = 0
 #freezeDBUpdates = 1
+
+currentDate = date.today()
 
 earliestDate = QDate.currentDate().toPyDate()
 
