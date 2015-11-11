@@ -18,54 +18,10 @@ from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
+from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
 from DPSPipeline.widgets import textEditAutosave
 from DPSPipeline import clickableImageQLabel
 
-'''
-class CheckForImagePath(QtCore.QThread):
-
-    def run(self):
-	#search for image
-	sentpath = sharedDB.myProjectViewWidget.shotImageDir
-	
-	try:
-		types = ('*.[Jj][Pp]*[Gg]', '*.[Pp][Nn][Gg]') # the tuple of file types
-		files_grabbed = []
-		for files in types:
-		    files_grabbed.extend(glob.iglob(os.path.join(sentpath, files)))
-
-		#newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-		newImage = max(files_grabbed, key=os.path.getctime)
-		if len(newImage)>3:
-			print "Loading Shot Image: "+newImage
-			sharedDB.myProjectViewWidget.shotImagePath = newImage
-			sharedDB.myProjectViewWidget.shotImageFound.emit(newImage)
-		
-	except:
-	    print "No Image file found for selected shot"
-	    
-class CheckForPlayblastPath(QtCore.QThread):
-
-    def run(self):
-	#search for image
-	sentpath = sharedDB.myProjectViewWidget.shotPlayblastDir
-	
-	try:
-		types = ('*.[Mm][Oo][Vv]', '*.[Mm][Pp][4]') # the tuple of file types
-		files_grabbed = []
-		for files in types:
-		    files_grabbed.extend(glob.iglob(os.path.join(sentpath, files)))
-		
-		
-		#newPlayblast = max(glob.iglob(os.path.join(sentpath, '*.[Mm][Oo][Vv]')), key=os.path.getctime)
-		newPlayblast = max(files_grabbed, key=os.path.getctime)
-		if len(newPlayblast)>3:
-		    print "Loading Shot Playblast: "+newPlayblast
-		    os.startfile(newPlayblast)
-		
-	except:
-	    print "No Playblast file found for selected shot"
-'''
 class ProjectViewWidget(QWidget):
     #shotImageFound = QtCore.pyqtSignal(QtCore.QString)
     refreshProjectValuesSignal = QtCore.pyqtSignal()
@@ -75,10 +31,6 @@ class ProjectViewWidget(QWidget):
 	super(ProjectViewWidget, self).__init__( parent )
 	
 	self._currentProject = None
-	#self._currentSequence = None
-	#self._currentShot = None
-	
-	#self._noImage = projexui.resources.find('img/DP/noImage.png')
 	
 	# load the user interface# load the user interface
 	if getattr(sys, 'frozen', None):
@@ -87,8 +39,6 @@ class ProjectViewWidget(QWidget):
 	else:
 	    projexui.loadUi(__file__, self)
 	
-	#self.shotImage = clickableImageQLabel.ClickableImageQLabel(self)
-	#self.shotImageLayout.addWidget(self.shotImage)
 	self.projectDescription = textEditAutosave.TextEditAutoSave()
 	self.projDescrLayout.addWidget(self.projectDescription)
 	self.projectDescription.save.connect(self.SaveProjectDescription)
@@ -96,31 +46,23 @@ class ProjectViewWidget(QWidget):
 	self.myProjectNameLineEdit = projectNameLineEdit.ProjectNameLineEdit(self)
 	self.projectNameLayout.addWidget(self.myProjectNameLineEdit)
 	
-	
-	#self.cfip = CheckForImagePath()
-	#self.shotImageFound.connect(self.shotImage.assignImage)
-	#self.shotImageDir = ''	
-	
-	#self.cfpb = CheckForPlayblastPath()
-	#self.shotPlayblastPath = None
-	#self.shotPlayblastDir = ''
-	#self.shotImage.clicked.connect(self.checkForPlayblast)
-	
 	self._backend               = None
 	self._blockUpdates = 0
 	
 	sharedDB.myProjectViewWidget = self
 
 	self.projectValueGrp.setEnabled(0)
-	self.progressListGrp.setEnabled(0)
-	#self.ShotBox.setEnabled(0)
+	self.progressListGrpInner.setEnabled(0)
 	
 	self.stillImagesCheckbox.stateChanged.connect(self.ToggleStillImages)
 	
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.myProjectNameLineEdit.firstLoadComplete)
 	
-    
+	self._shotTreeWidget = None
+	#self.progressListLayout.addWidget(self._shotTreeWidget)
+	#self.setProgressListVisibility()
+	
     def propogateUI(self, ):
 	self.setPrivelages()
 
@@ -141,17 +83,14 @@ class ProjectViewWidget(QWidget):
 	self.projectPath.textChanged.connect(self.SetProjectValues)		
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
+	self.addImageNameButton.clicked.connect(self.AddImagePath)
+	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
-	#connect shot settings
-	#self.saveShotDescription.clicked.connect(self.SaveShotDescription)
-	#self.startFrame.valueChanged.connect(self.SetShotValues)
-	#self.endFrame.valueChanged.connect(self.SetShotValues)
-	#self.saveShotNotes.clicked.connect(self.SaveShotNotes)
-
-	self.setEnabled(1)    
+	self.setEnabled(1)
+	self.setProgressListVisibility()
     
     def cancel(self):
 	self.close()
@@ -166,7 +105,11 @@ class ProjectViewWidget(QWidget):
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
-
+	    
+	    for image in self._currentProject._images:
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_SCENES\\"))
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_PREVIEWS\\"))	    
+	    
 	    for path in paths:
 		self.ensure_dir(path)
 	else:
@@ -271,9 +214,10 @@ class ProjectViewWidget(QWidget):
 	#self.blockSignals(True)
 	
 	if self._currentProject is not None:
+	    
 	    #set name
 	    self.projectValueGrp.setEnabled(1)
-	    self.progressListGrp.setEnabled(1)
+	    self.progressListGrpInner.setEnabled(1)
 	    #self.ShotBox.setEnabled(0)
 	    
 	    self.myProjectNameLineEdit.setText(str(self._currentProject._name)+"        (Right Click to Switch Project)")
@@ -306,12 +250,8 @@ class ProjectViewWidget(QWidget):
 	    
 	    self.LoadProgressListValues()
 	    
-	    if len(self._currentProject._sequences):
-		self.stillImagesCheckbox.setHidden(1)
-		self.AddImageBox.setHidden(1)
-	    else:
-		self.stillImagesCheckbox.setHidden(0)
-		#self.AddImageBox.setHidden(0)
+	    self.setProgressListVisibility()
+	    
 	self._blockUpdates = 0
 	#self.blockSignals(False)
 	
@@ -319,26 +259,32 @@ class ProjectViewWidget(QWidget):
 	unique = 1
 	
 	#get sequence name
-	newName = self.getSequenceName()
+	newName = self.getImageName()
 	
-	#iterate through sequences
-	for sequence in self._currentProject._sequences:	    
-	    #if sequence matches name
-	    if newName == sequence._number:
-		unique = 0
-		break
-	    
-	#if unique
-	if unique:
-	    #add sequence
-	    seq = self._currentProject.AddSequenceToProject(newName)
-	    seq.sequenceAdded.connect(self.AddSequenceToProgressList)
-	    
+	if len(newName):
+	
+	    #iterate through sequences
+	    for image in self._currentProject._images:	    
+		#if image matches name
+		if newName == image._number:
+		    unique = 0
+		    break
+		
+	    #if unique
+	    if unique:
+		#add image
+		im = self._currentProject.AddShotToProject(newName)
+		im.shotAdded.connect(self.CreateTasks)
+		#im.shotAdded.connect(self.AddShotToProgressList)
+		
+	    else:
+		#warning message
+		message = QtGui.QMessageBox.question(self, 'Message',
+	    "Image name already exists, choose a unique name.", QtGui.QMessageBox.Ok)
 	else:
-	    #warning message
 	    message = QtGui.QMessageBox.question(self, 'Message',
-	"Sequence name already exists, choose a unique name (it is recommended to leave 10 between each sequence in case sequences need to be added in the middle)", QtGui.QMessageBox.Ok)
-    
+	    "Please enter a name.", QtGui.QMessageBox.Ok)
+	
     def AddSequence(self):
 	unique = 1
 	
@@ -372,10 +318,12 @@ class ProjectViewWidget(QWidget):
     
     def getImageName(self):
 	return self.imageNameLineEdit.text()
-
 	    
     def LoadProgressListValues(self):
 	self.progressList.clear()
+	
+	#self._shotTreeWidget.addTopLevelItem(self._shotTreeWidget.shotTreeItem)
+	
 	self.progressList.sortByColumn(0, QtCore.Qt.AscendingOrder);
 	self.progressList.setSortingEnabled(True);
 	self._currentSequence = None
@@ -386,6 +334,24 @@ class ProjectViewWidget(QWidget):
 		    
 		#Add Sequences to list
 		self.AddSequenceToProgressList(sequence = sequence)
+	elif (self._currentProject._images):
+	    
+	    self.stillImagesCheckbox.setChecked(1)
+	    self.CreateShotTreeWidget()
+	    
+	    for x in range(0,len(self._currentProject._images)):
+		image = self._currentProject._images[x]
+		#Add Shot to list
+		self.AddShotToProgressList(shot = image)
+    
+    def CreateShotTreeWidget(self):
+	self.progressList.clear()
+	self._shotTreeWidget = shotTreeWidget.ShotTreeWidget(self._currentProject,None,self)
+	self._shotTreeWidget.setProject(self._currentProject)
+	self._shotTreeWidget.SetupTable()
+	#add shotwidget to progresslist
+	self.progressList.addTopLevelItem(self._shotTreeWidget.shotTreeItem)        
+	self.progressList.setItemWidget(self._shotTreeWidget.shotTreeItem,0,self._shotTreeWidget)
     
     def GetSequenceByID(self,seqid):
 	if self._currentProject is not None:
@@ -408,38 +374,125 @@ class ProjectViewWidget(QWidget):
 		    sequenceTreeItem.setExpanded(True)
 		    #self.CreateFolderStructure()
     	
-    def GetShotByID(self,shotid):
-	if self._currentProject is not None:
-		for seq in self._currentProject._sequences:
-		    for shot in seq._shots:
-			if str(shot._idshots) == str(shotid):
-			    return shot	   
-    
     def AddShotToProgressList(self, shotid = None, shot = None):
 	if shot is None:
 	    #print "getting shot by id"
 	    shot = self.GetShotByID(shotid)
 	
 	if shot is not None:
-		for x in range(0,self.progressList.topLevelItemCount()):
-		    if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
-			seqTreeItem = self.progressList.topLevelItem(x)
+		if self.stillImagesCheckbox.isChecked():
+		    self._shotTreeWidget.AddShot(shot)
+		    #print "BLAH"
+		    #self.UpdateShots()
 		
-			#add shot to that widget
-			seqTreeItem._shotTreeWidget.AddShot(shot)		
-			#self.CreateFolderStructure()
-			break
+		else:
+		    for x in range(0,self.progressList.topLevelItemCount()):
+			if self.progressList.topLevelItem(x)._sequence._idsequences == shot._idsequences:
+			    seqTreeItem = self.progressList.topLevelItem(x)
+		    
+			    #add shot to that widget
+			    seqTreeItem._shotTreeWidget.AddShot(shot)		
+			    #self.CreateFolderStructure()
+			    break
+    
+    def GetShotByID(self,shotid):
+	if self._currentProject is not None:
+		for seq in self._currentProject._sequences:
+		    for shot in seq._shots:
+			if str(shot._idshots) == str(shotid):
+			    return shot
+		for shot in self._currentProject._images:
+		    if str(shot._idshots) == str(shotid):
+			    return shot
+		
+    def setProgressListVisibility(self):
+	if self._currentProject is not None:
+	
+	    if len(self._currentProject._sequences):
+		self.stillImagesCheckbox.setHidden(1)
+		self.stillImagesCheckbox.setChecked(0)
+		self.AddImageBox.setHidden(1)
+		#self._shotTreeWidget.setHidden(1)
+		#self.progressList.setHidden(0)
+		self.AddSequenceBox.setHidden(0)
+	    elif len(self._currentProject._images):
+		self.stillImagesCheckbox.setHidden(1)
+		self.stillImagesCheckbox.setChecked(1)
+		self.AddImageBox.setHidden(0)
+		#self._shotTreeWidget.setHidden(0)
+		#self.progressList.setHidden(1)
+		self.AddSequenceBox.setHidden(1)
+	    else:
+		self.stillImagesCheckbox.setHidden(0)
+		self.stillImagesCheckbox.setChecked(0)
+		#self.progressList.setHidden(0)
+		#self._shotTreeWidget.setHidden(1)
+		self.AddSequenceBox.setHidden(0)
+		self.AddImageBox.setHidden(1)		
+	else:
+	    self.stillImagesCheckbox.setHidden(0)
+	    self.stillImagesCheckbox.setChecked(0)
+	    #self.progressList.setHidden(0)
+	    #if self._shotTreeWidget is not None:
+		#self._shotTreeWidget.setHidden(1)
+	    self.AddSequenceBox.setHidden(0)
+	    self.AddImageBox.setHidden(1)
+	
+	pass
 
     def ToggleStillImages(self):
 	#if self._currentProject._sequences is None:	
 	if self.stillImagesCheckbox.isChecked():
 	    self.AddSequenceBox.setHidden(1)
 	    self.AddImageBox.setHidden(0)
+	    #self._shotTreeWidget.setHidden(0)
+	    #self.progressList.setHidden(1)
+	    
 	else:
 	    self.AddSequenceBox.setHidden(0)
 	    self.AddImageBox.setHidden(1)
+	    #self._shotTreeWidget.setHidden(1)
+	    #self.progressList.setHidden(0)
 	    
     def setSequenceSettingsEnabled(self, v):
 	self.sequenceNumber.setEnabled(v)
 	self.sequenceStatus.setEnabled(v)
 	self.sequenceDescription.setEnabled(v)
+
+
+    def CreateTasks(self, shotid = None, shot = None):
+	if shot is None:
+	    print "getting shot by id "+str(shotid)
+	    shot = self.GetShotByID(shotid)
+
+	if shot is not None:
+	    
+	    #add shot to that widget
+	    if self._shotTreeWidget is None:
+		self.CreateShotTreeWidget()
+	    self._shotTreeWidget.AddShot(shot)		
+	    
+	    if not sharedDB.autoCreateShotTasks:
+		self.selectShotByName(shot._number)
+		for phase in self._currentProject._phases:	    
+		    if phase._taskPerShot:
+			task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._currentProject._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
+			task.taskAdded.connect(self._shotTreeWidget.AttachTaskToButton)
+			
+			if shot._tasks is None:
+			    shot._tasks = [task]
+			else:
+			    shot._tasks.append(task)
+	else:
+	    print "SHOT NOT FOUND!"
+    def selectShotByName(self, sName):
+	
+	stree = self._shotTreeWidget
+	#item = stree.findItems(sName,1)
+	for x in range(0,stree.topLevelItemCount()):
+	    print stree.topLevelItem(x).text(1)
+	    print sName
+	    if str(stree.topLevelItem(x).text(1))==str(sName):
+		item = stree.topLevelItem(x)
+		stree.setCurrentItem(item)
+		break

@@ -123,8 +123,11 @@ class AEShot(QWidget):
 	    self.checkForShotImage()		    
 	    
 	    #set title
-	    self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
-	    
+	    if self._currentShot._sequence is None:
+		
+		self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._number))
+	    else:
+		self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
 	    #set Status
 	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
 	    
@@ -165,15 +168,24 @@ class AEShot(QWidget):
 	shot= self._currentShot
 	seq = self._currentShot._sequence
 	
-	if seq._project._folderLocation is not None:
-	    if len(seq._project._folderLocation)>3:
-		d = str(seq._project._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
-		
+	if seq is None:
+	    proj = shot._project
+	else:
+	    proj = seq._project
+	
+	
+	if proj._folderLocation is not None:
+	    if len(proj._folderLocation)>3:
+		if seq is not None:
+		    d = str(proj._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
+		else:
+		    d = str(proj._folderLocation+"\\"+shot._number+"\\_PREVIEWS\\")
+		    
 		#myPixmap = QtGui.QPixmap(self._noImage)
 		self.shotImage.assignImage()
 		#if os.path.isdir(d):
 		if shot is not None:	
-			if len(seq._project._folderLocation):
+			if len(proj._folderLocation):
 			    self.shotImageDir = d
 			    self.cfip.start()
     

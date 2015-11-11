@@ -1,6 +1,7 @@
 
 from DPSPipeline.database.connection import Connection
 from DPSPipeline.database import sequences
+from DPSPipeline.database import shots
 import sharedDB
 #from DPSPipeline.projectview import ProjectView
 
@@ -43,6 +44,7 @@ class Projects(QObject):
 		self._phases                 = []
 		#self._duePhase 		= []
 		self._sequences              = []
+		self._images		     = []
 		
 		self._new		     = _new
 		
@@ -81,6 +83,10 @@ class Projects(QObject):
 		for seq in self._sequences:
 			seq.Save()
 			
+		for shot in self._images:
+			shot.Save()
+		
+			
 		for phase in self._phases:
 			phase.Save()
 		
@@ -92,6 +98,13 @@ class Projects(QObject):
 		self._sequences.append(seq)
 		sharedDB.mySequences.append(seq)
 		return seq
+	
+	def AddShotToProject(self, newName):
+		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = 0, _startframe = 101, _endframe = 101)
+		self._images.append(shot)
+		sharedDB.myShots.append(shot)
+		
+		return shot
 	
 	def UpdateProjectInDB (self):		
 		if self._description is None:

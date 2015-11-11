@@ -13,66 +13,65 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def __init__(self,_project,_sequence,_parentWidgetItem):
         super(QtGui.QTreeWidget, self).__init__()
         
-        self._project = _project
-        self._parentWidgetItem = _parentWidgetItem
-        self._shots = _sequence._shots
-        self._phases = _project._phases
+        #self._project = _project
         self._sequence = _sequence
+        self.setProject(_project)
+        
+        self._parentWidgetItem = _parentWidgetItem
         
         self.rowHeight = 45
-        
-        self.shotPhaseNames = ["ShotID","Name"]
-        
-        
-        self.statuses = ["Not Started","In Progress","On Hold","Done"]        
-        
-        self.SetShotPhaseNames()
-        
-        self.setHeaderLabels(self.shotPhaseNames)
-        
-        self.shotTreeItem = QtGui.QTreeWidgetItem() 
-        
-        #Hides project id column				
-        self.setColumnHidden(0,True)
-        self.header().setResizeMode(QtGui.QHeaderView.Fixed)
-        self.setColumnWidth(1,40)
 
-        #center all headers
-        for col in range(0,len(self.shotPhaseNames)):
-            self.headerItem().setTextAlignment(col,QtCore.Qt.AlignHCenter)
-            self.header().setResizeMode(col,QtGui.QHeaderView.Fixed)
-            self.setColumnWidth(col,85)
+        self.shotTreeItem = QtGui.QTreeWidgetItem()
 
-        self._shots.sort(key=operator.attrgetter('_number'))
-        for x in range(0, len(self._shots)):
-                shot=self._shots[x]		    
-
-                
-                     
-                shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
-                shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
-                #self.addTopLevelItem(shotWidgetItem)
-         
-        #self.setSortingEnabled(True)
-        #self.sortByColumn(1)
-        self.sortItems(1,QtCore.Qt.AscendingOrder)
-        
+        self.SetupTable()
+        self.UpdateShots()        
         self.UpdateBackgroundColors()
         
-        #self.itemEntered.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
-	#self.itemPressed.connect(sharedDB.myProjectViewWidget.LoadShotValuesFromSent)
         self.itemEntered.connect(self.ChangeSelection)
 	self.itemPressed.connect(self.ChangeSelection)
         
-        self.itemEntered.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
-	self.itemPressed.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
-        sharedDB.mySQLConnection.newTaskSignal.connect(self.AttachTaskToButton)
+        if hasattr(_parentWidgetItem, 'sequenceDescription'):
+            self.itemEntered.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
+            self.itemPressed.connect(self._parentWidgetItem.sequenceDescription.UpdateShotNumberValue)
         
-        self.UpdateWidgetHeight()
+        sharedDB.mySQLConnection.newTaskSignal.connect(self.AttachTaskToButton)
         
         #disables vertical scroll bar
         #self.setHorizontalScrollBarPolicy( QtCore.Qt.ScrollBarAlwaysOff )
+    
+    def SetupTable(self):
+        if self._phases is not None:
         
+            self.shotPhaseNames = ["ShotID","Name"]
+             
+            self.statuses = ["Not Started","In Progress","On Hold","Done"]        
+            
+            self.SetShotPhaseNames()
+            
+            self.setHeaderLabels(self.shotPhaseNames)
+            
+            #Hides project id column				
+            self.setColumnHidden(0,True)
+            self.header().setResizeMode(QtGui.QHeaderView.Fixed)
+            self.setColumnWidth(1,40)
+    
+            #center all headers
+            for col in range(0,len(self.shotPhaseNames)):
+                self.headerItem().setTextAlignment(col,QtCore.Qt.AlignHCenter)
+                self.header().setResizeMode(col,QtGui.QHeaderView.Fixed)
+                self.setColumnWidth(col,85)
+    
+    
+    def UpdateShots(self):
+        if self._shots is not None:
+            self.clear()
+            self._shots.sort(key=operator.attrgetter('_number'))
+            for x in range(0, len(self._shots)):
+                shot=self._shots[x]                    
+                shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
+                shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
+            self.sortItems(1,QtCore.Qt.AscendingOrder)
+    
     def UpdateWidgetHeight(self):
         
         height = self.topLevelItemCount()*self.rowHeight+40
@@ -92,17 +91,22 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 		    bgc = QtGui.QColor(250,250,250)
 		     
 		     
-		    for col in range(0,self.columnCount()):
-			self.topLevelItem(x).setBackground(col,bgc)
+                for col in range(0,self.columnCount()):
+                    self.topLevelItem(x).setBackground(col,bgc)
 	except:
 	    print "Unable to change color on shot item, sequence was removed from list"
     
     def AddShot(self,shot):
+        #print self.shotPhaseNames[0]
+        #print shot._number
+        #print self._phases
+        #print self._project._name
         shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
         self.UpdateBackgroundColors()
         shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
         self.UpdateWidgetHeight()
+    
     def SetShotPhaseNames(self):        
         for phase in self._phases:
             if phase._taskPerShot:
@@ -131,49 +135,25 @@ class ShotTreeWidget(QtGui.QTreeWidget):
                     
                     break
         
-    
+    def setProject(self, project):
+        self._project = project
+        if project is not None:
+            self._phases = project._phases
+            if self._sequence is not None:
+                self._shots = self._sequence._shots
+            else:
+                self._shots = None
+        else:
+            self._phases = None
+            self._shots = None
     
     #Disable arrow keys for this qtree
     def keyPressEvent(self, event):
         pass
     
     def wheelEvent(self, event):
-	self._parentWidgetItem._progressList.wheelEvent(event)
+	if hasattr (self._parentWidgetItem, "_progressList"):
+            self._parentWidgetItem._progressList.wheelEvent(event)
     
     def ChangeSelection(self,itemwidget, column):
         sharedDB.sel.select([itemwidget,itemwidget.shot])
-    
-    #def deselect(self):
-    #    self.UpdateBackgroundColors()
-        
-    #def select(self, ):
-    #    pass
-    
-    
-    '''
-    #self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu);    
-    #self.connect(self,SIGNAL("customContextMenuRequested(QPoint)"),self,SLOT("contextMenuRequested(QPoint)"))
-    
-    @pyqtSlot(QtCore.QPoint)
-    def contextMenuRequested(self,point):
-        
-        menu	 = QtGui.QMenu()
-           
-        action1 = QtGui.QAction('&Add Sequence', self)
-        #action1.setData(10)
-        #action1 = self.popMenu.addAction('Selected %s' % item)
-        action1.triggered[()].connect(
-            lambda item="Not working yet": self.AddShot(item))
-        menu.addAction(action1)
-       
-        #action2 = menu.addAction("Set Size 500x500") 
-        
-        #self.connect(action1,SIGNAL("triggered()"),sharedDB.myProjectViewWidget,SLOT("AddShot()"))
-        self.connect(action1,SIGNAL("triggered(QtGui.QAction)"),self,SLOT("AddShot(QtGui.QAction)"))
-        
-        #self.connect(action2,SIGNAL("triggered()"),self,SLOT("slotShow500x500()"))
-        menu.exec_(self.mapToGlobal(point))
-        
-    def AddShot(self,yay):
-        QtGui.QMessageBox.about(self, "Test", yay)
-    '''

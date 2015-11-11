@@ -447,13 +447,22 @@ class Connection(QObject):
 					#add shot to shot list
 					sharedDB.myShots.append(myShot)
 					#iterate through sequences
-					for seq in sharedDB.mySequences:
-						##if idsequences matches
-						if seq._idsequences == myShot._idsequences:
-							###add to sequence's shot list
-							seq._shots.append(myShot)
-							###if current sequence in projectview update
-							break
+					if myShot._idsequences == 0:
+						for proj in sharedDB.myProjects:
+							##if idsequences matches
+							if proj._idprojects == myShot._idprojects:
+								###add to sequence's shot list
+								proj._images.append(myShot)
+								###if current sequence in projectview update
+								break
+					else:
+						for seq in sharedDB.mySequences:
+							##if idsequences matches
+							if seq._idsequences == myShot._idsequences:
+								###add to sequence's shot list
+								seq._shots.append(myShot)
+								###if current sequence in projectview update
+								break
 					
 					sharedDB.mySQLConnection.newShotSignal.emit(str(myShot._idshots))
 							
