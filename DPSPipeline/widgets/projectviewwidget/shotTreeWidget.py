@@ -89,7 +89,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 		#sets alternating background colors
 		bgc = QtGui.QColor(200,200,200)			
 		if x%2:
-		     bgc = QtGui.QColor(250,250,250)
+		    bgc = QtGui.QColor(250,250,250)
 		     
 		     
 		    for col in range(0,self.columnCount()):

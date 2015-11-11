@@ -115,6 +115,8 @@ class ProjectViewWidget(QWidget):
 	self.progressListGrp.setEnabled(0)
 	#self.ShotBox.setEnabled(0)
 	
+	self.stillImagesCheckbox.stateChanged.connect(self.ToggleStillImages)
+	
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
 	sharedDB.mySQLConnection.firstLoadComplete.connect(self.myProjectNameLineEdit.firstLoadComplete)
 	
@@ -303,10 +305,39 @@ class ProjectViewWidget(QWidget):
 	    self.projectDescription.blockSignals = 0
 	    
 	    self.LoadProgressListValues()
-    
+	    
+	    if len(self._currentProject._sequences):
+		self.stillImagesCheckbox.setHidden(1)
+		self.AddImageBox.setHidden(1)
+	    else:
+		self.stillImagesCheckbox.setHidden(0)
+		#self.AddImageBox.setHidden(0)
 	self._blockUpdates = 0
 	#self.blockSignals(False)
 	
+    def AddImagePath(self):
+	unique = 1
+	
+	#get sequence name
+	newName = self.getSequenceName()
+	
+	#iterate through sequences
+	for sequence in self._currentProject._sequences:	    
+	    #if sequence matches name
+	    if newName == sequence._number:
+		unique = 0
+		break
+	    
+	#if unique
+	if unique:
+	    #add sequence
+	    seq = self._currentProject.AddSequenceToProject(newName)
+	    seq.sequenceAdded.connect(self.AddSequenceToProgressList)
+	    
+	else:
+	    #warning message
+	    message = QtGui.QMessageBox.question(self, 'Message',
+	"Sequence name already exists, choose a unique name (it is recommended to leave 10 between each sequence in case sequences need to be added in the middle)", QtGui.QMessageBox.Ok)
     
     def AddSequence(self):
 	unique = 1
@@ -338,6 +369,10 @@ class ProjectViewWidget(QWidget):
 	    sName = "0"+sName
     
 	return sName
+    
+    def getImageName(self):
+	return self.imageNameLineEdit.text()
+
 	    
     def LoadProgressListValues(self):
 	self.progressList.clear()
@@ -370,7 +405,8 @@ class ProjectViewWidget(QWidget):
 		    #Add Sequences to list
 		    sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
 		    self.progressList.addTopLevelItem(sequenceTreeItem)
-		    sequenceTreeItem.setExpanded(True)	    
+		    sequenceTreeItem.setExpanded(True)
+		    #self.CreateFolderStructure()
     	
     def GetShotByID(self,shotid):
 	if self._currentProject is not None:
@@ -391,121 +427,19 @@ class ProjectViewWidget(QWidget):
 		
 			#add shot to that widget
 			seqTreeItem._shotTreeWidget.AddShot(shot)		
+			#self.CreateFolderStructure()
 			break
 
+    def ToggleStillImages(self):
+	#if self._currentProject._sequences is None:	
+	if self.stillImagesCheckbox.isChecked():
+	    self.AddSequenceBox.setHidden(1)
+	    self.AddImageBox.setHidden(0)
+	else:
+	    self.AddSequenceBox.setHidden(0)
+	    self.AddImageBox.setHidden(1)
+	    
     def setSequenceSettingsEnabled(self, v):
 	self.sequenceNumber.setEnabled(v)
 	self.sequenceStatus.setEnabled(v)
 	self.sequenceDescription.setEnabled(v)
-
-    '''def checkForShotImage(self):
-	seq = self._currentSequence
-	shot= self._currentShot
-	
-	if len(self.projectPath.text())>3 and seq is not None and shot is not None:
-	    d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\")	   
-	    
-	    #myPixmap = QtGui.QPixmap(self._noImage)
-	    self.shotImage.assignImage()
-	    #if os.path.isdir(d):
-	    if shot is not None:	
-		    if len(self.projectPath.text()):
-			self.shotImageDir = d
-			self.cfip.start()
-    
-    def checkForPlayblast(self):
-	seq = self._currentSequence
-	shot= self._currentShot
-	
-	if len(self.projectPath.text())>3 and seq is not None and shot is not None:
-	    d = str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\")	   
-	    
-	    #if os.path.isdir(d):
-	    if shot is not None:	
-		    if len(self.projectPath.text()):
-			self.shotPlayblastDir = d
-			self.cfpb.start()
-    
-    def setShotSettingsEnabled(self, v):
-	self.shotNumber.setEnabled(v)
-	self.shotStatus.setEnabled(v)
-	self.startFrame.setEnabled(v)
-	self.endFrame.setEnabled(v)
-	self.shotImage.setEnabled(v)
-	self.shotDescription.setEnabled(v)
-	self.shotNotes.setEnabled(v)
-    
-    def LoadShotValuesFromSent(self,itemwidget, column):				
-		    
-	self._blockUpdates = 1
-	#self.blockSignals(True)
-	
-	#make sure _currentSequence is current
-	
-	
-	#self.setCurrentShot()
-	self._currentShot = None
-	
-	for shot in sharedDB.myShots:
-		if str(shot._idshots) == str(itemwidget.text(0)):
-			self._currentShot = shot
-			
-			for seq in self._currentProject._sequences:
-			    if seq._idsequences == shot._idsequences:
-				self._currentSequence = seq
-				break
-			break
-
-	if self._currentShot is not None and self._currentSequence is not None:
-	    
-	    self.ShotBox.setEnabled(1)
-	    
-	    self.checkForShotImage()		    
-	    
-	    #set title
-	    self.ShotBox.setTitle("Shot "+str(self._currentSequence._number)+"_"+str(self._currentShot._number))
-	    
-	    #set Status
-	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-	    
-	    #set frame range
-	    self.startFrame.setValue(self._currentShot._startframe)
-	    self.endFrame.setValue(self._currentShot._endframe)
-	    
-	    #set Description
-	    if self._currentShot is not None and self._currentShot._description is not None:
-		self.shotDescription.setText(self._currentShot._description)
-	    
-	    
-	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-		    self.shotNotes.setText('Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-')
-	    else:
-		    self.shotNotes.setText(self._currentShot._shotnotes)
-	
-	self._blockUpdates = 0
-    
-    def SetShotValues(self):
-	if not self._blockUpdates:
-		if self._currentShot is not None:
-		    #self._currentShot._description = self.shotDescription.toPlainText()
-		    self._currentShot._idstatuses = self.shotStatus.currentIndex()+1
-		    self._currentShot._startframe = self.startFrame.value()
-		    self._currentShot._endframe = self.endFrame.value()
-		    self._currentShot._updated = 1
-	    
-	    
-    def SaveShotDescription(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    if not (self.shotDescription.toPlainText() == self._currentShot._description):
-		    self._currentShot._description = self.shotDescription.toPlainText()
-		    self._currentShot._updated = 1
-
-    def SaveShotNotes(self):
-	#if not self._blockUpdates:
-	if self._currentShot is not None:
-	    if not (self.shotNotes.toPlainText() == self._currentShot._shotnotes):
-		    self._currentShot._shotnotes = self.shotNotes.toPlainText()
-		    self._currentShot._updated = 1
-		    
-    '''
