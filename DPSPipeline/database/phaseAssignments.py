@@ -132,6 +132,12 @@ class PhaseAssignments(QObject):
 	def iddepartments(self):
 		return self._iddepartments
 
+	def idusers(self):
+		ids = []
+		for ua in self._userAssignments:
+			ids.append(ua.userAssignment()._idusers)
+		return ids
+		
 	
 def getPhaseAssignmentByID(sentid):
 	for phase in sharedDB.myPhaseAssignments:		
