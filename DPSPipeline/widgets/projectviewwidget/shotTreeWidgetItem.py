@@ -70,7 +70,6 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 columnIndex +=1
                 
     def deselect(self):
-        print "Attempting Deselect"
         self.shotWidget.UpdateBackgroundColors()
         
     def select(self):

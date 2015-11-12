@@ -46,10 +46,18 @@ class CheckForPlayblastPath(QtCore.QThread):
 
 		if len(newPlayblast)>3:
 		    print "Loading Shot Playblast: "+newPlayblast
-		    os.startfile(newPlayblast)
+		    os.startfile(newPlayblast)		    
 		
 	except:
-	    print "No Playblast file found for selected shot"
+	    print "No Playblast file found for selected shot, attempting to open image"
+	    try:
+		sentpath = sharedDB.myAttributeEditorWidget.shotWidget.shotImageDir
+		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		if len(newImage)>3:
+		    os.startfile(newImage)
+	    except:
+		print "No Image file found for selected shot"
+	    
 
 class AEShot(QWidget):
     shotImageFound = QtCore.pyqtSignal(QtCore.QString)
@@ -193,14 +201,25 @@ class AEShot(QWidget):
 	shot= self._currentShot
 	seq = self._currentShot._sequence
 	
-	if len(seq._project._folderLocation)>3:
-	    d = str(seq._project._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\")	   
-	    
+	if seq is not None:
+	    if len(seq._project._folderLocation)>3:
+		d = str(seq._project._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\")	   
+		
+		#if os.path.isdir(d):
+		if shot is not None:	
+			if len(seq._project._folderLocation):
+			    self.shotPlayblastDir = d
+			    self.cfpb.start()
+	
+	elif len(shot._project._folderLocation)>3:
+	    d = str(shot._project._folderLocation+"\\"+shot._number+"\\_PREVIEWS\\")	   
+		
 	    #if os.path.isdir(d):
 	    if shot is not None:	
-		    if len(seq._project._folderLocation):
-			self.shotPlayblastDir = d
-			self.cfpb.start()
+		if len(shot._project._folderLocation):
+		    self.shotPlayblastDir = d
+		    self.cfpb.start()
+	    
     
     def setShotSettingsEnabled(self, v):
 	self.shotNumber.setEnabled(v)

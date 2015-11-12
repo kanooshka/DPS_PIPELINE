@@ -53,6 +53,8 @@ class ProjectViewWidget(QWidget):
 
 	self.projectValueGrp.setEnabled(0)
 	self.progressListGrpInner.setEnabled(0)
+	self.AddImageBox.setHidden(1)
+	
 	
 	self.stillImagesCheckbox.stateChanged.connect(self.ToggleStillImages)
 	
@@ -84,6 +86,7 @@ class ProjectViewWidget(QWidget):
 	self.projectPathButton.clicked.connect(self.changeProjectPath)
 	
 	self.addImageNameButton.clicked.connect(self.AddImagePath)
+	self.imageNameLineEdit.returnPressed.connect(self.AddImagePath)
 	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
@@ -108,7 +111,10 @@ class ProjectViewWidget(QWidget):
 	    
 	    for image in self._currentProject._images:
 		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_SCENES\\"))
-		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_PREVIEWS\\"))	    
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_PREVIEWS\\"))
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_ASSETS\\"))
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_RENDERS\\"))
+		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_COMP\\"))
 	    
 	    for path in paths:
 		self.ensure_dir(path)
@@ -256,6 +262,8 @@ class ProjectViewWidget(QWidget):
 	#self.blockSignals(False)
 	
     def AddImagePath(self):
+	self.stillImagesCheckbox.setHidden(1)
+	
 	unique = 1
 	
 	#get sequence name
