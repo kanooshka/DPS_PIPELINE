@@ -71,7 +71,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
                 shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
                 shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
             self.sortItems(1,QtCore.Qt.AscendingOrder)
-    
+	    
+	    self.UpdateWidgetHeight()
     def UpdateWidgetHeight(self):
         
         height = self.topLevelItemCount()*self.rowHeight+40

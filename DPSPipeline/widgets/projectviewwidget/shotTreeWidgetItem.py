@@ -31,7 +31,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 if self.shot._tasks is not None:
                     for task in self.shot._tasks:
                         if task._idphases == phase._idphases:
-                            print "MATCH FOUND Attaching Task"
+                            #print "MATCH FOUND Attaching Task"
                             currentTask = task
                 
                 
