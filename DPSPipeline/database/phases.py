@@ -36,10 +36,14 @@ class Phases():
 		self._taskPerShot     = _taskPerShot
 		self._defaultTaskStatus = _defaultTaskStatus
 		
-		if (sharedDB.currentUser._iddepartments == 0 or str(_iddepartments) in sharedDB.currentUser.departments()):
+		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1
 		else:
 			self._visible = 0
+			
+	def isVisible(self):
+		return self._visible
+	
 			
 def GetPhaseNames():
 	phases = []

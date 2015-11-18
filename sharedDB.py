@@ -31,7 +31,6 @@ remote = 0
 autoCreateShotTasks = 0
 testPrivileges = 0
 testuser = 0
-#freezeDBUpdates = 1
 
 currentDate = date.today()
 

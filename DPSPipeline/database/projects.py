@@ -17,7 +17,7 @@ from datetime import datetime
 class Projects(QObject):
 
 	projectChanged = QtCore.pyqtSignal(QtCore.QString)
-	#projectAdded = QtCore.pyqtSignal(QtCore.QString)
+	projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
 	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = ''):
 		super(QObject, self).__init__()
@@ -58,7 +58,8 @@ class Projects(QObject):
 		if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
 			self._hidden = True
 			
-		#self.projectAdded.emit(str(self._idprojects))
+		#Connect new project to UI elements
+		#self.projectAdded.connect(sharedDB.calendarview.AddNewProjects)
 			
 	def Save(self):
 		
@@ -148,9 +149,10 @@ class Projects(QObject):
 		#connect phases to projectid
 		for phase in self._phases:
 			phase._idprojects = self._idprojects
+			phase.project = self
 			phase._new = 1
-			
 		
+		#self.projectAdded.emit(str(self._idprojects))
 		
 	
 	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
