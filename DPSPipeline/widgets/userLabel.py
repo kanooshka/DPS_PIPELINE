@@ -15,15 +15,22 @@ class UserLabel(QtGui.QLabel):
         
         self.setFixedWidth(50)
         self.getUserFromTask()
+        
+        
 
     def getUserFromTask(self):
         
-        if self.task == None or str(self.task._idusers) == "0":
+        if self.task == None:
             self.setText("----")
-        elif str(self.task._status) == "4":
-            self.setText("")
         else:
-            self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
+            self.task.taskChanged.connect(self.getUserFromTask)
+            if str(self.task._idusers) == "0":
+                self.setText("----")
+            elif str(self.task._status) == "4":
+                self.setText("")
+            else:
+                self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
+                
         
     def mActions(self, username):
         for u in sharedDB.myUsers:
