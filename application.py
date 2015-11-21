@@ -125,9 +125,11 @@ class MainWindow(QtGui.QMainWindow):
         dockWidget.setWidget(self._MyTasksWidget)
         sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
         #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
-	dockWidget.setMaximumWidth(170);
+	dockWidget.setMinimumWidth(195);
+	dockWidget.setMaximumWidth(195);
         dockWidget.show()
         dockWidget.raise_()
+	dockWidget.setMaximumWidth(9999999);
 
     def fileMenuActions( self, action ):
 	"""
