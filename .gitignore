@@ -54,3 +54,7 @@ DPS_PIPELINE.pro.user
 DPSPipeline.komodoproject
 *.komodoproject
 DPSPipeline.komodoproject
+*.pro
+DPS_PIPELINE.pro
+*.user
+DPS_PIPELINE.pro.user
