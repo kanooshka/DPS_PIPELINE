@@ -44,6 +44,7 @@ class PhaseAssignments(QObject):
 		
 		self.SetPhaseValues()
 		
+		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
 		self._userAssignments = []
 		#self._unassigned = []
 		
@@ -142,6 +143,12 @@ class PhaseAssignments(QObject):
 			self._assigned = value
 			self._updated = 1
 	
+	def idusers(self):
+		idusers = []
+		for a in self._userAssignments:
+			idusers.append(a.userAssignment().idUsers())
+			
+		return idusers
 	
 	
 def getPhaseAssignmentByID(sentid):
