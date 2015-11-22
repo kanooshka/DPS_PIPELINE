@@ -146,16 +146,19 @@ class AEShot(QWidget):
 	    #set Description
 	    if self._currentShot is not None and self._currentShot._description is not None:
 		self.shotDescription.blockSignals = 1
-		self.shotDescription.resetColorPalette()
-		self.shotDescription.setText(self._currentShot._description)
+		
+		self.shotDescription.setSource(self._currentShot,'_description')
+		self.shotDescription.getSourceText()
+		
 		self.shotDescription.blockSignals = 0
 	    
 	    self.shotNotes.blockSignals = 1
-	    self.shotNotes.resetColorPalette()
+
 	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-		    self.shotNotes.setText('Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-')
-	    else:
-		    self.shotNotes.setText(self._currentShot._shotnotes)
+		self._currentShot._shotnotes = 'Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-'
+
+	    self.shotNotes.setSource(self._currentShot,'_shotnotes')
+	    self.shotNotes.getSourceText()
 	    self.shotNotes.blockSignals = 0
 	    
 	self._blockUpdates = 0    

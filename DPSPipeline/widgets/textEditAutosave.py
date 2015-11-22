@@ -13,9 +13,12 @@ class AutoSaveTimer(QtCore.QThread):
 
 class TextEditAutoSave(QtGui.QTextEdit):
 
-    def __init__(self):
+    def __init__(self, source = None, sourceAttr = ''):
 	super(TextEditAutoSave, self).__init__()
         
+	self.textSource = source
+	self.textAttr = sourceAttr
+	
         self.AutoSaveTimer = AutoSaveTimer()
         self.save = self.AutoSaveTimer.save
         self.blockSignals = 0
@@ -36,6 +39,8 @@ class TextEditAutoSave(QtGui.QTextEdit):
 	    self.resetColorPalette()
 	    #print "Enter Pressed!"
 	    self.save.emit()
+	elif (event.key() == QtCore.Qt.Key_Escape):
+	    self.getSourceText()
 	else:
 	    #print ("Text Inputted!"+str(event.key()))
 	    #self.blockSignals(0)
@@ -49,7 +54,19 @@ class TextEditAutoSave(QtGui.QTextEdit):
 	if not self.isReadOnly():
 	    self.setPalette(self.changedPalette)
     
+    def getSourceText(self):
+	if self.textSource is not None:
+	    exec("self.setText(self.textSource.%s)" % (self.textAttr))
+	else:
+	    self.setText('')
+	self.resetColorPalette()
+	#exec("self.setText(%s.%s)" % (repr(projs[k]._name)))
+
+    def setSource(self, source = None, sourceAttr = '' ):
+	self.textSource = source
+	self.textAttr = sourceAttr
     
+
     @pyqtSlot()
     def slotTextChanged(self):        
         if not self.blockSignals:
