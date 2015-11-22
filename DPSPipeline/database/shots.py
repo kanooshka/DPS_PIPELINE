@@ -32,6 +32,7 @@ class Shots(QObject):
 		self._shotnotes		     = _shotnotes
 		
 		self._sequence               = self.GetSequenceById()
+		self._project		     = self.GetProjectById()
 		self._tasks                  = _tasks
 		self._taskButtons            = []
 		self._updated                = _updated
@@ -61,7 +62,12 @@ class Shots(QObject):
 	def GetSequenceById(self):
 		for seq in sharedDB.mySequences:
 			if seq._idsequences == self._idsequences:
-				return seq	
+				return seq
+			
+	def GetProjectById(self):
+		for proj in sharedDB.myProjects:
+			if proj._idprojects == self._idprojects:
+				return proj
 	
 	def AddShotToDB(self):
 		if isinstance(self._description, QtCore.QString):

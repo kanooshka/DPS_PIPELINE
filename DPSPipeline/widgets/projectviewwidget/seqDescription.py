@@ -20,7 +20,7 @@ class SeqDescription(QtGui.QWidget):
 	self._sequenceTreeItem = _sequenceTreeItem
 	self._project = _project
 	
-	self.sequenceDescription = textEditAutosave.TextEditAutoSave()
+	self.sequenceDescription = textEditAutosave.TextEditAutoSave(source = self._sequence, sourceAttr = "_description")
 	self.seqDescriptionLayout.addWidget(self.sequenceDescription)
 	self.sequenceDescription.save.connect(self.SaveSequenceDescription)
 	

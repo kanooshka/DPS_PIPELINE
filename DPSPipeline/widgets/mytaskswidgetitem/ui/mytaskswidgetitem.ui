@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>150</width>
-    <height>95</height>
+    <width>175</width>
+    <height>106</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>130</width>
-    <height>95</height>
+    <width>175</width>
+    <height>100</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -165,19 +165,40 @@
          </property>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="spacing">
+            <number>1</number>
+           </property>
            <item>
             <widget class="QGroupBox" name="groupBox_2">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>45</height>
+              </size>
+             </property>
              <property name="title">
               <string>Hours Left:</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
                <widget class="QLabel" name="hours">
+                <property name="font">
+                 <font>
+                  <pointsize>15</pointsize>
+                  <weight>75</weight>
+                  <italic>false</italic>
+                  <bold>true</bold>
+                  <kerning>true</kerning>
+                 </font>
+                </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgba(0,0,0,0)</string>
+                 <string notr="true">color: rgb(0, 0, 0);background-color: rgba(0,0,0,0)</string>
                 </property>
                 <property name="text">
                  <string>20</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
                 </property>
                </widget>
               </item>
@@ -189,7 +210,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>50</height>
+               <height>45</height>
               </size>
              </property>
              <property name="autoFillBackground">
@@ -204,11 +225,18 @@
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
                <widget class="QLabel" name="due">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="autoFillBackground">
                  <bool>false</bool>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(255, 0, 4,); background-color: rgba(0,0,0,0)</string>
+                 <string notr="true">color: rgb(255, 0, 4); background-color: rgba(0,0,0,0)</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::NoFrame</enum>
@@ -217,10 +245,10 @@
                  <enum>QFrame::Plain</enum>
                 </property>
                 <property name="text">
-                 <string>10/20/20</string>
+                 <string>10/20/2015</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
                 </property>
                </widget>
               </item>

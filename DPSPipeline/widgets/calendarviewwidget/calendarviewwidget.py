@@ -194,11 +194,12 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				parentItem.addChild(childItem)
 				
-				if 0 in sharedDB.currentUser.departments() or str(department) in sharedDB.currentUser.departments():
+				if "0" in sharedDB.currentUser.departments() or sharedDB.phases.getPhaseByID(phase._idphases).isVisible():
 					childItem.setHidden(False)
 					parentItem.setHidden(False)
 				else:
 					childItem.setHidden(True)
+
 
 				parentItem.adjustRange()
 	def updateDate(self):
