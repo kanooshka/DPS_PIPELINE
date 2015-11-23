@@ -18,19 +18,20 @@ from DPSPipeline import selection
 from PyQt4.QtCore   import QDate
 from datetime import date,datetime,timedelta
 
-myVersion = version.Version("0.1.02")
+myVersion = version.Version("0.1.03")
 
 #TEST SETTINGS
-ignoreVersion = 0
+ignoreVersion = 1
 testDB = 0
 testing = 0
 disableSaving = 0
-autologin = 0
-localDB = 0
+autologin = 1
+localDB = 1
 remote = 0
 autoCreateShotTasks = 0
 testPrivileges = 0
-testuser = 0
+testuser = "lpikora"
+#freezeDBUpdates = 1
 
 currentDate = date.today()
 

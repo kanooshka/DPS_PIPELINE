@@ -10,6 +10,7 @@ class PhaseAssignments(QObject):
 	phaseAssignmentChanged = QtCore.pyqtSignal(QtCore.QString)
 	phaseAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
 	userAssigned = QtCore.pyqtSignal()
+	unassignedSignal = QtCore.pyqtSignal(QtCore.QString)
 	
 	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _assigned = 0, _timestamp = datetime.now()):
 		
@@ -110,7 +111,10 @@ class PhaseAssignments(QObject):
 	
 	def hoursAlotted(self):
 		return self._hoursalotted
-	
+
+	def idphaseassignments(self):
+		return self._idphaseassignments
+
 	def name(self):
 		return self._name
 	
@@ -124,6 +128,14 @@ class PhaseAssignments(QObject):
 	def endDate(self):
 		return self._enddate
 	
+	def addUserAssignment(self, userAssignment ):	
+		self._userAssignments.append(userAssignment)
+		#self.updateAssigned()
+	
+	def userAssignments(self):
+		return self._userAssignments
+	
+	'''
 	def addUserAssignmentTaskItem(self, taskitem):
 		self._userAssignments.append(taskitem)
 		#print "added user assignment"
@@ -131,7 +143,7 @@ class PhaseAssignments(QObject):
 		
 	def userAssignmentTaskItems(self):
 		return self._userAssignments
-	
+	'''	
 	def iddepartments(self):
 		return self._iddepartments
 
@@ -139,16 +151,28 @@ class PhaseAssignments(QObject):
 		return self._assigned
 	
 	def setAssigned(self, value):
-		if self.assigned()!= value:
+		if str(self.assigned())!= str(value):
 			self._assigned = value
 			self._updated = 1
 	
 	def idusers(self):
 		idusers = []
-		for a in self._userAssignments:
-			idusers.append(a.userAssignment().idUsers())
+		for ua in self._userAssignments:
+			idusers.append(ua.idUsers())
 			
 		return idusers
+	
+	def updateAssigned(self):
+		for user in self._userAssignments:
+			if user.hours()>0:
+				self.setAssigned(1)
+				self.userAssigned.emit()
+				return
+			
+		self.setAssigned(0)
+		self.unassignedSignal.emit(str(self.idphaseassignments()))
+		return
+		
 	
 	
 def getPhaseAssignmentByID(sentid):

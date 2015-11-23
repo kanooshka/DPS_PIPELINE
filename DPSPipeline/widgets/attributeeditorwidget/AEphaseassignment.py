@@ -223,7 +223,11 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    if str(self._currentPhaseAssignment.iddepartments()) not in sharedDB.currentUser.departments():
 		self.phaseStatus.setEnabled(0)
 	    
-	if sharedDB.currentUser._idPrivileges == 3:    
+	if sharedDB.currentUser._idPrivileges == 3:
+	    self.startDate.setReadOnly(1)
+	    self.endDate.setReadOnly(1)
+	    self.workDays.setReadOnly(1)
+	    self.calendarDays.setReadOnly(1)
 	    self.phaseStatus.setEnabled(0)
 	    self.userBox.setVisible(0)
 	

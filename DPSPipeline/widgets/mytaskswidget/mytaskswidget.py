@@ -21,7 +21,7 @@ class WaitTimer(QtCore.QThread):
 			sharedDB.myTasksWidget.AddTaskSignal.emit()
 			#sharedDB.calendarview.AddPhaseAssignmentSignal.emit()
 		
-		time.sleep(.1)
+		time.sleep(.05)
 
 class MyTasksWidget(QtGui.QTableWidget):
     AddTaskSignal = QtCore.pyqtSignal()
@@ -137,50 +137,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 				t.UpdateValues()
 				found = 1
 				break
-		    
-		    if not found:
-			if userassignment._assignmentid not in self._userAssignmentQueue:
-			    self._userAssignmentQueue.append(userassignment._assignmentid)
 	
-	self.CheckForUnassigned()
-			#self.AddUserAssignment(userassignment._assignmentid)
+	#self.CheckForUnassigned()
 
-	'''
-	if self.showUnassignedEnabled:
-	    for phase in sharedDB.myPhaseAssignments:
-		skip = 0
-		if len(phase.userAssignmentTaskItems()):		    
-		    for ua in phase.userAssignmentTaskItems():		    
-			if hasattr(ua, '_userassignment'):
-			    if int(ua._userassignment.hours()) > 0:
-				skip = 1			    
-				break
-
-		if not skip:
-		    found = 0
-		    
-		    if self.unassignedItems is not None:
-			for p in self.unassignedItems:
-			    if p.phaseAssignment() == phase:
-				p.UpdateValues()
-				found = 1
-				break
-		    
-		    if not found:
-			if phase.project is not None and phase.name().upper() != "DUE" and phase.name().upper() != "APPROVAL":
-			    self.insertRow(self.rowCount())
-	    
-			    dateitem = QtGui.QTableWidgetItem()	
-			    #dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-			    dateitem.setText(date.today().strftime('%Y/%m/%d'))
-			
-			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
-			    self.unassignedItems.append(taskItem)
-		    
-			    self.setCellWidget(self.rowCount()-1,0,taskItem)
-			    self.setItem(self.rowCount()-1,1,dateitem)
-			    taskItem.SetVisibility()
-	'''
 	self.setSortingEnabled(1)
 
 	self.setEnabled(1)
@@ -192,16 +151,10 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    phaselist = [sharedDB.phaseAssignments.getPhaseAssignmentByID(sentphaseid)]
 	    
 	for phase in phaselist:
-	    skip = 0
 	    if phase is not None:
-		if len(phase.userAssignmentTaskItems()):		    
-		    for ua in phase.userAssignmentTaskItems():		    
-			if hasattr(ua, '_userassignment'):
-			    if int(ua._userassignment.hours()) > 0:
-				skip = 1			    
-				break
-    
-		if not skip:
+		#connect phase unassigned signal to widget
+		phase.unassignedSignal.connect(self.AddToUnassignedQueue)
+		if not phase.assigned():
 		    found = 0
 		    if self.unassignedItems is not None:
 			for p in self.unassignedItems:
@@ -215,6 +168,17 @@ class MyTasksWidget(QtGui.QTableWidget):
 				if phase not in self._unassignedTaskQueue:
 				    self._unassignedTaskQueue.append(phase)
     
+    def AddToUnassignedQueue(self, sentID):
+	for phase in sharedDB.myPhaseAssignments:
+	    if str(phase.idphaseassignments()) == sentID:
+		if self.unassignedItems is not None:
+		    for p in self.unassignedItems:
+			if p.phaseAssignment() == phase:
+			    p.UpdateValues()
+			    return
+			    
+		self._unassignedTaskQueue.append(phase)
+		return
     
     def AppendToUserAssignmentQueue(self, assignmentid):
 	self._userAssignmentQueue.append(assignmentid)
@@ -239,7 +203,7 @@ class MyTasksWidget(QtGui.QTableWidget):
     
 		#add phase assignment to widget
 		
-		phase.setAssigned(1)
+		#phase.setAssigned(1)
 		
 		if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
 		    self.insertRow(self.rowCount())
@@ -249,7 +213,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 		    
 		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
 		    self.myTaskItems.append(taskItem)
-		    phase.addUserAssignmentTaskItem(taskItem)
+		    #phase.addUserAssignmentTaskItem(taskItem)
 		    
 		    self.setCellWidget(self.rowCount()-1,0,taskItem)
 		    self.setItem(self.rowCount()-1,1,dateitem)

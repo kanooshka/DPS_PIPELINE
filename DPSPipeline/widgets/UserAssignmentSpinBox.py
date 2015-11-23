@@ -14,6 +14,7 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
         self.setValue(0)
         self.getUserAssignment()
         
+        #self._parent.totalHoursChanged
         self.valueChanged.connect(self.setHours)
         sharedDB.mySQLConnection.newUserAssignmentSignal.connect(self.CheckForUserAssignment)
         
@@ -46,16 +47,16 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
         if self._userAssignment is not None:
             self._userAssignment.setHours(self.value())
             if self.value()>0:
-                self._phaseAssignment.userAssigned.emit()
+                self._phaseAssignment.updateAssigned()
             else:
-                sharedDB.myTasksWidget.CheckForUnassigned(self._phaseAssignment._idphaseassignments)
+                #sharedDB.myTasksWidget.CheckForUnassigned(self._phaseAssignment._idphaseassignments)
+                self._phaseAssignment.updateAssigned()
         elif self.value()>0:
             self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = self._user._idusers,_assignmentid = self._phaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = self.value(), _new = 1)
-	    self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
-            #sharedDB.myTasksWidget.AddUserAssignment(ua = self._userAssignment)
+	    self._phaseAssignment.setAssigned(1)
+            self._phaseAssignment.updateAssigned()
+            self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
             sharedDB.myUserAssignments.append(self._userAssignment)
             #connect to update
             self._userAssignment.userAssignmentChanged.connect(self.getHours)
-            #Add User Assignment to phase
-            #self._phaseAssignment.addUserAssignment(self._userAssignment)
         
