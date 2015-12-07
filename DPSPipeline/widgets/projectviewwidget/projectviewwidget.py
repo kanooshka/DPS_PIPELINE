@@ -247,11 +247,10 @@ class ProjectViewWidget(QWidget):
 	    #set Description
 	    
 	    self.projectDescription.blockSignals = 1
-	    self.projectDescription.resetColorPalette()
-	    if self._currentProject._description is not None:
-		    self.projectDescription.setText(self._currentProject._description)
-	    else:
-		    self.projectDescription.setText('')
+	    
+	    self.projectDescription.setSource(self._currentProject,"_description")
+	    self.projectDescription.getSourceText()	    
+	    
 	    self.projectDescription.blockSignals = 0
 	    
 	    self.LoadProgressListValues()
