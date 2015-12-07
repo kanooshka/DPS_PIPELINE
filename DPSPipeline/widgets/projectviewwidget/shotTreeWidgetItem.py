@@ -14,7 +14,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.project = project
         self.btns = []
         
-        self.shotWidget.addTopLevelItem(self)
+        if shotWidget is not None:
+            self.shotWidget.addTopLevelItem(self)
             
         #shot id
         self.setText(0,(str(self.shot._idshots)))
