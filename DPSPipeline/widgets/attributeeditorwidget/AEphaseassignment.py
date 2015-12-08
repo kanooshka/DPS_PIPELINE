@@ -222,6 +222,8 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.hoursalotted.setReadOnly(1)
 	    if str(self._currentPhaseAssignment.iddepartments()) not in sharedDB.currentUser.departments():
 		self.phaseStatus.setEnabled(0)
+	    else:
+		self.phaseStatus.setEnabled(1)
 	    
 	if sharedDB.currentUser._idPrivileges == 3:
 	    self.startDate.setReadOnly(1)
