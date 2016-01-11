@@ -312,7 +312,7 @@ class Connection(QObject):
 					#if id exists update entry
 					if str(proj._idprojects) == str(row[0]):
 						if not str(sharedDB.app.sessionId()) == str(row[13]) or sharedDB.testing:
-							proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8])
+							proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12])
 						existed = True
 						break
 				if not existed:
