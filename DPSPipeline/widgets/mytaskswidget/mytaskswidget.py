@@ -111,6 +111,8 @@ class MyTasksWidget(QtGui.QTableWidget):
 	self._userAssignmentQueue = []
 	self._unassignedTaskQueue = []
 	
+	self._connectedPhaseAssignments = []
+	
     def closeThreads(self):
 	self.myWaitTimer.quit()
     
@@ -153,7 +155,10 @@ class MyTasksWidget(QtGui.QTableWidget):
 	for phase in phaselist:
 	    if phase is not None:
 		#connect phase unassigned signal to widget
-		phase.unassignedSignal.connect(self.AddToUnassignedQueue)
+		if phase not in self._connectedPhaseAssignments:
+		    phase.unassignedSignal.connect(self.AddToUnassignedQueue)
+		    self._connectedPhaseAssignments.append(phase)
+		
 		if not phase.assigned():
 		    found = 0
 		    if self.unassignedItems is not None:
@@ -189,7 +194,8 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    del self._userAssignmentQueue[0]
 	else:
 	    if len(self._unassignedTaskQueue)>0:
-		self.AddUnassigned(self._unassignedTaskQueue[0])
+		if not self._unassignedTaskQueue[0].assigned():
+		    self.AddUnassigned(self._unassignedTaskQueue[0])
 		del self._unassignedTaskQueue[0]
     
     def AddUserAssignment(self,sentIdUserAssignment):
