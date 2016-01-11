@@ -111,6 +111,10 @@ class UserAssignment(QObject):
 			for phase in sharedDB.myPhaseAssignments:
 				if phase.idphaseassignments() == self.assignmentID():
 					phase.addUserAssignment(self)
+					if self.hours():
+						if not phase.assigned():
+							phase.setAssigned(1)
+					
 				
 	def assignmentID(self):
 		return self._assignmentid	
