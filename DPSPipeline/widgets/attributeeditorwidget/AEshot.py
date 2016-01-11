@@ -122,44 +122,46 @@ class AEShot(QWidget):
 		break
 
 	if self._currentShot is not None:
-	    
-	    self.setEnabled(1)
-	    self.setHidden(0)
-	    
-	    self._currentShot.shotChanged.connect(self.LoadShot)
-	    
-	    self.checkForShotImage()		    
-	    
-	    #set title
-	    if self._currentShot._sequence is None:
-		
-		self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._number))
-	    else:
-		self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
-	    #set Status
-	    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-	    
-	    #set frame range
-	    self.startFrame.setValue(self._currentShot._startframe)
-	    self.endFrame.setValue(self._currentShot._endframe)
-	    
-	    #set Description
-	    if self._currentShot is not None and self._currentShot._description is not None:
-		self.shotDescription.blockSignals = 1
-		
-		self.shotDescription.setSource(self._currentShot,'_description')
-		self.shotDescription.getSourceText()
-		
-		self.shotDescription.blockSignals = 0
-	    
-	    self.shotNotes.blockSignals = 1
-
-	    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
-		self._currentShot._shotnotes = 'Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-'
-
-	    self.shotNotes.setSource(self._currentShot,'_shotnotes')
-	    self.shotNotes.getSourceText()
-	    self.shotNotes.blockSignals = 0
+	    if len(sharedDB.sel.items):
+		if hasattr(sharedDB.sel.items[len(sharedDB.sel.items)-1], "_type") and sharedDB.sel.items[len(sharedDB.sel.items)-1]._type == "shot":
+		    print "SHOWING SHOT"
+		    self.setEnabled(1)
+		    self.setHidden(0)
+		    
+		    self._currentShot.shotChanged.connect(self.LoadShot)
+		    
+		    self.checkForShotImage()		    
+		    
+		    #set title
+		    if self._currentShot._sequence is None:
+			
+			self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._number))
+		    else:
+			self.ShotBox.setTitle("Shot: "+str(self.project._name)+" - "+str(self._currentShot._sequence._number)+"_"+str(self._currentShot._number))
+		    #set Status
+		    self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+		    
+		    #set frame range
+		    self.startFrame.setValue(self._currentShot._startframe)
+		    self.endFrame.setValue(self._currentShot._endframe)
+		    
+		    #set Description
+		    if self._currentShot is not None and self._currentShot._description is not None:
+			self.shotDescription.blockSignals = 1
+			
+			self.shotDescription.setSource(self._currentShot,'_description')
+			self.shotDescription.getSourceText()
+			
+			self.shotDescription.blockSignals = 0
+		    
+		    self.shotNotes.blockSignals = 1
+	
+		    if self._currentShot._shotnotes is None or self._currentShot._shotnotes == '' or self._currentShot._shotnotes == 'None':
+			self._currentShot._shotnotes = 'Anim-\n\nShot Prep-\n\nFX-\n\nSound-\n\nLighting-\n\nComp-\n\nRendering-'
+	
+		    self.shotNotes.setSource(self._currentShot,'_shotnotes')
+		    self.shotNotes.getSourceText()
+		    self.shotNotes.blockSignals = 0
 	    
 	self._blockUpdates = 0    
     

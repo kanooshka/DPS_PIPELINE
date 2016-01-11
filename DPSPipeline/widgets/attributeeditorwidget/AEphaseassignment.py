@@ -136,20 +136,22 @@ class AEPhaseAssignment(QtGui.QWidget):
 
 	if self._currentPhaseAssignment is not None:
 	    
-	    self.setPrivileges()
-	    self.setEnabled(1)
-	    self.setHidden(0)   
-	    
-	    self.refresh()
-	    self.userTable.UpdateWidget()
-	    #set Status
-	    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-	    
-	    #set Description
-	    #if self._currentShot is not None and self._currentShot._description is not None:
-		#self.shotDescription.blockSignals = 1
-		#self.shotDescription.setText(self._currentShot._description)
-		#self.shotDescription.blockSignals = 0
+	    if len(sharedDB.sel.items):
+		if hasattr(sharedDB.sel.items[len(sharedDB.sel.items)-1], "_type") and sharedDB.sel.items[len(sharedDB.sel.items)-1]._type == "phaseassignment":
+		    self.setPrivileges()
+		    self.setEnabled(1)
+		    self.setHidden(0)   
+		    
+		    self.refresh()
+		    self.userTable.UpdateWidget()
+		    #set Status
+		    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+		    
+		    #set Description
+		    #if self._currentShot is not None and self._currentShot._description is not None:
+			#self.shotDescription.blockSignals = 1
+			#self.shotDescription.setText(self._currentShot._description)
+			#self.shotDescription.blockSignals = 0
 	    
 	self._signalsBlocked = 0
     

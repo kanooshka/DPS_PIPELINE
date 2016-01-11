@@ -31,22 +31,24 @@ class AEProject(QtGui.QWidget):
 
 	if self._currentProject is not None:
 	    
-	    self.setEnabled(1)
-	    self.setHidden(0)
-	    
-	    self._currentProject.projectChanged.connect(self.LoadProject)	    
-	    
-	    #set title
-	    self.ProjectBox.setTitle("Project: "+str(self._currentProject._name))
-	    
-	    #set Status
-	    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-	    
-	    #set Description
-	    #if self._currentShot is not None and self._currentShot._description is not None:
-		#self.shotDescription.blockSignals = 1
-		#self.shotDescription.setText(self._currentShot._description)
-		#self.shotDescription.blockSignals = 0
+	    if len(sharedDB.sel.items):
+		if hasattr(sharedDB.sel.items[len(sharedDB.sel.items)-1], "_type") and sharedDB.sel.items[len(sharedDB.sel.items)-1]._type == "project":	    
+		    self.setEnabled(1)
+		    self.setHidden(0)
+		    
+		    self._currentProject.projectChanged.connect(self.LoadProject)	    
+		    
+		    #set title
+		    self.ProjectBox.setTitle("Project: "+str(self._currentProject._name))
+		    
+		    #set Status
+		    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+		    
+		    #set Description
+		    #if self._currentShot is not None and self._currentShot._description is not None:
+			#self.shotDescription.blockSignals = 1
+			#self.shotDescription.setText(self._currentShot._description)
+			#self.shotDescription.blockSignals = 0
 	    
 	self._blockUpdates = 0
     
