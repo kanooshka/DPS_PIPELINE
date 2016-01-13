@@ -96,18 +96,18 @@ class MyTasksWidgetItem(QWidget):
     
     def deleteThisRow(self):
 	#print "Trying to remove"+self._phaseassignment.name()
-	if self._userassignment is None:
-	    self.mytaskwidget.unassignedItems.remove(self)
-	    '''for i, o in enumerate(self.mytaskwidget.unassignedItems):
-		if o == self:
-		    del self.mytaskwidget.unassignedItems[i]
-		    break
-	    '''
-	    self.mytaskwidget.removeCellWidget(self._rowItem.row(),0)
-	    self.mytaskwidget.removeRow(self._rowItem.row())
-	    #print "REMOVING WIDGET"
-	#else:
-	    #print "User assignment is not None"
+	try:
+	    if self._userassignment is None:
+		self.mytaskwidget.unassignedItems.remove(self)
+		'''for i, o in enumerate(self.mytaskwidget.unassignedItems):
+		    if o == self:
+			del self.mytaskwidget.unassignedItems[i]
+			break
+		'''
+		self.mytaskwidget.removeCellWidget(self._rowItem.row(),0)
+		self.mytaskwidget.removeRow(self._rowItem.row())
+	except:
+	    print "Widget did not exist"
     
     def SetVisibility(self):
 	self.mytaskwidget.setSortingEnabled(0)

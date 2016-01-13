@@ -136,20 +136,22 @@ class AEPhaseAssignment(QtGui.QWidget):
 
 	if self._currentPhaseAssignment is not None:
 	    
-	    self.setPrivileges()
-	    self.setEnabled(1)
-	    self.setHidden(0)   
-	    
-	    self.refresh()
-	    self.userTable.UpdateWidget()
-	    #set Status
-	    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
-	    
-	    #set Description
-	    #if self._currentShot is not None and self._currentShot._description is not None:
-		#self.shotDescription.blockSignals = 1
-		#self.shotDescription.setText(self._currentShot._description)
-		#self.shotDescription.blockSignals = 0
+	    if len(sharedDB.sel.items):
+		if hasattr(sharedDB.sel.items[len(sharedDB.sel.items)-1], "_type") and sharedDB.sel.items[len(sharedDB.sel.items)-1]._type == "phaseassignment":
+		    self.setPrivileges()
+		    self.setEnabled(1)
+		    self.setHidden(0)   
+		    
+		    self.refresh()
+		    self.userTable.UpdateWidget()
+		    #set Status
+		    #self.shotStatus.setCurrentIndex(self._currentShot._idstatuses-1)
+		    
+		    #set Description
+		    #if self._currentShot is not None and self._currentShot._description is not None:
+			#self.shotDescription.blockSignals = 1
+			#self.shotDescription.setText(self._currentShot._description)
+			#self.shotDescription.blockSignals = 0
 	    
 	self._signalsBlocked = 0
     
@@ -222,8 +224,14 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    self.hoursalotted.setReadOnly(1)
 	    if str(self._currentPhaseAssignment.iddepartments()) not in sharedDB.currentUser.departments():
 		self.phaseStatus.setEnabled(0)
+	    else:
+		self.phaseStatus.setEnabled(1)
 	    
-	if sharedDB.currentUser._idPrivileges == 3:    
+	if sharedDB.currentUser._idPrivileges == 3:
+	    self.startDate.setReadOnly(1)
+	    self.endDate.setReadOnly(1)
+	    self.workDays.setReadOnly(1)
+	    self.calendarDays.setReadOnly(1)
 	    self.phaseStatus.setEnabled(0)
 	    self.userBox.setVisible(0)
 	

@@ -146,6 +146,11 @@ class CalendarViewWidget(QtGui.QWidget):
 		if phase.project is not None:
 			if phase.project._calendarWidgetItem is not None:
 
+				#if not already attached
+				for c in range(0,phase.project._calendarWidgetItem.childCount()):
+					if phase.project._calendarWidgetItem.child(c)._dbEntry == phase:
+						return
+				
 				parentItem = phase.project._calendarWidgetItem
 				
 				department = 0

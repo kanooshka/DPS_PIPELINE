@@ -2,6 +2,7 @@ import sys
 import weakref
 import projexui
 import sharedDB
+import time
 
 from datetime import timedelta,datetime,date
 #from projexui import qt import Signal
@@ -10,8 +11,20 @@ from PyQt4 import QtGui,QtCore
 #from PyQt4 import QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
+import atexit
+
+class WaitTimer(QtCore.QThread):
+
+	def run(self):
+		
+		if sharedDB.myTasksWidget is not None:
+			sharedDB.myTasksWidget.AddTaskSignal.emit()
+			#sharedDB.calendarview.AddPhaseAssignmentSignal.emit()
+		
+		time.sleep(.05)
 
 class MyTasksWidget(QtGui.QTableWidget):
+    AddTaskSignal = QtCore.pyqtSignal()
     
     def __init__( self, parent = None ):
     
@@ -82,11 +95,26 @@ class MyTasksWidget(QtGui.QTableWidget):
 	self.myTaskItems = []
 	self.unassignedItems = []
 	
-	sharedDB.mySQLConnection.newUserAssignmentSignal.connect(self.AddUserAssignment)
+	sharedDB.mySQLConnection.newUserAssignmentSignal.connect(self.AppendToUserAssignmentQueue)
+	sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.CheckForUnassigned)
 	
 	#self.currentCellChanged.connect(self.sendSelection)
 	self.cellClicked.connect(self.sendSelection)
 	self.cellDoubleClicked.connect(self.loadinprojectview)
+    
+	self.myWaitTimer = WaitTimer()
+	self.myWaitTimer.daemon = True
+	self.myWaitTimer.finished.connect(self.myWaitTimer.start)
+	self.myWaitTimer.start()
+	atexit.register(self.closeThreads)
+	self.AddTaskSignal.connect(self.ProcessQueue)
+	self._userAssignmentQueue = []
+	self._unassignedTaskQueue = []
+	
+	self._connectedPhaseAssignments = []
+	
+    def closeThreads(self):
+	self.myWaitTimer.quit()
     
     def propogateUI(self):
 	#self.clear()
@@ -111,75 +139,64 @@ class MyTasksWidget(QtGui.QTableWidget):
 				t.UpdateValues()
 				found = 1
 				break
-		    
-		    if not found:
-			self.AddUserAssignment(userassignment._assignmentid)
-			'''
-			#add phase assignment to widget
-			phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
-			
-			#if sharedDB.currentUser._idPrivileges < 2 or date.today()+timedelta(days=5) >= phase._startdate or sharedDB.currentUser._idPrivileges == 1 or (self.showAllUsersInDepartmentEnabled and phase._iddepartments in sharedDB.currentUser.departments()):
-			    
-			self.insertRow(self.rowCount())
-			
-			#phase.phaseAssignmentChanged.connect(self.propogateUI)
-			dateitem = QtGui.QTableWidgetItem()	
-			dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-			
-			taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-			self.myTaskItems.append(taskItem)
-			phase.addUserAssignmentTaskItem(taskItem)
-			#taskItem.setText(phase.name())
-			
-			#userassignItem = QtGui.QTableWidgetItem()	
-			#userassignItem.setText(self._userassignment.idUserAssignment)
-			
-			self.setCellWidget(self.rowCount()-1,0,taskItem)
-			self.setItem(self.rowCount()-1,1,dateitem)
-			taskItem.SetVisibility()
-			
-			#self.setItem(self.rowCount()-1,2,userassignItem)
-			'''
 	
-	if self.showUnassignedEnabled:
-	    for phase in sharedDB.myPhaseAssignments:
-		skip = 0
-		if len(phase.userAssignmentTaskItems()):		    
-		    for ua in phase.userAssignmentTaskItems():		    
-			if hasattr(ua, '_userassignment'):
-			    if int(ua._userassignment.hours()) > 0:
-				skip = 1			    
-				break
+	#self.CheckForUnassigned()
 
-		#if len(phase.userAssignment()) == 0:
-		if not skip:
+	self.setSortingEnabled(1)
+
+	self.setEnabled(1)
+    
+    def CheckForUnassigned(self, sentphaseid = None):
+	if sentphaseid is None:
+	    phaselist = sharedDB.myPhaseAssignments
+	else:
+	    phaselist = [sharedDB.phaseAssignments.getPhaseAssignmentByID(sentphaseid)]
+	    
+	for phase in phaselist:
+	    if phase is not None:
+		#connect phase unassigned signal to widget
+		if phase not in self._connectedPhaseAssignments:
+		    phase.unassignedSignal.connect(self.AddToUnassignedQueue)
+		    self._connectedPhaseAssignments.append(phase)
+		
+		if not phase.assigned():
 		    found = 0
-		    
 		    if self.unassignedItems is not None:
 			for p in self.unassignedItems:
 			    if p.phaseAssignment() == phase:
 				p.UpdateValues()
 				found = 1
 				break
-		    
-		    if not found:
-			if phase.project is not None and phase.name().upper() != "DUE" and phase.name().upper() != "APPROVAL":
-			    self.insertRow(self.rowCount())
-	    
-			    dateitem = QtGui.QTableWidgetItem()	
-			    #dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-			    dateitem.setText(date.today().strftime('%Y/%m/%d'))
 			
-			    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
-			    self.unassignedItems.append(taskItem)
-		    
-			    self.setCellWidget(self.rowCount()-1,0,taskItem)
-			    self.setItem(self.rowCount()-1,1,dateitem)
-			    taskItem.SetVisibility()
-
-	self.setSortingEnabled(1)
-
-	self.setEnabled(1)
+			if not found:
+			    if phase.project is not None and phase.name().upper() != "DUE" and phase.name().upper() != "APPROVAL":
+				if phase not in self._unassignedTaskQueue:
+				    self._unassignedTaskQueue.append(phase)
+    
+    def AddToUnassignedQueue(self, sentID):
+	for phase in sharedDB.myPhaseAssignments:
+	    if str(phase.idphaseassignments()) == sentID:
+		if self.unassignedItems is not None:
+		    for p in self.unassignedItems:
+			if p.phaseAssignment() == phase:
+			    p.UpdateValues()
+			    return
+			    
+		self._unassignedTaskQueue.append(phase)
+		return
+    
+    def AppendToUserAssignmentQueue(self, assignmentid):
+	self._userAssignmentQueue.append(assignmentid)
+    
+    def ProcessQueue(self):
+	if len(self._userAssignmentQueue)>0:
+	    self.AddUserAssignment(self._userAssignmentQueue[0])
+	    del self._userAssignmentQueue[0]
+	else:
+	    if len(self._unassignedTaskQueue)>0:
+		if not self._unassignedTaskQueue[0].assigned():
+		    self.AddUnassigned(self._unassignedTaskQueue[0])
+		del self._unassignedTaskQueue[0]
     
     def AddUserAssignment(self,sentIdUserAssignment):
 
@@ -192,6 +209,7 @@ class MyTasksWidget(QtGui.QTableWidget):
     
 		#add phase assignment to widget
 		
+		#phase.setAssigned(1)
 		
 		if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
 		    self.insertRow(self.rowCount())
@@ -201,38 +219,26 @@ class MyTasksWidget(QtGui.QTableWidget):
 		    
 		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
 		    self.myTaskItems.append(taskItem)
-		    phase.addUserAssignmentTaskItem(taskItem)
+		    #phase.addUserAssignmentTaskItem(taskItem)
 		    
 		    self.setCellWidget(self.rowCount()-1,0,taskItem)
 		    self.setItem(self.rowCount()-1,1,dateitem)
 		    taskItem.SetVisibility()
 
-    def CheckPhaseForUnassigned(self, phase):
+    def AddUnassigned(self, phase):
 	if self.showUnassignedEnabled:
 
-	    skip = 0
-	    if len(phase.userAssignmentTaskItems()):		    
-		for ua in phase.userAssignmentTaskItems():		    
-		    if hasattr(ua, '_userassignment'):
-			if int(ua._userassignment.hours()) > 0:
-			    skip = 1			    
-			    break
+	    self.insertRow(self.rowCount())
 
-	    #if len(phase.userAssignment()) == 0:
-	    if not skip:
-		if phase.project is not None and phase.name().upper() != "DUE" and phase.name().upper() != "APPROVAL":
-		    self.insertRow(self.rowCount())
+	    dateitem = QtGui.QTableWidgetItem()
+	    dateitem.setText(date.today().strftime('%Y/%m/%d'))
+	
+	    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
+	    self.unassignedItems.append(taskItem)
     
-		    dateitem = QtGui.QTableWidgetItem()	
-		    #dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
-		    dateitem.setText(date.today().strftime('%Y/%m/%d'))
-		
-		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _phaseassignment = phase, _rowItem = dateitem)	
-		    self.unassignedItems.append(taskItem)
-	    
-		    self.setCellWidget(self.rowCount()-1,0,taskItem)
-		    self.setItem(self.rowCount()-1,1,dateitem)
-		    taskItem.SetVisibility()
+	    self.setCellWidget(self.rowCount()-1,0,taskItem)
+	    self.setItem(self.rowCount()-1,1,dateitem)
+	    taskItem.SetVisibility()
     
     
     def contextMenuEvent(self, ev):

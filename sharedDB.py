@@ -18,7 +18,7 @@ from DPSPipeline import selection
 from PyQt4.QtCore   import QDate
 from datetime import date,datetime,timedelta
 
-myVersion = version.Version("0.1.02")
+myVersion = version.Version("0.1.03")
 
 #TEST SETTINGS
 ignoreVersion = 0
@@ -31,6 +31,7 @@ remote = 0
 autoCreateShotTasks = 0
 testPrivileges = 0
 testuser = 0
+#freezeDBUpdates = 1
 
 currentDate = date.today()
 

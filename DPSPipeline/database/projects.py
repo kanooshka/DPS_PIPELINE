@@ -155,11 +155,13 @@ class Projects(QObject):
 		#self.projectAdded.emit(str(self._idprojects))
 		
 	
-	def SetValues(self,_idprojects , _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
+	def SetValues(self,_idprojects , _idclients = 1, _idips = 1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '' ):
 		print ("Downloaded updated for Project '"+str(self._name)+"'")
 		
 		self._idprojects             = _idprojects
 		self._name                   = _name
+		self._idips		     = _idips
+		self._idclients              = _idclients
 		self._folderLocation         = _folderLocation
 		self._idstatuses               = _idstatuses
 		self._fps                    = _fps

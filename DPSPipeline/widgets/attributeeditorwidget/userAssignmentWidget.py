@@ -130,6 +130,9 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
 		#sharedDB.myTasksWidget.AddUserAssignment(ua = self._userAssignment)
 		sharedDB.myUserAssignments.append(self._userAssignment)
+		
+		self._parent._currentPhaseAssignment.addUserAssignment(self._userAssignment)
+		self.UpdateWidget()
 		#connect to update
 		#self._userAssignment.userAssignmentChanged.connect(self.getHours)
 		
