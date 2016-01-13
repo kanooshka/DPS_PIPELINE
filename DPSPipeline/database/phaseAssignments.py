@@ -74,9 +74,14 @@ class PhaseAssignments(QObject):
 				break
 		
 	def AddPhaseAssignmentToDB(self):
+		
+		sharedDB.myPhaseAssignments.append(self)
+		
 		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
+	
+		
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
