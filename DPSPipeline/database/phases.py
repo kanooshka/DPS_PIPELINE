@@ -1,7 +1,7 @@
 import mysql.connector
 import sharedDB
 from DPSPipeline.database.connection import Connection
-
+from PyQt4 import QtCore
 '''
 '1', 'Storyboarding'
 '2', 'Modeling'
@@ -22,8 +22,10 @@ from DPSPipeline.database.connection import Connection
 '17', 'Sound (Rough)'
 '''
 
-class Phases():
 
+
+class Phases():
+	
 	def __init__(self,_idphases = 0,_name = '',_ganttChartBGColor = '255,0,0',_ganttChartTextColor = '0,0,0',_manHoursToMinuteRatio = "0.1",_iddepartments = 0,_taskPerShot = 1,_defaultTaskStatus = 0):
 		
 		# define custom properties
@@ -40,7 +42,8 @@ class Phases():
 			self._visible = 1
 		else:
 			self._visible = 0
-			
+		
+		sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
 	def isVisible(self):
 		return self._visible
 	

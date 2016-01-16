@@ -35,6 +35,7 @@ class XGanttScene(QGraphicsScene):
         self._vlines            = []
         self._alternateRects    = []
         self._weekendRects      = []
+	self._bookedRects      = []
         self._topLabels         = []
         self._labels            = []
         self._dirty             = True
@@ -159,6 +160,11 @@ class XGanttScene(QGraphicsScene):
         painter.setPen(gantt.gridPen())
         painter.drawLines(self._hlines + self._vlines)
     
+	#draw the booked
+	for rect in self._bookedRects:
+	    painter.setBrush(gantt.bookedBrush())
+	    painter.drawRect(rect)
+    
     def ganttWidget( self ):
         """
         Returns the gantt view that this scene is linked to.
@@ -200,6 +206,7 @@ class XGanttScene(QGraphicsScene):
         self._hlines            = []
         self._vlines            = []
         self._weekendRects      = []
+	self._bookedRects       = []
 	self._holidayRects      = []
 	self._currentDayRects   = []
         self._alternateRects    = []
@@ -244,18 +251,30 @@ class XGanttScene(QGraphicsScene):
             rect  = QRect(x, half, cell_width, half)
             self._labels.append((rect, label))
             
+	    # store weekend rectangles
+            if ( curr.dayOfWeek() in (6, 7) ):
+                rect = QRect(x, 0, cell_width, height)
+                self._weekendRects.append(rect)
+	    
+	    if gantt._availabilityEnabled:
+		# store booked rectangles
+		if ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
+		    rect = QRect(x, header_height+cell_height*2, cell_width, cell_height)
+		    self._bookedRects.append(rect)
+	    
 	    # store current day rectangle
-	    if ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
+	    elif ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
                 rect = QRect(x, 0, cell_width, height)
                 self._currentDayRects.append(rect)
 		
-            # store weekend rectangles
-            elif ( curr.dayOfWeek() in (6, 7) ):
-                rect = QRect(x, 0, cell_width, height)
-                self._weekendRects.append(rect)
             
+            
+	    # store holiday rectangles	    
 	    
-		
+	   
+	    
+	    
+	    
             # increment the dates
             curr = curr.addDays(increment)
             x += cell_width

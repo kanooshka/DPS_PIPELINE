@@ -39,18 +39,20 @@ class AttributeEditorWidget(QtGui.QStackedWidget):
 	item = sharedDB.sel.items[len(sharedDB.sel.items)-1]
 	
 	self.HideAll()
-	if item._type == 'shot':
-	    self.setCurrentIndex(0)
-	    self.shotWidget.LoadShot(item)
-	elif item._type == 'project':
-	    self.setCurrentIndex(1)
-	    self.projectWidget.LoadProject(item)
-	elif item._type == 'phaseassignment':
-	    self.setCurrentIndex(2)
-	    self.phaseAssignmentWidget.LoadPhaseAssignment(item)
-	    item.phaseAssignmentChanged.connect(self.phaseAssignmentWidget.refresh)
-	else:
-	    self.setCurrentIndex(0)
+	if item is not None:
+	
+	    if item._type == 'shot':
+		self.setCurrentIndex(0)
+		self.shotWidget.LoadShot(item)
+	    elif item._type == 'project':
+		self.setCurrentIndex(1)
+		self.projectWidget.LoadProject(item)
+	    elif item._type == 'phaseassignment':
+		self.setCurrentIndex(2)
+		self.phaseAssignmentWidget.LoadPhaseAssignment(item)
+		item.phaseAssignmentChanged.connect(self.phaseAssignmentWidget.refresh)
+	    else:
+		self.setCurrentIndex(0)
 	    
     def HideAll(self):
 	for widget in self.widgets:

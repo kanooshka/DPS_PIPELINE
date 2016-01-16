@@ -49,7 +49,7 @@ class XGanttWidget(QWidget):
     
     Timescale = enum('Week', 'Month', 'Year')
     
-    def __init__( self, parent = None ):
+    def __init__( self, parent = None, _availabilityEnabled = 0):
 	super(XGanttWidget, self).__init__( parent )
 	
 	'''
@@ -95,12 +95,18 @@ class XGanttWidget(QWidget):
 	self._alternateBrush    = QBrush(color.darker(25))
 	self._currentDayBrush   = QBrush(QColor(146,252,186))
 	self._holidayBrush      = QBrush(QColor(166,46,46))
+	self._bookedBrush      = QBrush(QColor(50,250,0))
+	
+	self._availabilityEnabled = _availabilityEnabled
 	
 	weekendColor            = color.darker(148)
 	self._weekendBrush      = QBrush(weekendColor)
 	
 	# setup the columns for the tree
-	self.setColumns(['Name', 'Start', 'End', 'Calendar Days', 'Work Days'])
+	if _availabilityEnabled:
+	    self.setColumns(['Name'])
+	else:
+	    self.setColumns(['Name', 'Start', 'End', 'Calendar Days', 'Work Days'])
 	header = self.uiGanttTREE.header()
 	header.setFixedHeight(self._cellHeight * 2)
 	header.setResizeMode(0, header.ResizeToContents)
@@ -232,9 +238,10 @@ class XGanttWidget(QWidget):
 	vitem = item.viewItem()
 	
 	self.treeWidget().addTopLevelItem(item)
-	self.viewWidget().scene().addItem(vitem)
-	
-	item._viewItem = weakref.ref(vitem)
+	if not self._availabilityEnabled:
+	    self.viewWidget().scene().addItem(vitem)
+	    
+	    item._viewItem = weakref.ref(vitem)
 	
 	#set scrollbar offset
 	#item.treeWidget._scrollBar = self.uiGanttTREE.verticalScrollBar()
@@ -683,3 +690,11 @@ class XGanttWidget(QWidget):
 	:return     <QBrush>
 	"""
 	return self._weekendBrush
+
+    def bookedBrush( self ):
+	"""
+	Returns the booked brush to be used for coloring in booked days.
+	
+	:return     <QBrush>
+	"""
+	return self._bookedBrush

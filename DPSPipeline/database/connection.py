@@ -47,7 +47,7 @@ class processQueries(QtCore.QThread):
 			else:
 				print "Commencing initial Database load"
 				
-				sharedDB.myStatuses = sharedDB.statuses.GetStatuses()
+				sharedDB.myStatuses = sharedDB.statuses.GetStatuses()				
 				sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
 		
@@ -118,6 +118,7 @@ class processQueries(QtCore.QThread):
 
     
 class Connection(QObject):
+	newPhaseSignal = QtCore.pyqtSignal(QtCore.QString)
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
 	newIpSignal = QtCore.pyqtSignal(QtCore.QString)
 	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)

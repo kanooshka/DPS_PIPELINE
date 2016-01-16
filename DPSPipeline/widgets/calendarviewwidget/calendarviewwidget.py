@@ -37,13 +37,34 @@ class CalendarViewWidget(QtGui.QWidget):
 		#sharedDB.widgetList.Append(dockWidget)
 		vLayout = QtGui.QHBoxLayout()
 		self.setLayout(vLayout)
+		
+		#Add Splitter
+		splitter = QtGui.QSplitter(QtCore.Qt.Vertical)
+		vLayout.addWidget(splitter)
+		
+		
 		self._myXGanttWidget = XGanttWidget()
-		vLayout.addWidget(self._myXGanttWidget)
+		splitter.addWidget(self._myXGanttWidget)
+		
+		self._departmentXGanttWidget = XGanttWidget(_availabilityEnabled = 1)
+		#self._departmentXGanttWidget._availabilityEnabled = 1
+		splitter.addWidget(self._departmentXGanttWidget)
+		#CONNECT SLIDERS
+		self._departmentXGanttWidget.uiGanttVIEW.horizontalScrollBar().valueChanged.connect(self._myXGanttWidget.uiGanttVIEW.horizontalScrollBar().setValue)
+		self._myXGanttWidget.uiGanttVIEW.horizontalScrollBar().valueChanged.connect(self._departmentXGanttWidget.uiGanttVIEW.horizontalScrollBar().setValue)
+		self._departmentXGanttWidget.uiGanttSPLT.splitterMoved.connect(self.syncSplitters)
+		self._myXGanttWidget.uiGanttSPLT.splitterMoved.connect(self.syncSplitters)
+		 
+		#connect date range changed
+		self._myXGanttWidget.dateRangeChanged.connect(self.UpdateDepartmentGanttDateRange)
+		sharedDB.mySQLConnection.newPhaseSignal.connect(self.AddPhaseToDepartment)
 		
 		#resize splitter
 		sizes = [275,50000]
 		self._myXGanttWidget.uiGanttSPLT.setSizes(sizes)
 		self._myXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
+		self._departmentXGanttWidget.uiGanttSPLT.setSizes(sizes)
+		self._departmentXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
 		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
 		#dockWidget.setWidget(self._myXGanttWidget)
@@ -215,3 +236,49 @@ class CalendarViewWidget(QtGui.QWidget):
 		self._myXGanttWidget.uiGanttVIEW.scene().rebuild()
 		pass
 	
+	def AddPhaseToDepartment(self, phaseid):
+		for phase in sharedDB.myPhases:
+			if str(phaseid) == str(phase._idphases):
+				phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+				
+				phaseXGanttWidgetItem.setName(phase._name)
+				
+				#viewItem = phaseXGanttWidgetItem.viewItem()
+				
+				#find where to insert item
+				index = 0						
+					
+				#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
+				self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
+				#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+				
+				#project._calendarWidgetItem = projectXGanttWidgetItem
+				
+				#projectXGanttWidgetItem.setHidden(True)
+				
+				#for phase in project._phases:
+				#	self.AddPhase(phase)
+				
+				#print project._calendarWidgetItem			
+		
+				phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
+				phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
+		
+				#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
+				phaseXGanttWidgetItem.setExpanded(0)
+				self._departmentXGanttWidget.syncView()
+				phaseXGanttWidgetItem.sync()
+				
+				return
+
+	def syncSplitters(self,x, index):
+		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(1)
+		self._myXGanttWidget.uiGanttSPLT.blockSignals(1)
+		self._departmentXGanttWidget.uiGanttSPLT.moveSplitter(x,index)
+		self._myXGanttWidget.uiGanttSPLT.moveSplitter(x,index)
+		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(0)
+		self._myXGanttWidget.uiGanttSPLT.blockSignals(0)
+
+	def UpdateDepartmentGanttDateRange(self):
+		self._departmentXGanttWidget.setDateStart(self._myXGanttWidget.dateStart())
+		self._departmentXGanttWidget.setDateEnd(self._myXGanttWidget.dateEnd())
