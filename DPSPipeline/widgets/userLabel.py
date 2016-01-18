@@ -29,11 +29,11 @@ class UserLabel(QtGui.QLabel):
             elif str(self.task._status) == "4":
                 self.setText("")
             else:
-                self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
+                self.setText(sharedDB.myUsers[str(self.task._idusers)]._name)
                 
         
     def mActions(self, username):
-        for u in sharedDB.myUsers:
+        for u in sharedDB.myUsers.values():
             if str(u._name) == username.text():
                 #self.setText(username.text())
                 self.task.setUserId(u._idusers)
@@ -46,12 +46,12 @@ class UserLabel(QtGui.QLabel):
             menu	 = QtGui.QMenu()
             
             userList = []
-            for user in sharedDB.myUsers:
+            for user in sharedDB.myUsers.values():
                 #if in department
                 if self.showAllEnabled:
                     userList.append(user._name)
                 else:
-                    if user._active and str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments) in user.departments():
+                    if user._active and str(sharedDB.myPhases[str(self.task._idphases)]._iddepartments) in user.departments():
                         userList.append(user._name)
                     
             userList.sort(reverse=False)

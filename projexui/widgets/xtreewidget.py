@@ -1723,7 +1723,8 @@ class XTreeWidget(QTreeWidget):
         
         hitem = self.headerItem()        
         phases = sharedDB.myPhases
-        for phase in sorted(sharedDB.myPhases):
+        for phaseid in sorted(sharedDB.myPhases):
+            phase = sharedDB.myPhases[str(phaseid)]
             #col    = self.column(column)
             action = phaseFilterMenu.addAction(phase._name)
             action.setCheckable(True)

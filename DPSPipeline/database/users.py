@@ -45,6 +45,9 @@ class Users():
 	def departments(self):
 		return self._departments
 	
+	def isActive(self):
+		return self._active
+
 def GetAllUsers():
 	users = {}
 

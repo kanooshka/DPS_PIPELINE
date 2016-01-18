@@ -64,7 +64,7 @@ class SeqDescription(QtGui.QWidget):
 	newName = self.getShotName()
 	
 	#iterate through sequences
-	for shot in self._sequence._shots:	    
+	for shot in self._sequence._shots.values():	    
 	    #if sequence matches name
 	    if newName == shot._number:
 		unique = 0

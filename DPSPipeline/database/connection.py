@@ -105,6 +105,7 @@ class processQueries(QtCore.QThread):
 			#save changes				
 			for proj in sharedDB.myProjects :		
 			    sharedDB.myProjects[str(proj)].Save()
+			
 			for ua in sharedDB.myUserAssignments:
 				sharedDB.myUserAssignments[str(ua)].Save()
 			

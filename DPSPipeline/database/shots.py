@@ -94,6 +94,8 @@ class Shots(QObject):
 	
 		self._idshots = sharedDB.mySQLConnection._lastInsertId
 		
+		sharedDB.myShots[str(self.id())] = self
+		
 		self.shotAdded.emit(str(self._idshots))
 	
 	def UpdateShotInDB (self):	

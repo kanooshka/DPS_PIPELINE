@@ -35,7 +35,6 @@ class Clients(QObject):
 		if self._new:
 			self.AddClientToDB()
 			self._new = 0
-			sharedDB.myClients.append(self)
 			
 			sharedDB.mySQLConnection.newClientSignal.emit(str(self._idclients))
 			print "Client '"+self._name+"' Added to Database!"
@@ -74,6 +73,7 @@ class Clients(QObject):
 		sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
 		self._idclients = sharedDB.mySQLConnection._lastInsertId
+		sharedDB.myClients[str(self.id())] = self
 		
 		self.clientAdded.emit(str(self._idclients))
 

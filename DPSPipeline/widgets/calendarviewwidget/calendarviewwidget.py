@@ -149,8 +149,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			projectXGanttWidgetItem.setHidden(True)
 			
-			for phase in project._phases:
-				self.AddPhase(sharedDB.myPhaseAssignments[str(phase)])
+			for phase in project._phases.values():
+				self.AddPhase(phase)
 			
 			#print project._calendarWidgetItem			
 	
@@ -179,20 +179,21 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				department = 0
 				
-				for myPhase in sharedDB.myPhases:
-					if myPhase._idphases == phase._idphases:
-						name = myPhase._name
-						
-						BGcolor = myPhase._ganttChartBGColor.split(',')
-						#print BGcolor[0]
-						BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
-						
-						textColor = myPhase._ganttChartTextColor.split(',')
-						#print textColor[0]
-						textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
-						
-						department = myPhase._iddepartments
-						continue
+				if str(phase._idphases) in sharedDB.myPhases:
+					myPhase = sharedDB.myPhases[str(phase._idphases)]
+
+					name = myPhase._name
+					
+					BGcolor = myPhase._ganttChartBGColor.split(',')
+					#print BGcolor[0]
+					BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
+					
+					textColor = myPhase._ganttChartTextColor.split(',')
+					#print textColor[0]
+					textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
+					
+					department = myPhase._iddepartments
+
 				
 				startDate = phase._startdate
 				endDate = phase._enddate
@@ -240,39 +241,40 @@ class CalendarViewWidget(QtGui.QWidget):
 		pass
 	
 	def AddPhaseToDepartment(self, phaseid):
-		for phase in sharedDB.myPhases:
-			if str(phaseid) == str(phase._idphases):
-				phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+		if str(phaseid) in sharedDB.myPhases:
+			phase = sharedDB.myPhases[str(phaseid)]		
+
+			phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+			
+			phaseXGanttWidgetItem.setName(phase._name)
+			
+			#viewItem = phaseXGanttWidgetItem.viewItem()
+			
+			#find where to insert item
+			index = 0						
 				
-				phaseXGanttWidgetItem.setName(phase._name)
-				
-				#viewItem = phaseXGanttWidgetItem.viewItem()
-				
-				#find where to insert item
-				index = 0						
-					
-				#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
-				self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
-				#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
-				
-				#project._calendarWidgetItem = projectXGanttWidgetItem
-				
-				#projectXGanttWidgetItem.setHidden(True)
-				
-				#for phase in project._phases:
-				#	self.AddPhase(phase)
-				
-				#print project._calendarWidgetItem			
-		
-				phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
-				phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
-		
-				#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
-				phaseXGanttWidgetItem.setExpanded(0)
-				self._departmentXGanttWidget.syncView()
-				phaseXGanttWidgetItem.sync()
-				
-				return
+			#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
+			self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
+			#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+			
+			#project._calendarWidgetItem = projectXGanttWidgetItem
+			
+			#projectXGanttWidgetItem.setHidden(True)
+			
+			#for phase in project._phases:
+			#	self.AddPhase(phase)
+			
+			#print project._calendarWidgetItem			
+	
+			phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
+			phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
+	
+			#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
+			phaseXGanttWidgetItem.setExpanded(0)
+			self._departmentXGanttWidget.syncView()
+			phaseXGanttWidgetItem.sync()
+			
+			return
 
 	def syncSplitters(self,x, index):
 		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(1)

@@ -336,8 +336,10 @@ class ProjectViewWidget(QWidget):
 	self._currentSequence = None
 	
 	if (self._currentProject._sequences):
-	    for x in range(0,len(self._currentProject._sequences)):
-		sequence = self._currentProject._sequences[x]
+	    for seqid in self._currentProject._sequences:
+		sequence = self._currentProject._sequences[str(seqid)]
+	    #for x in range(0,len(self._currentProject._sequences)):
+		#sequence = self._currentProject._sequences[x]
 		    
 		#Add Sequences to list
 		self.AddSequenceToProgressList(sequence = sequence)

@@ -25,7 +25,7 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         activeIps = []
         activeClients = []
 
-        for proj in sharedDB.myProjects:
+        for proj in sharedDB.myProjects.values():
             if not proj._hidden or self.showAllEnabled:
                 if str(proj._idclients) not in activeClients or self.showAllEnabled:
                     activeClients.append(str(proj._idclients))
@@ -45,7 +45,7 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         menu.addSeparator()
            
         #iterate through clients
-        cli = sharedDB.myClients
+        cli = sharedDB.myClients.values()
         cli.sort(key=operator.attrgetter('_name'),reverse=False)
         for i in xrange(0, len(cli)):
             if str(cli[i]._idclients) in activeClients:
@@ -53,7 +53,7 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
                 exec("menu.addMenu(client_menu%d)" % (i + 1))
                 #Iterate through Client's IPs
                 if len(cli[i]._ips):
-                    ips = cli[i]._ips
+                    ips = cli[i]._ips.values()
                     ips.sort(key=operator.attrgetter('_name'),reverse=False)
                     for j in xrange(0, len(ips)):
                         if str(ips[j]._idips) in activeIps:
@@ -61,7 +61,7 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
                             exec("client_menu%d.addMenu(ip%d_%d)" % (i + 1,i+1,j+1))
                             #Iterate through projects in IP
                             if len(ips[j]._projects):
-                                projs = ips[j]._projects
+                                projs = ips[j]._projects.values()
                                 projs.sort(key=operator.attrgetter('_name'),reverse=False)
                                 for k in xrange(0, len(projs)):
                                     if not projs[k]._hidden or self.showAllEnabled:
@@ -71,7 +71,7 @@ class ProjectNameLineEdit(QtGui.QLineEdit):
         menu.exec_(ev.globalPos())
     
     def ChangeProject(self, projname):
-        for proj in sharedDB.myProjects:
+        for proj in sharedDB.myProjects.values():
             if str(proj._name) == str(projname.text()):
                 self._projectviewwidget._currentProject = proj
                 break

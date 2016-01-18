@@ -652,7 +652,7 @@ class XGanttWidget(QWidget):
 		    
 	    #if phase matches, change visibility
 	    
-	    for phase in sharedDB.myPhases:
+	    for phase in sharedDB.myPhases.values():
 		if (phase._name == phaseName):
 		    phase._visible = visibility
 	    
@@ -669,7 +669,7 @@ class XGanttWidget(QWidget):
 		projectWidgetItem.setHidden(not visibility)
 		
 	    
-	    for phase in sharedDB.myPhases:
+	    for phase in sharedDB.myPhases.values():
 		phase._visible = visibility
 	    #print ("Changing all phases to: "+ str(visibility))
 	    

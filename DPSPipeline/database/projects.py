@@ -105,14 +105,15 @@ class Projects(QObject):
 	def AddSequenceToProject(self, newName):
 
 		seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
-		self._sequences.append(seq)
-		sharedDB.mySequences.append(seq)
+		seq.save()
+		
+		self._sequences[str(seq.id())] = seq
 		return seq
 	
 	def AddShotToProject(self, newName):
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = 0, _startframe = 101, _endframe = 101)
-		self._images.append(shot)
-		sharedDB.myShots.append(shot)
+		shot.Save()
+		self._images[str(shot.id())] = shot
 		
 		return shot
 	
@@ -155,11 +156,7 @@ class Projects(QObject):
 		
 		self._idprojects = sharedDB.mySQLConnection._lastInsertId
 	
-		#connect phases to projectid
-		for phase in self._phases:
-			phase._idprojects = self._idprojects
-			phase.project = self
-			phase._new = 1
+		sharedDB.myProjects[str(self.id())] = self	
 		
 		#self.projectAdded.emit(str(self._idprojects))
 		
@@ -198,7 +195,7 @@ class Projects(QObject):
 	#	self._calendarWidgetItem.setName(self._name)
 		
 	def SetDueDate(self):
-		for phase in self._phases:
+		for phase in self._phases.values():
 			#print phase._idphases
 			if str(phase._idphases) == "16":
 				self._due_date = phase._enddate

@@ -72,7 +72,7 @@ class UserAssignment(QObject):
 	
 		self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
-		sharedDB.myUserAssignments.append(self)
+		sharedDB.myUserAssignments[str(self._iduserassignments)] = self
 		self.userAssignmentAdded.emit(str(self._iduserassignments))
 	
 	def UpdateUserAssignmentInDB (self):
@@ -114,13 +114,13 @@ class UserAssignment(QObject):
 		#connect to users
 		if str(self._idusers) in sharedDB.myUsers:
 			user = sharedDB.myUsers[str(self._idusers)]
-			user._assignments[self.id()] = self
+			user._assignments[str(self.id())] = self
 
 		if self.assignmentType() == "phase_assignment":
 			#for phase in sharedDB.myPhaseAssignments:
 				#if phase.idphaseassignments() == self.assignmentID():
-			if self.assignmentID() in sharedDB.myPhaseAssignments:		
-				phase = sharedDB.myPhaseAssignments[self.assignmentID()]
+			if str(self.assignmentID()) in sharedDB.myPhaseAssignments:		
+				phase = sharedDB.myPhaseAssignments[str(self.assignmentID())]
 				phase.addUserAssignment(self)
 				if self.hours():
 					if not phase.assigned():

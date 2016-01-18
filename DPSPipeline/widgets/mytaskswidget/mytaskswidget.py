@@ -143,7 +143,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 				    found = 1
 				    break
 	
-	#self.CheckForUnassigned()
+	self.CheckForUnassigned()
 
 	self.setSortingEnabled(1)
 
@@ -151,7 +151,7 @@ class MyTasksWidget(QtGui.QTableWidget):
     
     def CheckForUnassigned(self, sentphaseid = None):
 	if sentphaseid is None:
-	    phaselist = sharedDB.myPhaseAssignments
+	    phaselist = sharedDB.myPhaseAssignments.values()
 	else:
 	    #phaselist = [sharedDB.phaseAssignments.getPhaseAssignmentByID(sentphaseid)]
 	    phaselist = [sharedDB.myPhaseAssignments[str(sentphaseid)]]
@@ -178,16 +178,16 @@ class MyTasksWidget(QtGui.QTableWidget):
 				    self._unassignedTaskQueue.append(phase)
     
     def AddToUnassignedQueue(self, sentID):
-	for phase in sharedDB.myPhaseAssignments:
-	    if str(phase.idphaseassignments()) == sentID:
-		if self.unassignedItems is not None:
-		    for p in self.unassignedItems:
-			if p.phaseAssignment() == phase:
-			    p.UpdateValues()
-			    return
-			    
-		self._unassignedTaskQueue.append(phase)
-		return
+	if str(sentID) in sharedDB.myPhaseAssignments:
+	    phase = sharedDB.myPhaseAssignments[str(sentID)]
+	    if self.unassignedItems is not None:
+		for p in self.unassignedItems:
+		    if p.phaseAssignment() == phase:
+			p.UpdateValues()
+			return
+			
+	    self._unassignedTaskQueue.append(phase)
+	    return
     
     def AppendToUserAssignmentQueue(self, assignmentid):
 	self._userAssignmentQueue.append(assignmentid)

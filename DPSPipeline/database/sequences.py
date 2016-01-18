@@ -68,6 +68,8 @@ class Sequences(QObject):
 	
 		self._idsequences = sharedDB.mySQLConnection._lastInsertId
 	
+		sharedDB.mySequences[str(self.id())] = self
+	
 		self.sequenceAdded.emit(str(self._idsequences))
 		
 	def UpdateSequenceInDB (self):
@@ -86,8 +88,10 @@ class Sequences(QObject):
 	def AddShotToSequence(self, newName):
 		
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = self._idsequences, _startframe = 101, _endframe = 101)
-		self._shots.append(shot)
-		sharedDB.myShots.append(shot)
+		shot.Save()
+		
+		self._shots[str(shot.id())] = shot
+		#sharedDB.myShots.append(shot)
 		
 		return shot
 	

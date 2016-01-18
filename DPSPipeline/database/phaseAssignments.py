@@ -75,22 +75,22 @@ class PhaseAssignments(QObject):
 			self._updated = 0
 		
 	def SetPhaseValues(self):
-		for phase in sharedDB.myPhases:
-			if phase._idphases == self._idphases:
-				self._name = phase._name
-				self._taskPerShot = phase._taskPerShot
-				self._iddepartments = phase._iddepartments
-				break
+		if str(self._idphases) in sharedDB.myPhases:
+			phase = sharedDB.myPhases[str(self._idphases)]
+
+			self._name = phase._name
+			self._taskPerShot = phase._taskPerShot
+			self._iddepartments = phase._iddepartments
 		
 	def AddPhaseAssignmentToDB(self):
 		
-		sharedDB.myPhaseAssignments.append(self)
+		
 		
 		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
-		
+		sharedDB.myPhaseAssignments[str(self.id())] = self
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
@@ -144,7 +144,7 @@ class PhaseAssignments(QObject):
 		return self._enddate
 	
 	def addUserAssignment(self, userAssignment ):	
-		self._userAssignments.append(userAssignment)
+		self._userAssignments[str(userAssignment.id())] = userAssignment
 		#self.updateAssigned()
 	
 	def userAssignments(self):
@@ -172,14 +172,15 @@ class PhaseAssignments(QObject):
 	
 	def idusers(self):
 		idusers = []
-		for uaid in self._userAssignments:
-			ua = self._userAssignments[str(uaid)]
-			idusers.append(ua.idUsers())
+		for ua in self._userAssignments.values():
+			#print ua.idUsers()
+			idusers.append(str(ua.idUsers()))
 			
 		return idusers
 	
 	def updateAssigned(self):
-		for user in self._userAssignments:
+		for userids in self._userAssignments:
+			user = self._userAssignments[str(userids)]
 			if user.hours()>0:
 				self.setAssigned(1)
 				self.userAssigned.emit()

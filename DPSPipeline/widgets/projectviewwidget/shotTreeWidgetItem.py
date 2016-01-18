@@ -25,12 +25,14 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         
         #if tasklist less than lenshotphasenames - 2
         columnIndex = 2
-        for phase in self.phases:
+        for phaseid in self.phases:
+            phase = self.phases[str(phaseid)]
             if phase._taskPerShot:
                 currentTask = None
                 
                 if self.shot._tasks is not None:
-                    for task in self.shot._tasks:
+                    for taskid in self.shot._tasks:
+                        task = self.shot._tasks[str(taskid)]
                         if task._idphases == phase._idphases:
                             #print "MATCH FOUND Attaching Task"
                             currentTask = task

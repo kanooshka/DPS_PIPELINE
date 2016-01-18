@@ -65,14 +65,18 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def UpdateShots(self):
         if self._shots is not None:
             self.clear()
-            self._shots.sort(key=operator.attrgetter('_number'))
-            for x in range(0, len(self._shots)):
-                shot=self._shots[x]                    
-                shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
-                shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
-            self.sortItems(1,QtCore.Qt.AscendingOrder)
-	    
-	    self.UpdateWidgetHeight()
+            if len(self._shots.values()):
+		sortedShots = self._shots.values()
+		sortedShots.sort(key=operator.attrgetter('_number'))
+
+		#self._shots.sort(key=operator.attrgetter('_number'))
+		for x in range(0, len(sortedShots)):
+		    shot=sortedShots[x]                    
+		    shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
+		    shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
+		self.sortItems(1,QtCore.Qt.AscendingOrder)
+		
+		self.UpdateWidgetHeight()
     def UpdateWidgetHeight(self):
         
         height = self.topLevelItemCount()*self.rowHeight+40
@@ -109,8 +113,9 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         self.UpdateWidgetHeight()
     
     def SetShotPhaseNames(self):        
-        for phase in self._phases:
-            if phase._taskPerShot:
+        for phaseid in self._phases:
+            phase = self._phases[str(phaseid)]
+	    if phase._taskPerShot:
                 self.shotPhaseNames.append(phase._name)        
     
     def AttachTaskToButton(self, idtasks):
