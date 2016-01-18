@@ -36,7 +36,7 @@ class PhaseAssignments(QObject):
 		self._type                         = "phaseassignment"
 		self.project                       = None
 		self._calendarWidgetItem	   = None
-		self._tasks			   = []
+		self._tasks			   = {}
 		self._iddepartments	           = 1
 		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
@@ -46,9 +46,18 @@ class PhaseAssignments(QObject):
 		self.SetPhaseValues()
 		
 		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
-		self._userAssignments = []
+		self._userAssignments = {}
 		#self._unassigned = []
-		
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idphaseassignments') and self._idphaseassignments == another._idphaseassignments
+	
+	def __hash__(self):
+		return hash(self._idphaseassignments)	
+	
+	def id(self):
+		return self._idphaseassignments
+
 	def Save(self):		
 
 		if self._new:	
@@ -105,11 +114,12 @@ class PhaseAssignments(QObject):
 		self._timestamp                    = _timestamp
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
-		
+	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
 			self._tasks.append(task)
 			return
+	'''
 	def setHoursAlotted(self, sent):
 		self._hoursalotted = sent
 		self._updated = 1
@@ -162,7 +172,8 @@ class PhaseAssignments(QObject):
 	
 	def idusers(self):
 		idusers = []
-		for ua in self._userAssignments:
+		for uaid in self._userAssignments:
+			ua = self._userAssignments[str(uaid)]
 			idusers.append(ua.idUsers())
 			
 		return idusers
@@ -177,10 +188,3 @@ class PhaseAssignments(QObject):
 		self.setAssigned(0)
 		self.unassignedSignal.emit(str(self.idphaseassignments()))
 		return
-		
-	
-	
-def getPhaseAssignmentByID(sentid):
-	for phase in sharedDB.myPhaseAssignments:		
-		if str(phase._idphaseassignments) == str(sentid):
-			return phase

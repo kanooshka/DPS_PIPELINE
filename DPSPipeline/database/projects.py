@@ -41,10 +41,10 @@ class Projects(QObject):
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		self._phases                 = []
+		self._phases                 = {}
 		#self._duePhase 		= []
-		self._sequences              = []
-		self._images		     = []
+		self._sequences              = {}
+		self._images		     = {}
 		
 		self._new		     = _new
 		
@@ -60,7 +60,16 @@ class Projects(QObject):
 			
 		#Connect new project to UI elements
 		#self.projectAdded.connect(sharedDB.calendarview.AddNewProjects)
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idprojects') and self._idprojects == another._idprojects
+	
+	def __hash__(self):
+		return hash(self._idprojects)
+		
+	def id(self):
+		return self._idprojects
+		
 	def Save(self):
 		
 		#print self._name
@@ -82,14 +91,14 @@ class Projects(QObject):
 			self._new = 0
 			print "Project '"+self._name+"' Added to Database!"'''
 		for seq in self._sequences:
-			seq.Save()
+			self._sequences[str(seq)].Save()
 			
 		for shot in self._images:
-			shot.Save()
+			self._images[str(shot)].Save()
 		
 			
 		for phase in self._phases:
-			phase.Save()
+			self._phases[str(phase)].Save()
 		
 		#sharedDB.mySQLConnection.closeConnection()
 
@@ -206,10 +215,12 @@ class Projects(QObject):
 	def emitProjectChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.projectChanged.emit(str(self._idprojects))
-		    
+	
+	'''	    
 	def getPhaseAssignmentByIDPhases(self, idrequest):
 		for phase in phases:
 			if phase._idphases == idrequest:
 				return phase
 			
 		return 0
+	'''

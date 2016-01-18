@@ -24,7 +24,7 @@ class Sequences(QObject):
 		self._description	     = _description
 		self._timestamp		     = _timestamp
 		
-		self._shots                 = []
+		self._shots                 = {}
 		self._updated                = _updated
 		self._type                   = "sequence"
 		self._hidden                 = False
@@ -32,6 +32,15 @@ class Sequences(QObject):
 		
 		self._new		     = _new
 		self._lastSelectedShotNumber = '-1'
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idsequences') and self._idsequences == another._idsequences
+	
+	def __hash__(self):
+		return hash(self._idsequences)
+	
+	def id(self):
+		return self._idsequences
 		
 	def Save(self):
 		
@@ -46,7 +55,7 @@ class Sequences(QObject):
 			self._updated = 0
 	
 		for shot in self._shots:
-			shot.Save()
+			self._shots[str(shot)].Save()
 	
 	def AddSequenceToDB(self):
 		if isinstance(self._description, QtCore.QString):
@@ -93,10 +102,10 @@ class Sequences(QObject):
 
 		self.emitSequenceChanged()
 	
+	
 	def GetProjectById(self):
-		for proj in sharedDB.myProjects:
-			if proj._idprojects == self._idprojects:
-				return proj
+		if str(self._idprojects) in sharedDB.myProjects:
+			return sharedDB.myProjects[str(self._idprojects)]
 	
 	def emitSequenceChanged( self ):
 		if ( not self.signalsBlocked() ):

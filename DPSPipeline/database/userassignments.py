@@ -44,7 +44,16 @@ class UserAssignment(QObject):
 			#self._hidden = True
 			
 		self.connectToDBClasses()
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_iduserassignments') and self._iduserassignments == another._iduserassignments
+	
+	def __hash__(self):
+		return hash(self._iduserassignments)
+	
+	def id(self):
+		return self._iduserassignments
+				
 	def Save(self):
 
 		if self._new:	
@@ -103,17 +112,19 @@ class UserAssignment(QObject):
 	def connectToDBClasses(self):
 		
 		#connect to users
-		for user in sharedDB.myUsers:
-			if str(user._idusers) == str(self._idusers):
-				user._assignments.append(self)
-				break
+		if str(self._idusers) in sharedDB.myUsers:
+			user = sharedDB.myUsers[str(self._idusers)]
+			user._assignments[self.id()] = self
+
 		if self.assignmentType() == "phase_assignment":
-			for phase in sharedDB.myPhaseAssignments:
-				if phase.idphaseassignments() == self.assignmentID():
-					phase.addUserAssignment(self)
-					if self.hours():
-						if not phase.assigned():
-							phase.setAssigned(1)
+			#for phase in sharedDB.myPhaseAssignments:
+				#if phase.idphaseassignments() == self.assignmentID():
+			if self.assignmentID() in sharedDB.myPhaseAssignments:		
+				phase = sharedDB.myPhaseAssignments[self.assignmentID()]
+				phase.addUserAssignment(self)
+				if self.hours():
+					if not phase.assigned():
+						phase.setAssigned(1)
 					
 				
 	def assignmentID(self):
@@ -131,12 +142,6 @@ class UserAssignment(QObject):
 	
 	def hours(self):
 		return self._hours
-	
-def getUserAssignmentByID(sentid):
-	for userAssignment in sharedDB.myUserAssignments:		
-		if str(userAssignment._iduserassignments) == str(sentid):
-			return userAssignment
-
 	
 		#
 		

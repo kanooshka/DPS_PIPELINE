@@ -32,7 +32,7 @@ class Ips(QObject):
 		
 		self._new		     = _new
 		
-		self._projects		     = []
+		self._projects		     = {}
 		
 		if self._new:
 			self.AddIpToDB()
@@ -44,7 +44,17 @@ class Ips(QObject):
 		
 		#if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
 			#self._hidden = True
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idips') and self._idips == another._idips
+	
+	def __hash__(self):
+		return hash(self._idips)
 			
+	def id(self):
+		return self._idips
+	
+	
 	def Save(self):
 		
 		#print self._name

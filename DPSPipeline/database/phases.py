@@ -44,6 +44,16 @@ class Phases():
 			self._visible = 0
 		
 		sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idphases') and self._idphases == another._idphases
+	
+	def __hash__(self):
+		return hash(self._idphases)
+	
+	def id(self):
+		return self._idphases
+
 	def isVisible(self):
 		return self._visible
 	
@@ -58,8 +68,9 @@ def GetPhaseNames():
 		phases.append(Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7]))
 
 	return phases
-
+'''
 def getPhaseByID(sentid):
 	for phase in sharedDB.myPhases:		
 		if str(phase._idphases) == str(sentid):
 			return phase
+'''

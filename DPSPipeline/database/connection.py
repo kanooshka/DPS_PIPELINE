@@ -104,9 +104,9 @@ class processQueries(QtCore.QThread):
 			
 			#save changes				
 			for proj in sharedDB.myProjects :		
-			    proj.Save()
+			    sharedDB.myProjects[str(proj)].Save()
 			for ua in sharedDB.myUserAssignments:
-				ua.Save()
+				sharedDB.myUserAssignments[str(ua)].Save()
 			
 		else:
 			sharedDB.mySQLConnection.wrongVersionSignal.emit()
@@ -237,25 +237,19 @@ class Connection(QObject):
 		#clients
 		while True:
 			if len(self._clientsToBeParsed)>0:
-				row = self._clientsToBeParsed[0]
-				
-				existed = False		
-				
-				#iterate through ip list
-				for client in sharedDB.myClients:
-					#if id exists update entry
-					if str(client._idclients) == str(row[0]):
-						if not str(sharedDB.app.sessionId()) == str(row[4]) or sharedDB.testing:
-							client.SetValues(_idclients = row[0],_name = row[1])
-						existed = True
-						break
-				if not existed:
+				row = self._clientsToBeParsed[0]			
+			
+				if str(row[0]) in sharedDB.myClients:
+					client = sharedDB.myClients[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[4]) or sharedDB.testing:
+						client.SetValues(_idclients = row[0],_name = row[1])
+				else:
 					#create client
 					print "New Client found in database CREATING client: "+str(row[0])
 					myClient =sharedDB.clients.Clients(_idclients = row[0],_name = row[1],_new = 0)
 					#add ip to ip list
-					sharedDB.myClients.append(myClient)	
-		
+					sharedDB.myClients[str(row[0])] = myClient
+					
 					#emit new client signal
 					sharedDB.mySQLConnection.newClientSignal.emit(str(myClient._idclients))
 					
@@ -268,31 +262,25 @@ class Connection(QObject):
 		while True:
 			if len(self._ipsToBeParsed)>0:
 				row = self._ipsToBeParsed[0]
-				existed = False		
-				#iterate through ip list
-				for ip in sharedDB.myIps:
-					#if id exists update entry
-					if str(ip._idips) == str(row[0]):
-						if not str(sharedDB.app.sessionId()) == str(row[5]) or sharedDB.testing:
-							ip.SetValues(_idips = row[0],_name = row[1],_idclients = row[2])
-						existed = True
-						break
-				if not existed:
+
+				if str(row[0]) in sharedDB.myIps:
+					ip = sharedDB.myIps[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[5]) or sharedDB.testing:
+						ip.SetValues(_idips = row[0],_name = row[1],_idclients = row[2])
+				else:
 					#create ip
 					print "New IP found in database CREATING ip: "+str(row[0])
 					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
 					myIp =sharedDB.ips.Ips(_idips = row[0],_name = row[1],_idclients = row[2],_new = 0)
 					#add ip to ip list
-					sharedDB.myIps.append(myIp)
-					#iterate through projects
-					for client in sharedDB.myClients:
-						##if idprojects matches
-						if client._idclients == myIp._idclients:
-							###add to client's ips
-							client._ips.append(myIp)
-							break
-		
-		
+					sharedDB.myIps[str(row[0])] = myIp
+					
+					#connect ip to client
+					if str(myIp._idclients) in sharedDB.myClients:
+						client = sharedDB.myClients[str(myIp._idclients)]
+						if str(myIp.id()) not in client._ips:
+							client._ips[str(myIp.id())] = myIp
+
 					#emit new sequence signal
 					sharedDB.mySQLConnection.newIpSignal.emit(str(myIp._idips))
 					
@@ -307,32 +295,27 @@ class Connection(QObject):
 			if len(self._projectsToBeParsed)>0:
 				row = self._projectsToBeParsed[0]
 				#print "Adding project "+str(row[1])
-				existed = False		
-				#iterate through project list
-				for proj in sharedDB.myProjects:
-					#if id exists update entry
-					if str(proj._idprojects) == str(row[0]):
-						if not str(sharedDB.app.sessionId()) == str(row[13]) or sharedDB.testing:
-							proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12])
-						existed = True
-						break
-				if not existed:
+
+				if str(row[0]) in sharedDB.myProjects:
+					proj = sharedDB.myProjects[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[13]) or sharedDB.testing:
+						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12])
+
+				else:
 					#create project
 					print "New PROJECT found in database CREATING project: "+str(row[0])
 					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
 					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12],_new = 0)
 					#add project to project list
-					sharedDB.myProjects.append(myProj)
+					sharedDB.myProjects[str(row[0])] = myProj
 					#iterate through projects
-					for ip in sharedDB.myIps:
-						##if idprojects matches
-						if ip._idips == myProj._idips:
-							###add to project's sequences
-							#print "Adding Sequence "+str(mySeq._idsequences)+ " in Project " + str(proj._idprojects)
-							ip._projects.append(myProj)
-							break
-		
-		
+					
+					#connect project to ip
+					if str(myProj._idips) in sharedDB.myIps:
+						ip = sharedDB.myIps[str(myProj._idips)]
+						if str(myProj.id()) not in ip._projects:
+							ip._projects[str(myProj.id())] = myProj
+
 					#emit new sequence signal
 					sharedDB.mySQLConnection.newProjectSignal.emit(str(myProj._idprojects))
 					
@@ -347,35 +330,26 @@ class Connection(QObject):
 			if len(self._phaseassignmentsToBeParsed)>0:
 				row = self._phaseassignmentsToBeParsed[0]
 				
-				existed = False
-				for phase in sharedDB.myPhaseAssignments:			
-					#if id exists update entry
-	
-					if str(phase._idphaseassignments) == str(row[0]):
-						if not str(sharedDB.app.sessionId()) == str(row[10]) or sharedDB.testing:
-							phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7],_hoursalotted = row[11],_assigned = row[12])
-						existed = True
-						break
-			
-					
-				if existed == False:
-				#create phase assignment
+				if str(row[0]) in sharedDB.myPhaseAssignments:
+					phase = sharedDB.myPhaseAssignments[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[10]) or sharedDB.testing:
+						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7],_hoursalotted = row[11],_assigned = row[12])
+
+				else:
+					#create phase assignment
 					print "New PHASE ASSIGNMENT found in database CREATING phase assignment: "+str(row[0])
 					#create instance of phase assignment class				
 					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7], _new = 0, _hoursalotted = row[11], _assigned = row[12])
 					#add phase to phase assignment list
-					sharedDB.myPhaseAssignments.append(myPhase)
-					#iterate through projects
-					for proj in sharedDB.myProjects:
-						##if idprojects matches
-						if proj._idprojects == myPhase._idprojects:
-							###add to project's phases
-							#print proj._idprojects
-							proj._phases.append(myPhase)
-							myPhase.project = proj
-							###if current project in projectview update
-							break
+					sharedDB.myPhaseAssignments[str(row[0])] = myPhase
 					
+					#connect phaseassignment to project
+					if str(myPhase._idprojects) in sharedDB.myProjects:
+						proj = sharedDB.myProjects[str(myPhase._idprojects)]
+						if str(myPhase.id()) not in proj._phases:
+							proj._phases[str(myPhase.id())] = myPhase
+							myPhase.project = proj
+
 					sharedDB.mySQLConnection.newPhaseAssignmentSignal.emit(str(myPhase._idphaseassignments))
 					
 				#remove row from list
@@ -388,33 +362,25 @@ class Connection(QObject):
 			#print "Queue Lenght: "+str(x)
 			if len(self._sequencesToBeParsed)>0:
 				row = self._sequencesToBeParsed[0]
-				
-				existed = False
-				for seq in sharedDB.mySequences:			
-					#if id exists update entry
 	
-					if str(seq._idsequences) == str(row[0]):
-						if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
-							seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
-						existed = True
-						break
-			
-					
-				if existed == False:
+				if str(row[0]) in sharedDB.mySequences:
+					seq = sharedDB.mySequences[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+						seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
+
+				else:
 				#create project
 					print "New SEQUENCE found in database CREATING sequence: "+str(row[0])
 					#create instance of sequence class				
 					mySeq =sharedDB.sequences.Sequences(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4], _idprojects = row[5], _new = 0)
 					#add sequence to sequence list
-					sharedDB.mySequences.append(mySeq)
-					#iterate through projects
-					for proj in sharedDB.myProjects:
-						##if idprojects matches
-						if proj._idprojects == mySeq._idprojects:
-							###add to project's sequences
-							#print "Adding Sequence "+str(mySeq._idsequences)+ " in Project " + str(proj._idprojects)
-							proj._sequences.append(mySeq)
-							break
+					sharedDB.mySequences[str(row[0])] = mySeq
+					
+					#connect sequence to project
+					if str(mySeq._idprojects) in sharedDB.myProjects:
+						proj = sharedDB.myProjects[str(mySeq._idprojects)]
+						if str(mySeq.id()) not in proj._sequences:
+							proj._sequences[str(mySeq.id())] = mySeq
 					
 					sharedDB.mySQLConnection.newSequenceSignal.emit(str(mySeq._idsequences))
 					
@@ -429,41 +395,33 @@ class Connection(QObject):
 			if len(self._shotsToBeParsed)>0:
 				row = self._shotsToBeParsed[0]
 	
-				existed = False
-				for shot in sharedDB.myShots:			
-					#if id exists update entry
-					#if str(shot._number) == str(row[1]) and str(shot._idprojects) == str(row[7]) and str(shot._idsequences) == str(row[8]):
-	
-					if str(shot._idshots) == str(row[0]):						
-						if not str(sharedDB.app.sessionId()) == str(row[12]) or sharedDB.testing:
-							shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _shotnotes = row[11])
-						existed = True
-						break
-					
-				if existed == False:
+				if str(row[0]) in sharedDB.myShots:
+					shot = sharedDB.myShots[str(row[0])]						
+					if not str(sharedDB.app.sessionId()) == str(row[12]) or sharedDB.testing:
+						shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _shotnotes = row[11])
+
+				else:
 				#create project
 					print "New SHOT found in database CREATING shot: "+str(row[0])
 					#create instance of shot class				
 					myShot =sharedDB.shots.Shots(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _new = 0, _shotnotes = row[11])
 					#add shot to shot list
-					sharedDB.myShots.append(myShot)
+					sharedDB.myShots[str(row[0])] = myShot
+					
+					
 					#iterate through sequences
 					if myShot._idsequences == 0:
-						for proj in sharedDB.myProjects:
-							##if idsequences matches
-							if proj._idprojects == myShot._idprojects:
-								###add to sequence's shot list
-								proj._images.append(myShot)
-								###if current sequence in projectview update
-								break
+						#connect shot to project
+						if str(myShot._idprojects) in sharedDB.myProjects:
+							proj = sharedDB.myProjects[str(myShot._idprojects)]
+							if str(myShot.id()) not in proj._sequences:
+								proj._images[str(myShot.id())] = myShot
 					else:
-						for seq in sharedDB.mySequences:
-							##if idsequences matches
-							if seq._idsequences == myShot._idsequences:
-								###add to sequence's shot list
-								seq._shots.append(myShot)
-								###if current sequence in projectview update
-								break
+						#connect shot to sequence
+						if str(myShot._idsequences) in sharedDB.mySequences:
+							seq = sharedDB.mySequences[str(myShot._idsequences)]
+							if str(myShot.id()) not in seq._shots:
+								seq._shots[str(myShot.id())] = myShot
 					
 					sharedDB.mySQLConnection.newShotSignal.emit(str(myShot._idshots))
 							
@@ -478,36 +436,40 @@ class Connection(QObject):
 			#print "Queue Lenght: "+str(x)
 			if len(self._tasksToBeParsed)>0:
 				row = self._tasksToBeParsed[0]
-	
-				existed = False
-				for task in sharedDB.myTasks:
-					if str(task._idtasks) == str(row[0]):						
-						if not str(sharedDB.app.sessionId()) == str(row[15]) or sharedDB.testing:
-							#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp
-							task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
-						existed = True
-						break
+
+				if str(row[0]) in sharedDB.myTasks:
+					task = sharedDB.myTasks[str(row[0])]						
+					if not str(sharedDB.app.sessionId()) == str(row[15]) or sharedDB.testing:
+						#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp
+						task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
 					
-				if existed == False:
+				else:
 				#create project
 					print "New TASK found in database CREATING task: "+str(row[0])
 					#create instance of shot class				
 					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
 					#add task to task list
-					sharedDB.myTasks.append(myTask)
+					sharedDB.myTasks[str(row[0])] = myTask
 					#iterate through shots
 					
-					for phase in sharedDB.myPhaseAssignments:
-						phase.AddTaskToList(myTask)
-						
-					for shot in sharedDB.myShots:
-						shot.AddTaskToList(myTask)
+					#connect task to phase
+					if str(myTask._idphaseassignments) in sharedDB.myPhaseAssignments:
+						phase = sharedDB.myPhaseAssignments[str(myTask._idphaseassignments)]
+						if str(myTask.id()) not in phase._tasks:
+							phase._tasks[str(myTask.id())] = myTask
+	
+					#connect task to shot
+					if str(myTask._idshots) in sharedDB.myShots:
+						shot = sharedDB.myShots[str(myTask._idshots)]
+						if str(myTask.id()) not in shot._tasks:
+							shot._tasks[str(myTask.id())] = myTask
 					
-					#SLOWWWWWW		
-					'''for task in sharedDB.myTasks:
-						if task._parenttaskid is not None:
-							task.AddTaskToList(myTask)
-					'''		
+					#connect task to task
+					if str(myTask._parenttaskid) in sharedDB.myTasks:
+						t = sharedDB.myTasks[str(myTask._parenttaskid)]
+						if str(myTask.id()) not in t.childTasks:
+							t.childTasks[str(myTask.id())] = myTask
+
 					sharedDB.mySQLConnection.newTaskSignal.emit(str(myTask._idtasks))
 				
 					
@@ -521,24 +483,22 @@ class Connection(QObject):
 			#print "Queue Lenght: "+str(x)
 			if len(self._userAssignmentsToBeParsed)>0:
 				row = self._userAssignmentsToBeParsed[0]
-				
-				existed = False
-				for assignment in sharedDB.myUserAssignments:
-					if str(assignment._iduserassignments) == str(row[0]):						
-						if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
-							#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
-							assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
-						existed = True
-						break
+
+				if str(row[0]) in sharedDB.myUserAssignments:
+					assignment = sharedDB.myUserAssignments[str(row[0])]						
+					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+						#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
+						assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
+					existed = True
+					break
 					
-				if existed == False:
+				else:
 				#create User Assignment
 					print "New USER ASSIGNMENT found in database CREATING user assignment id: "+str(row[0])
 					#create instance of user assignment class				
 					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3],_idstatuses = row[4],_timestamp = row[5], _hours = row[9])
 					#add task to task list
-					sharedDB.myUserAssignments.append(myUserAssignment)
-					
+					sharedDB.myUserAssignments[str(row[0])] = myUserAssignment
 					sharedDB.mySQLConnection.newUserAssignmentSignal.emit(str(myUserAssignment._iduserassignments))
 					
 		
@@ -568,8 +528,7 @@ class Connection(QObject):
 					#create instance of user assignment class				
 					myHours =sharedDB.hours.Hours(_idhours = row[0], _idusers = row[1],_idphaseassignments = row[2],_idprojects = row[3],_description = row[4],_hours = row[5],_date = row[6], _timestamp = row[7])
 
-					sharedDB.myHours.append(myHours)
-					
+					sharedDB.myHours[str(row[0])] = myHours
 					sharedDB.mySQLConnection.newHoursSignal.emit(str(myHours._idhours))
 					
 				#remove row from list

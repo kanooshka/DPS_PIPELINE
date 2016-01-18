@@ -24,7 +24,8 @@ class MyTasksWidgetItem(QWidget):
 	self._project = _project
 	self._userassignment = _userassignment
 	if _userassignment is not None:
-	    self.user = sharedDB.users.getUserByID(self._userassignment.idUsers())
+	    if str(_userassignment.idUsers()) in sharedDB.myUsers:
+		self.user = sharedDB.myUsers[str(_userassignment.idUsers())]
 	    self._userassignment.userAssignmentChanged.connect(self.UpdateValues)
 	else:
 	    self.user = None

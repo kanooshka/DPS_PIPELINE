@@ -94,20 +94,23 @@ class CalendarViewWidget(QtGui.QWidget):
 		self.myWaitTimer.quit()
 	
 	def AddNewProjects(self, idprojects):
-		for project in sharedDB.myProjects:
-			if str(project._idprojects) == str(idprojects):
-				#if project._phases:
-					#myPhaseAssignments = project._phases				
-				if (not project._hidden):
-				    self._projectQueue.append(project)
-				    #self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
+		if str(idprojects) in sharedDB.myProjects:
+			project = sharedDB.myProjects[str(idprojects)]				
+			#if project._phases:
+					#myPhaseAssignments = project._phases	
+			if (not project._hidden):
+			    self._projectQueue.append(project)
+			    #self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
 				
 	def AddNewPhaseAssignment(self, idphaseassignments):
+		if str(idphaseassignments) in sharedDB.myPhaseAssignments:
+			self.AddPhase(sharedDB.myPhaseAssignments[str(idphaseassignments)])
+		'''
 		for phase in sharedDB.myPhaseAssignments:
 			if str(phase._idphaseassignments) == str(idphaseassignments):
 				#find project with same id
 				self.AddPhase(phase)				
-						
+		'''				
 	
 	#def AddProject(self, project,phases = []):
 	def AddProject(self):
@@ -147,7 +150,7 @@ class CalendarViewWidget(QtGui.QWidget):
 			projectXGanttWidgetItem.setHidden(True)
 			
 			for phase in project._phases:
-				self.AddPhase(phase)
+				self.AddPhase(sharedDB.myPhaseAssignments[str(phase)])
 			
 			#print project._calendarWidgetItem			
 	
@@ -220,7 +223,7 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				parentItem.addChild(childItem)
 				
-				if "0" in sharedDB.currentUser.departments() or sharedDB.phases.getPhaseByID(phase._idphases).isVisible():
+				if "0" in sharedDB.currentUser.departments() or (str(phase._idphases) in sharedDB.myPhases and sharedDB.myPhases[str(phase._idphases)].isVisible()):
 					childItem.setHidden(False)
 					parentItem.setHidden(False)
 				else:

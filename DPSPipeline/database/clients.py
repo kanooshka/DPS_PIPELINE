@@ -30,7 +30,7 @@ class Clients(QObject):
 		self._hidden                 = False
 		
 		self._new		     = _new
-		self._ips		     = []
+		self._ips		     = {}
 		
 		if self._new:
 			self.AddClientToDB()
@@ -42,7 +42,16 @@ class Clients(QObject):
 		
 		#if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
 			#self._hidden = True
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idclients') and self._idclients == another._idclients
+	
+	def __hash__(self):
+		return hash(self._idclients)
+		
+	def id(self):
+		return self._idclients
+	
 	def Save(self):
 		
 		#print self._name
