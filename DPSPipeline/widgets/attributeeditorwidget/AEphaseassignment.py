@@ -198,6 +198,9 @@ class AEPhaseAssignment(QtGui.QWidget):
     def changeAlottedHours(self):
 	if not self._signalsBlocked:
 	    self._currentPhaseAssignment.setHoursAlotted(self.hoursalotted.value())
+	    
+	    #update colors
+	    self.userTable.setTotalAssignedHours()
     
     def changeCalendarDays(self):
 	if not self._signalsBlocked:
