@@ -121,11 +121,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def AttachTaskToButton(self, idtasks):
         #find task with id
         task = None
-        for t in sharedDB.myTasks:
-            if str(t._idtasks) == str(idtasks):
-                task = t
-                #print idtasks
-                break            
+        if str(idtasks) in sharedDB.myTasks:
+	    task = sharedDB.myTasks[str(idtasks)] 
         
         if task is not None:
             #iterate through items to find correct shot index

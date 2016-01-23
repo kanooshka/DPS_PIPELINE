@@ -85,7 +85,8 @@ class Tasks(QObject):
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
 		
-		sharedDB.myTasks.append(self)
+		sharedDB.myTasks[str(self.id())] = self
+		
 		self.taskAdded.emit(str(self._idtasks))
 	
 	def UpdateTaskInDB (self):

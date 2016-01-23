@@ -149,7 +149,13 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			projectXGanttWidgetItem.setHidden(True)
 			
-			for phase in project._phases.values():
+			phaselist = []
+			for p in project._phases.values():
+				phaselist.append(p)
+				
+			phaselist.sort(key=operator.attrgetter('_startdate'))
+
+			for phase in phaselist:
 				self.AddPhase(phase)
 			
 			#print project._calendarWidgetItem			

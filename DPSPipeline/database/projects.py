@@ -105,7 +105,7 @@ class Projects(QObject):
 	def AddSequenceToProject(self, newName):
 
 		seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
-		seq.save()
+		seq.Save()
 		
 		self._sequences[str(seq.id())] = seq
 		return seq

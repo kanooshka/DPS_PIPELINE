@@ -190,6 +190,21 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    return
     
     def AppendToUserAssignmentQueue(self, assignmentid):
+	user = sharedDB.myUsers[str(sharedDB.myUserAssignments[str(assignmentid)].idUsers())]
+	
+	'''
+	#if matches all criteria
+	if self.showAllUsersEnabled or 
+	self.showUnassignedEnabled
+	self.showNotStartedEnabled
+	self.showInProgressEnabled
+	self.showOnHoldEnabled
+	self.showFinishedEnabled
+	self.showCancelledEnabled
+	self.showDeletedEnabled
+	self.showOutForApprovalEnabled
+	self.showAllUsersInDepartmentEnabled = 0
+	'''
 	self._userAssignmentQueue.append(assignmentid)
     
     def ProcessQueue(self):

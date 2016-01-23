@@ -25,16 +25,13 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         
         #if tasklist less than lenshotphasenames - 2
         columnIndex = 2
-        for phaseid in self.phases:
-            phase = self.phases[str(phaseid)]
+        for phase in self.phases.values():
             if phase._taskPerShot:
                 currentTask = None
                 
                 if self.shot._tasks is not None:
-                    for taskid in self.shot._tasks:
-                        task = self.shot._tasks[str(taskid)]
+                    for task in self.shot._tasks.values():
                         if task._idphases == phase._idphases:
-                            #print "MATCH FOUND Attaching Task"
                             currentTask = task
                 
                 
@@ -52,7 +49,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
                 btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
-                
+
                 uLabel = userLabel.UserLabel(task = currentTask)
                 btn.stateChanged.connect(uLabel.getUserFromTask)
 
