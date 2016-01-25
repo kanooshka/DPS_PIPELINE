@@ -14,6 +14,7 @@ import atexit
 
 from PyQt4.QtGui import QColor
 
+
 class WaitTimer(QtCore.QThread):
 
 	def run(self):
@@ -251,6 +252,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			phase = sharedDB.myPhases[str(phaseid)]		
 
 			phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+			
+			phaseXGanttWidgetItem._dbEntry = phase
 			
 			phaseXGanttWidgetItem.setName(phase._name)
 			

@@ -26,6 +26,8 @@ class Users():
 		self._type                   = "user"
 		self._hidden                 = False
 		
+		self._availibility = {}
+		
 		if self._active == 0:
 			self._hidden = True
 			
@@ -52,6 +54,26 @@ class Users():
 	
 	def isActive(self):
 		return self._active
+
+	def updateAvailiblity(self):
+		#take sent information and update via selected
+		
+		
+		#if sent user assignment
+			#get start end date
+			#split hours over time period (weekdays / non holidays / not days off)
+		#if sent phase assignment
+			#refresh hours info for earliest start to latest end
+			
+		#connect user assignment
+			#refresh hours
+			#on update refresh hours
+		#connect phase assignment
+			#refresh hours
+			#on update refresh hours
+		
+		pass
+	
 
 def GetAllUsers():
 	users = {}

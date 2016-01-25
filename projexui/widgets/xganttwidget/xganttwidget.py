@@ -92,14 +92,22 @@ class XGanttWidget(QWidget):
 	
 	self._gridPen           = QPen(color.darker(135))
 	self._brush             = QBrush(color)
-	self._alternateBrush    = QBrush(color.darker(25))
+	self._alternateBrush    = QBrush(color.darker(105))	
 	self._currentDayBrush   = QBrush(QColor(146,252,186))
 	self._holidayBrush      = QBrush(QColor(166,46,46))
 	self._bookedBrush      = QBrush(QColor(50,250,0))
+	self._unavailableBrush = QBrush(QColor(75,75,75))
+	weekendColor            = color.darker(148)
+	
+	
 	
 	self._availabilityEnabled = _availabilityEnabled
 	
-	weekendColor            = color.darker(148)
+	if self._availabilityEnabled:
+	    self._currentDayBrush   = None
+	    self._holidayBrush      = QBrush(QColor(75,75,75))
+	    weekendColor	= QBrush(QColor(75,75,75))
+	
 	self._weekendBrush      = QBrush(weekendColor)
 	
 	# setup the columns for the tree
@@ -698,3 +706,11 @@ class XGanttWidget(QWidget):
 	:return     <QBrush>
 	"""
 	return self._bookedBrush
+    
+    def unavailableBrush( self ):
+	"""
+	Returns the unavailable brush to be used for coloring in unavailable days.
+	
+	:return     <QBrush>
+	"""
+	return self._unavailableBrush

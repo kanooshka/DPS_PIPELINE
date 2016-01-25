@@ -37,6 +37,12 @@ class Phases():
 		self._iddepartments    = _iddepartments
 		self._taskPerShot     = _taskPerShot
 		self._defaultTaskStatus = _defaultTaskStatus
+		self._type                   = "phase"
+		
+		self._availability = {}
+		
+		if self._name == "Lighting":
+			self._availability = {'01252016': 8,'01262016': 16}
 		
 		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1
