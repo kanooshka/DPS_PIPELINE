@@ -59,12 +59,11 @@ class UserAssignment(QObject):
 		if self._new:	
 			self.AddUserAssignmentToDB()
 			print "User Assignment '"+str(self._iduserassignments)+"' Added to Database!"
-			self._new = 0
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateUserAssignmentInDB()
 			print "User Assignment '"+str(self._iduserassignments)+"' Updated in Database!"
-			self._updated = 0	
+				
 	
 	def AddUserAssignmentToDB(self):
 	
@@ -74,10 +73,14 @@ class UserAssignment(QObject):
 		
 		sharedDB.myUserAssignments[str(self._iduserassignments)] = self
 		self.userAssignmentAdded.emit(str(self._iduserassignments))
+		
+		self._new = 0
 	
 	def UpdateUserAssignmentInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+		if self.id() is not None:
+			sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+			self._updated = 0
 
 	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _hours = 0, _timestamp = datetime.now()):
 		print ("Downloaded update for UserAssignment '"+str(self._iduserassignments)+"'")
