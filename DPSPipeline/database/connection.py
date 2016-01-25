@@ -119,6 +119,7 @@ class processQueries(QtCore.QThread):
 
     
 class Connection(QObject):
+	newUserSignal = QtCore.pyqtSignal(QtCore.QString)
 	newPhaseSignal = QtCore.pyqtSignal(QtCore.QString)
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
 	newIpSignal = QtCore.pyqtSignal(QtCore.QString)

@@ -1,7 +1,12 @@
 from DPSPipeline.database.connection import Connection
 import sharedDB
 
+from PyQt4 import QtCore
+
 class Users():
+
+	userChanged = QtCore.pyqtSignal(QtCore.QString)
+	userAdded = QtCore.pyqtSignal(QtCore.QString)
 
 	def __init__(self,_idusers = 0, _username = '', _name = '', _password = '', _iddepartments = 0, _idPrivileges = 3,_active = None, _assignments = {},_updated = 0):
 		
@@ -61,6 +66,8 @@ def GetAllUsers():
 		#print row[0]
 		#users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6]))
 		users[str(row[0])]=Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6])
+		
+		sharedDB.mySQLConnection.newUserSignal.emit(str(row[0]))
 	return users
 
 def GetCurrentUser(username = ''):
