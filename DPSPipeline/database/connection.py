@@ -48,9 +48,10 @@ class processQueries(QtCore.QThread):
 				print "Commencing initial Database load"
 				
 				sharedDB.myStatuses = sharedDB.statuses.GetStatuses()				
-				sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
+				#sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
-		
+			
+			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
@@ -70,7 +71,10 @@ class processQueries(QtCore.QThread):
 						
 						rows = sharedDB.mySQLConnection.query(self._currentQuery)
 	
-						if self._currentDB == "clients":						
+						if self._currentDB == "phases":						
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._phasesToBeParsed.extend(rows)
+						elif self._currentDB == "clients":						
 							rows.sort(key=lambda x: x[2])
 							sharedDB.mySQLConnection._clientsToBeParsed.extend(rows)
 						elif self._currentDB == "ips":
@@ -169,6 +173,7 @@ class Connection(QObject):
 		
 		self.wrongVersionSignal.connect(self.wrongVersion)
 		
+		self._phasesToBeParsed = []
 		self._clientsToBeParsed = []
 		self._ipsToBeParsed = []
 		self._projectsToBeParsed = []
@@ -235,7 +240,29 @@ class Connection(QObject):
 	def ParseUpdatesFromDB(self):
 		#sharedDB.blockSignals = 1
 		
-
+		#phases
+		while True:
+			if len(self._phasesToBeParsed)>0:
+				row = self._phasesToBeParsed[0]			
+			
+				if str(row[0]) in sharedDB.myPhases:
+					phase = sharedDB.myPhases[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[4]) or sharedDB.testing:
+						phase.SetValues(_idclients = row[0],_name = row[1])
+				else:
+					#create phase
+					print "New Phase found in database CREATING phase: "+str(row[0])
+					myPhase =sharedDB.phases.Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
+					#add ip to ip list
+					sharedDB.myPhases[str(row[0])] = myPhase
+					
+					#emit new client signal
+					sharedDB.mySQLConnection.newPhaseSignal.emit(str(myPhase._idphases))
+					
+				#remove row from list
+				del self._phasesToBeParsed[0]
+			else:
+				break
 		#clients
 		while True:
 			if len(self._clientsToBeParsed)>0:

@@ -39,17 +39,15 @@ class Phases():
 		self._defaultTaskStatus = _defaultTaskStatus
 		self._type                   = "phase"
 		
+		self._phaseAssignments = {}
 		self._availability = {}
-		
-		if self._name == "Lighting":
-			self._availability = {'01252016': 8,'01262016': 16}
 		
 		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1
 		else:
 			self._visible = 0
 		
-		sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
+		#sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
 	
 	def __eq__(self, another):
 		return hasattr(another, '_idphases') and self._idphases == another._idphases
