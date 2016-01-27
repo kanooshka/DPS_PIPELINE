@@ -3,7 +3,7 @@ from DPSPipeline.database.connection import Connection
 import sharedDB
 from PyQt4 import QtCore
 from PyQt4.QtCore import QDate, QObject
-from datetime import datetime
+from datetime import datetime,timedelta,date
 import operator
 
 class PhaseAssignments(QObject):
@@ -45,6 +45,14 @@ class PhaseAssignments(QObject):
 		
 		self.SetPhaseValues()
 		
+		self.updateAvailability()
+		
+		#connect to phase
+		sharedDB.myPhases[str(self._idphases)]._phaseAssignments[str(self.id())] = self
+		
+		#print self._startdate.strftime("%Y-%m-%d")
+		#print QDate(self._startdate).toString("yyyy-MM-dd")
+		
 		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
 		self._userAssignments = {}
 		#self._unassigned = []
@@ -72,6 +80,9 @@ class PhaseAssignments(QObject):
 			if str(self._idphases) == '16':
 				self.project._updated = 1
 			print "Phase '"+str(self._idphaseassignments)+"' Updated in Database!"
+			
+			
+			
 			self._updated = 0
 		
 	def SetPhaseValues(self):
@@ -114,6 +125,8 @@ class PhaseAssignments(QObject):
 		self._timestamp                    = _timestamp
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
+		
+		self.updateAvailability()
 	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
@@ -178,6 +191,19 @@ class PhaseAssignments(QObject):
 			
 		return idusers
 	
+	def updateAvailability(self):
+		self._availability = {}
+		for n in range(int ((self._enddate - self._startdate).days)+1):
+			#print self._startdate + timedelta(n)
+			self._availability[str(self._startdate + timedelta(n))] = 10
+			
+		view = sharedDB.calendarview._departmentXGanttWidget.uiGanttVIEW.scene()
+		view.setDirty()
+		view.update()
+		#view.syncView()
+		
+	
+
 	def updateAssigned(self):
 		for userids in self._userAssignments:
 			user = self._userAssignments[str(userids)]

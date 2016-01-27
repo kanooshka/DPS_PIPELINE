@@ -280,25 +280,21 @@ class XGanttScene(QGraphicsScene):
             curr = curr.addDays(increment)
             x += cell_width
             i += 1
-        
+
         if gantt._availabilityEnabled:
 	    #iterate through rows
 	    for itemcount in range(0,gantt.topLevelItemCount()):
 		#check top item, then check child items
 		item = gantt.topLevelItem(itemcount)
-		
 		if item._dbEntry is not None:
-		    if item._dbEntry._type == "phase":		    
-			# store unavailable rectangles
-			#if ( curr < QDate.currentDate()):
-			for key in item._dbEntry._availability.keys():
-			    			
-			    if item._dbEntry._availability[key] > 8:
-				print "Greater than 0"
-				if QDate.fromString(key,"MMddyyyy") >= start:
-				    diff = start.daysTo(QDate.fromString(key,"MMddyyyy"))
-				    rect = QRect((diff)*cell_width, header_height+cell_height*(itemcount), cell_width, cell_height)
-				    self._unavailableRects.append(rect)
+		    if item._dbEntry._type == "phase":
+			for pa in item._dbEntry._phaseAssignments.values():
+			    for key in pa._availability.keys():						    
+				if pa._availability[key] > 8:
+				    if QDate.fromString(key,"yyyy-MM-dd") >= start:
+					diff = start.daysTo(QDate.fromString(key,"yyyy-MM-dd"))
+					rect = QRect((diff)*cell_width, header_height+cell_height*(itemcount), cell_width, cell_height)
+					self._unavailableRects.append(rect)
 	
 	
 	# update the month rect

@@ -103,11 +103,6 @@ class XGanttWidget(QWidget):
 	
 	self._availabilityEnabled = _availabilityEnabled
 	
-	if self._availabilityEnabled:
-	    self._currentDayBrush   = None
-	    self._holidayBrush      = QBrush(QColor(75,75,75))
-	    weekendColor	= QBrush(QColor(75,75,75))
-	
 	self._weekendBrush      = QBrush(weekendColor)
 	
 	# setup the columns for the tree
@@ -168,6 +163,13 @@ class XGanttWidget(QWidget):
 	self.uiGanttTREE.itemSelectionChanged.connect(self.__selectView)
 	self.uiGanttVIEW.scene().selectionChanged.connect(self.__selectTree)
 	self.uiGanttTREE.itemChanged.connect(self.updateItemData)
+    
+	if self._availabilityEnabled:
+	    self._currentDayBrush   = None
+	    self._holidayBrush      = QBrush(QColor(75,75,75))
+	    weekendColor	= QBrush(QColor(75,75,75))
+	    self.uiGanttTREE.setEditable(False)
+	    #self._cellHeight = 12
     
     def __del__(self):
 	self.uiGanttVIEW.scene().selectionChanged.disconnect(self.__selectTree)

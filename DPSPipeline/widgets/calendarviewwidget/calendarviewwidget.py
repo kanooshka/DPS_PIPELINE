@@ -4,7 +4,7 @@ import datetime
 from projexui.widgets.xganttwidget.xganttwidget     import XGanttWidget
 from projexui.widgets.xganttwidget.xganttviewitem   import XGanttViewItem
 from projexui.widgets.xganttwidget.xganttwidgetitem import XGanttWidgetItem 
-from PyQt4.QtCore import QDate, QObject
+from PyQt4.QtCore import QDate, QObject, Qt
 from PyQt4 import QtGui, QtCore
 
 import sharedDB
@@ -72,6 +72,8 @@ class CalendarViewWidget(QtGui.QWidget):
 		#dockWidget.setWindowTitle("Calendar View")
 		#sharedDB.leftWidget = dockWidget
 		#sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
+
+		self.availabilityPhasesSkip = ["DUE","Revision 1","Revision 2","Approval"]
 
 		reload(projex)
 		reload(projexui)
@@ -251,39 +253,46 @@ class CalendarViewWidget(QtGui.QWidget):
 		if str(phaseid) in sharedDB.myPhases:
 			phase = sharedDB.myPhases[str(phaseid)]		
 
-			phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+			if phase._name not in self.availabilityPhasesSkip:
 			
-			phaseXGanttWidgetItem._dbEntry = phase
-			
-			phaseXGanttWidgetItem.setName(phase._name)
-			
-			#viewItem = phaseXGanttWidgetItem.viewItem()
-			
-			#find where to insert item
-			index = 0						
+				phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
 				
-			#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
-			self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
-			#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
-			
-			#project._calendarWidgetItem = projectXGanttWidgetItem
-			
-			#projectXGanttWidgetItem.setHidden(True)
-			
-			#for phase in project._phases:
-			#	self.AddPhase(phase)
-			
-			#print project._calendarWidgetItem			
-	
-			phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
-			phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
-	
-			#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
-			phaseXGanttWidgetItem.setExpanded(0)
-			self._departmentXGanttWidget.syncView()
-			phaseXGanttWidgetItem.sync()
-			
-			return
+				phaseXGanttWidgetItem.setFlags(phaseXGanttWidgetItem.flags() ^ Qt.ItemIsSelectable)
+				
+				phaseXGanttWidgetItem._dbEntry = phase
+				
+				phaseXGanttWidgetItem.setName(phase._name)
+				
+				#viewItem = phaseXGanttWidgetItem.viewItem()
+				
+				#find where to insert item
+				index = 0						
+				for x in range(0,self._departmentXGanttWidget.topLevelItemCount()):
+					if min(self._departmentXGanttWidget.topLevelItem(x)._dbEntry._name , phase._name) == phase._name:
+						break
+					index = x+1
+				
+				#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
+				
+				self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
+				#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+				
+				#project._calendarWidgetItem = projectXGanttWidgetItem
+				
+				#projectXGanttWidgetItem.setHidden(True)
+				
+				#for phase in project._phases:
+				#	self.AddPhase(phase)
+				
+				#print project._calendarWidgetItem			
+		
+				phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
+				phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
+		
+				#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
+				phaseXGanttWidgetItem.setExpanded(0)
+				self._departmentXGanttWidget.syncView()
+				phaseXGanttWidgetItem.sync()
 
 	def syncSplitters(self,x, index):
 		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(1)

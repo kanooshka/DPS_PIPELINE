@@ -38,18 +38,18 @@ currentDate = date.today()
 earliestDate = QDate.currentDate().toPyDate()
 
 '''Database Lists'''
-myStatuses = []
-myPhases = []
-myShots = []
-myTasks = []
-myUsers = []
-myClients = []
-myIps = []
-myProjects = []
-mySequences = []
-myPhaseAssignments = []
-myUserAssignments = []
-myHours = []
+myStatuses = {}
+myPhases = {}
+myShots = {}
+myTasks = {}
+myUsers = {}
+myClients = {}
+myIps = {}
+myProjects = {}
+mySequences = {}
+myPhaseAssignments = {}
+myUserAssignments = {}
+myHours = {}
 
 Doobedeba = -0.0*0+0
 
