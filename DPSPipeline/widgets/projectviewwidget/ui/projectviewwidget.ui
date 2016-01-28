@@ -809,9 +809,6 @@ Structure</string>
             </widget>
            </item>
           </layout>
-          <zorder></zorder>
-          <zorder>horizontalLayoutWidget</zorder>
-          <zorder>rigList</zorder>
          </widget>
         </widget>
        </item>
