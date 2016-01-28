@@ -587,8 +587,6 @@ class Connection(QObject):
 					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
 						#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
 						assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
-					existed = True
-					break
 					
 				else:
 				#create User Assignment
