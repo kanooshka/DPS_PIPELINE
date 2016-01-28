@@ -2,6 +2,7 @@ from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import taskProgressButton
 from DPSPipeline.widgets import userLabel
 import sharedDB
+import operator
 
 class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
     
@@ -25,7 +26,12 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         
         #if tasklist less than lenshotphasenames - 2
         columnIndex = 2
-        for phase in self.phases.values():
+        
+        #sort phases
+        #sortedPhases = self.phases.values()
+        #sortedPhases.sort(key=operator.attrgetter('_startdate'))
+        
+        for phase in self.phases:
             if phase._taskPerShot:
                 currentTask = None
                 

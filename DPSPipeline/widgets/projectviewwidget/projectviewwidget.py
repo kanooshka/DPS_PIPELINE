@@ -16,6 +16,7 @@ from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
+from DPSPipeline.widgets.temprigwidgetitem import temprigwidgetitem
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
 from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
@@ -65,11 +66,14 @@ class ProjectViewWidget(QWidget):
 	#self.progressListLayout.addWidget(self._shotTreeWidget)
 	#self.setProgressListVisibility()
 	
+	self.rigList.setColumnHidden(0,True)
+	
     def propogateUI(self, ):
 	self.setPrivelages()
 
 	#connects signals
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.AddSequenceToProgressList)
+	sharedDB.mySQLConnection.newTempRigSignal.connect(self.AddRigToRigList)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.AddShotToProgressList)
 	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
 	
@@ -90,6 +94,7 @@ class ProjectViewWidget(QWidget):
 	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
+	self.addRigButton.clicked.connect(self.AddRig)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	self.setEnabled(1)
@@ -179,9 +184,9 @@ class ProjectViewWidget(QWidget):
 		return self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		
     def propogateStatuses(self):
-	for status in sharedDB.myStatuses:
-	    self.projectStatus.addItem(status._name, QVariant(status))
-	    self.sequenceStatus.addItem(status._name, QVariant(status))
+	for status in sharedDB.myStatuses.values():
+	    self.projectStatus.addItem(status._name, QVariant(status.id()))
+	    self.sequenceStatus.addItem(status._name, QVariant(status.id()))
 	    #self.shotStatus.addItem(status._name, QVariant(status))
 
     def changeProjectPath(self):
@@ -201,7 +206,7 @@ class ProjectViewWidget(QWidget):
     def SetProjectValues(self):
 	if not self._blockUpdates:
 	    #self._currentProject._name = self.projectName.currentText()
-	    self._currentProject._idstatuses = self.projectStatus.currentIndex()+1
+	    self._currentProject._idstatuses = self.projectStatus.itemData(self.projectStatus.currentIndex()).toString()
 	    self._currentProject._fps = self.fps.value()
 	    self._currentProject._due_date = self.dueDate.date().toPyDate()
 	    self._currentProject._renderWidth = self.renderWidth.value()
@@ -237,7 +242,14 @@ class ProjectViewWidget(QWidget):
 	    else:
 		self.projectPath.setText('')
 	    #set Status
-	    self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+	    
+	    for x in range(0,self.projectStatus.count()):
+		if self.projectStatus.itemData(x).toString() == str(self._currentProject._idstatuses):	
+		    self.projectStatus.setCurrentIndex(x)
+		    break	    
+	    
+	    #self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+	    
 	    #set res
 	    self.renderWidth.setValue(self._currentProject._renderWidth)
 	    self.renderHeight.setValue(self._currentProject._renderHeight)
@@ -254,6 +266,7 @@ class ProjectViewWidget(QWidget):
 	    self.projectDescription.blockSignals = 0
 	    
 	    self.LoadProgressListValues()
+	    self.LoadRigListValues()
 	    
 	    self.setProgressListVisibility()
 	    
@@ -499,3 +512,47 @@ class ProjectViewWidget(QWidget):
 		item = stree.topLevelItem(x)
 		stree.setCurrentItem(item)
 		break
+	    
+    def LoadRigListValues(self):
+	self.rigList.clear()
+	
+	#self._shotTreeWidget.addTopLevelItem(self._shotTreeWidget.shotTreeItem)
+	
+	#self.rigList.sortByColumn(0, QtCore.Qt.AscendingOrder);
+	#self.progressList.setSortingEnabled(True);
+	
+	if (self._currentProject._rigs):
+	    for rig in self._currentProject._rigs.values():
+
+		#Add Sequences to list
+		self.AddRigToRigList(rig = rig)
+		
+    def AddRigToRigList(self, rigid = None, rig = None):
+	if rig is None:
+	    #print "getting sequence by id"
+	    if str(rigid) in sharedDB.myTempRigs:
+		rig = sharedDB.myTempRigs[str(rigid)]
+	
+	if rig is not None and self._currentProject is not None:
+	    if str(rig._idprojects) == str(self._currentProject._idprojects):
+	    
+		#Add rig to list
+		self.rigItem = temprigwidgetitem.TempRigWidgetItem(parent = self.rigList, rig = rig)
+    
+    def AddRig(self):
+	
+	#get sequence name
+	rigName = self.addRigLine.text()
+	
+	
+	if len(rigName):
+	    #add sequence
+	    rig = self._currentProject.AddRigToProject(rigName)
+	    self.AddRigToRigList(rig = rig)
+	    self.addRigLine.setText("")
+	    #seq.sequenceAdded.connect(self.AddSequenceToProgressList)
+	    
+	else:
+	    #warning message
+	    message = QtGui.QMessageBox.question(self, 'Message',
+	"Please input rig name and try again.", QtGui.QMessageBox.Ok)

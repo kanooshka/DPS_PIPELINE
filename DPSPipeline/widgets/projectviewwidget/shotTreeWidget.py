@@ -113,8 +113,9 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         self.UpdateWidgetHeight()
     
     def SetShotPhaseNames(self):        
-        for phaseid in self._phases:
-            phase = self._phases[str(phaseid)]
+        #for phaseid in self._phases:
+        #    phase = self._phases[str(phaseid)]
+	for phase in self._phases:
 	    if phase._taskPerShot:
                 self.shotPhaseNames.append(phase._name)        
     
@@ -141,7 +142,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def setProject(self, project):
         self._project = project
         if project is not None:
-            self._phases = project._phases
+            self._phases = project._phases.values()
+	    self._phases.sort(key=operator.attrgetter('_startdate'))
             if self._sequence is not None:
                 self._shots = self._sequence._shots
             else:

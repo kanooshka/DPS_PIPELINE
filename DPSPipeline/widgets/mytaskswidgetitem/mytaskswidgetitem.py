@@ -57,10 +57,9 @@ class MyTasksWidgetItem(QWidget):
 	else:
 	    self.hours.setText("0")
 	
-	for s in sharedDB.myStatuses:
-	    if s._idstatuses == self._phaseassignment._idstatuses:
-		    self.status.setText(s._name)
-		    break
+	if str(self._phaseassignment._idstatuses) in sharedDB.myStatuses:
+	    self.status.setText(sharedDB.myStatuses[str(self._phaseassignment._idstatuses)]._name)
+
 	
 	self.UpdateColors()
 	    
@@ -69,11 +68,11 @@ class MyTasksWidgetItem(QWidget):
     def UpdateColors(self):
 	#if due date is already passed turn red
 	try:
-	    if self._phaseassignment.idstatuses() == 4:
+	    if str(self._phaseassignment.idstatuses()) == "4":
 		self.bgFrame.setStyleSheet("background-color: rgb(0,150,0);")
-	    elif self._phaseassignment.idstatuses() == 3:
+	    elif str(self._phaseassignment.idstatuses()) == "3":
 		self.bgFrame.setStyleSheet("background-color: rgb(250,200,0);")
-	    elif self._phaseassignment.idstatuses() == 7:
+	    elif str(self._phaseassignment.idstatuses()) == "7":
 		self.bgFrame.setStyleSheet("background-color: rgb(200,100,255);")
 	    elif self._userassignment is None:
 		self.bgFrame.setStyleSheet("background-color: rgb(20,150,230);")

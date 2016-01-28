@@ -190,22 +190,31 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    return
     
     def AppendToUserAssignmentQueue(self, assignmentid):
-	user = sharedDB.myUsers[str(sharedDB.myUserAssignments[str(assignmentid)].idUsers())]
+	statusids = []
 	
-	'''
-	#if matches all criteria
-	if self.showAllUsersEnabled or 
-	self.showUnassignedEnabled
-	self.showNotStartedEnabled
-	self.showInProgressEnabled
-	self.showOnHoldEnabled
-	self.showFinishedEnabled
-	self.showCancelledEnabled
-	self.showDeletedEnabled
-	self.showOutForApprovalEnabled
-	self.showAllUsersInDepartmentEnabled = 0
-	'''
+	ua = sharedDB.myUserAssignments[str(assignmentid)]
+	if ua.assignmentType() == "phase_assignment":	    
+	    pa = sharedDB.myPhaseAssignments[str(ua._assignmentid)]
+	    project = sharedDB.myProjects[str(pa._idprojects)]
+	    for status in sharedDB.myStatuses.values():
+		if (status._name == "Finished" and not self.showFinishedEnabled) or (status._name == "Cancelled" and not self.showCancelledEnabled) or (status._name == "Deleted" and not self.showDeletedEnabled) or (status._name == "On Hold" and not self.showOnHoldEnabled) or (status._name == "Not Started" and not self.showNotStartedEnabled) or (status._name == "In Progress" and not self.showInProgressEnabled) or (status._name == "Out For Approval" and not self.showOutForApprovalEnabled):
+		    statusids.append(str(status.id()))
+	    
+	    if str(project._idstatuses) in statusids or str(pa._idstatuses) in statusids:
+		return
+	    
+	#user = sharedDB.myUsers[str(ua.idUsers())]
+	
+	#or (status._name == "Cancelled" and not self.showAllUsersEnabled)
+	#or (status._name == "Cancelled" and not self.showAllUsersInDepartmentEnabled)
+	#or (status._name == "Cancelled" and not self.showUnassignedEnabled)
+	
+	#print "Appending UA: "+str(assignmentid)
 	self._userAssignmentQueue.append(assignmentid)
+	
+	
+	
+	
     
     def ProcessQueue(self):
 	if len(self._userAssignmentQueue)>0:
@@ -421,8 +430,16 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    sharedDB.sel.select([self.cellWidget(row,column),self.cellWidget(row,column)._phaseassignment])
     
     def loadinprojectview(self, row, column):
+	pa = self.cellWidget(row,column)._phaseassignment
+	
 	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
 	sharedDB.mainWindow.centralTabbedWidget.setCurrentIndex(0)
-        sharedDB.myProjectViewWidget._currentProject = self.cellWidget(row,column)._phaseassignment.project            
+        sharedDB.myProjectViewWidget._currentProject = pa.project            
         
 	sharedDB.myProjectViewWidget.LoadProjectValues()
+	
+	#if rigging, show rigging tab
+	if sharedDB.myPhases[str(pa._idphases)].name() == "Rigging":
+	    sharedDB.myProjectViewWidget.projectPartWidget.setCurrentIndex(1)
+	else:
+	    sharedDB.myProjectViewWidget.projectPartWidget.setCurrentIndex(0)
