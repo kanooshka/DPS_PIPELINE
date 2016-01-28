@@ -28,7 +28,11 @@ class Statuses():
 	
 	def id(self):
 		return self._idstatuses
+	
+	def name(self):
+		return self._name
 
+'''
 def GetStatuses():
 	statuses = []
 	
@@ -40,7 +44,7 @@ def GetStatuses():
 		statuses.append(Statuses(_idstatuses = row[0],_name = row[1]))
 			
 	return statuses
-'''
+
 def getStatusById(sentid):
 	for s in sharedDB.myStatuses:
 		if s._idstatuses == sentid:
