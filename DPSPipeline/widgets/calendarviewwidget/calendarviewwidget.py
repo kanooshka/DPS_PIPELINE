@@ -4,7 +4,7 @@ import datetime
 from projexui.widgets.xganttwidget.xganttwidget     import XGanttWidget
 from projexui.widgets.xganttwidget.xganttviewitem   import XGanttViewItem
 from projexui.widgets.xganttwidget.xganttwidgetitem import XGanttWidgetItem 
-from PyQt4.QtCore import QDate, QObject
+from PyQt4.QtCore import QDate, QObject, Qt
 from PyQt4 import QtGui, QtCore
 
 import sharedDB
@@ -13,6 +13,7 @@ import time
 import atexit
 
 from PyQt4.QtGui import QColor
+
 
 class WaitTimer(QtCore.QThread):
 
@@ -37,19 +38,42 @@ class CalendarViewWidget(QtGui.QWidget):
 		#sharedDB.widgetList.Append(dockWidget)
 		vLayout = QtGui.QHBoxLayout()
 		self.setLayout(vLayout)
+		
+		#Add Splitter
+		splitter = QtGui.QSplitter(QtCore.Qt.Vertical)
+		vLayout.addWidget(splitter)
+		
+		
 		self._myXGanttWidget = XGanttWidget()
-		vLayout.addWidget(self._myXGanttWidget)
+		splitter.addWidget(self._myXGanttWidget)
+		
+		self._departmentXGanttWidget = XGanttWidget(_availabilityEnabled = 1)
+		#self._departmentXGanttWidget._availabilityEnabled = 1
+		splitter.addWidget(self._departmentXGanttWidget)
+		#CONNECT SLIDERS
+		self._departmentXGanttWidget.uiGanttVIEW.horizontalScrollBar().valueChanged.connect(self._myXGanttWidget.uiGanttVIEW.horizontalScrollBar().setValue)
+		self._myXGanttWidget.uiGanttVIEW.horizontalScrollBar().valueChanged.connect(self._departmentXGanttWidget.uiGanttVIEW.horizontalScrollBar().setValue)
+		self._departmentXGanttWidget.uiGanttSPLT.splitterMoved.connect(self.syncSplitters)
+		self._myXGanttWidget.uiGanttSPLT.splitterMoved.connect(self.syncSplitters)
+		 
+		#connect date range changed
+		self._myXGanttWidget.dateRangeChanged.connect(self.UpdateDepartmentGanttDateRange)
+		sharedDB.mySQLConnection.newPhaseSignal.connect(self.AddPhaseToDepartment)
 		
 		#resize splitter
 		sizes = [275,50000]
 		self._myXGanttWidget.uiGanttSPLT.setSizes(sizes)
 		self._myXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
+		self._departmentXGanttWidget.uiGanttSPLT.setSizes(sizes)
+		self._departmentXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
 		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
 		#dockWidget.setWidget(self._myXGanttWidget)
 		#dockWidget.setWindowTitle("Calendar View")
 		#sharedDB.leftWidget = dockWidget
 		#sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
+
+		self.availabilityPhasesSkip = ["DUE","Revision 1","Revision 2","Approval"]
 
 		reload(projex)
 		reload(projexui)
@@ -73,20 +97,23 @@ class CalendarViewWidget(QtGui.QWidget):
 		self.myWaitTimer.quit()
 	
 	def AddNewProjects(self, idprojects):
-		for project in sharedDB.myProjects:
-			if str(project._idprojects) == str(idprojects):
-				#if project._phases:
-					#myPhaseAssignments = project._phases				
-				if (not project._hidden):
-				    self._projectQueue.append(project)
-				    #self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
+		if str(idprojects) in sharedDB.myProjects:
+			project = sharedDB.myProjects[str(idprojects)]				
+			#if project._phases:
+					#myPhaseAssignments = project._phases	
+			if (not project._hidden):
+			    self._projectQueue.append(project)
+			    #self._projectQueue.sort(key=operator.attrgetter('_due_date'),reverse=True)
 				
 	def AddNewPhaseAssignment(self, idphaseassignments):
+		if str(idphaseassignments) in sharedDB.myPhaseAssignments:
+			self.AddPhase(sharedDB.myPhaseAssignments[str(idphaseassignments)])
+		'''
 		for phase in sharedDB.myPhaseAssignments:
 			if str(phase._idphaseassignments) == str(idphaseassignments):
 				#find project with same id
 				self.AddPhase(phase)				
-						
+		'''				
 	
 	#def AddProject(self, project,phases = []):
 	def AddProject(self):
@@ -125,7 +152,13 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			projectXGanttWidgetItem.setHidden(True)
 			
-			for phase in project._phases:
+			phaselist = []
+			for p in project._phases.values():
+				phaselist.append(p)
+				
+			phaselist.sort(key=operator.attrgetter('_startdate'))
+
+			for phase in phaselist:
 				self.AddPhase(phase)
 			
 			#print project._calendarWidgetItem			
@@ -155,20 +188,21 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				department = 0
 				
-				for myPhase in sharedDB.myPhases:
-					if myPhase._idphases == phase._idphases:
-						name = myPhase._name
-						
-						BGcolor = myPhase._ganttChartBGColor.split(',')
-						#print BGcolor[0]
-						BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
-						
-						textColor = myPhase._ganttChartTextColor.split(',')
-						#print textColor[0]
-						textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
-						
-						department = myPhase._iddepartments
-						continue
+				if str(phase._idphases) in sharedDB.myPhases:
+					myPhase = sharedDB.myPhases[str(phase._idphases)]
+
+					name = myPhase._name
+					
+					BGcolor = myPhase._ganttChartBGColor.split(',')
+					#print BGcolor[0]
+					BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
+					
+					textColor = myPhase._ganttChartTextColor.split(',')
+					#print textColor[0]
+					textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
+					
+					department = myPhase._iddepartments
+
 				
 				startDate = phase._startdate
 				endDate = phase._enddate
@@ -199,7 +233,7 @@ class CalendarViewWidget(QtGui.QWidget):
 				
 				parentItem.addChild(childItem)
 				
-				if "0" in sharedDB.currentUser.departments() or sharedDB.phases.getPhaseByID(phase._idphases).isVisible():
+				if "0" in sharedDB.currentUser.departments() or (str(phase._idphases) in sharedDB.myPhases and sharedDB.myPhases[str(phase._idphases)].isVisible()):
 					childItem.setHidden(False)
 					parentItem.setHidden(False)
 				else:
@@ -215,3 +249,59 @@ class CalendarViewWidget(QtGui.QWidget):
 		self._myXGanttWidget.uiGanttVIEW.scene().rebuild()
 		pass
 	
+	def AddPhaseToDepartment(self, phaseid):
+		if str(phaseid) in sharedDB.myPhases:
+			phase = sharedDB.myPhases[str(phaseid)]		
+
+			if phase._name not in self.availabilityPhasesSkip:
+			
+				phaseXGanttWidgetItem = XGanttWidgetItem(self._departmentXGanttWidget)
+				
+				phaseXGanttWidgetItem.setFlags(phaseXGanttWidgetItem.flags() ^ Qt.ItemIsSelectable)
+				
+				phaseXGanttWidgetItem._dbEntry = phase
+				
+				phaseXGanttWidgetItem.setName(phase._name)
+				
+				#viewItem = phaseXGanttWidgetItem.viewItem()
+				
+				#find where to insert item
+				index = 0						
+				for x in range(0,self._departmentXGanttWidget.topLevelItemCount()):
+					if min(self._departmentXGanttWidget.topLevelItem(x)._dbEntry._name , phase._name) == phase._name:
+						break
+					index = x+1
+				
+				#print "Inserting "+project._name+" into index "+ str(index) + " " + duedate.toString("MM.dd.yyyy")
+				
+				self._departmentXGanttWidget.insertTopLevelItem(index,phaseXGanttWidgetItem)
+				#self._myXGanttWidget.addTopLevelItem(projectXGanttWidgetItem)
+				
+				#project._calendarWidgetItem = projectXGanttWidgetItem
+				
+				#projectXGanttWidgetItem.setHidden(True)
+				
+				#for phase in project._phases:
+				#	self.AddPhase(phase)
+				
+				#print project._calendarWidgetItem			
+		
+				phaseXGanttWidgetItem.setDateStart(QDate.currentDate().addYears(-12),True)
+				phaseXGanttWidgetItem.setDateEnd(QDate.currentDate().addYears(-12),True)
+		
+				#self._myXGanttWidget.setDateStart(QDate(sharedDB.earliestDate.year,sharedDB.earliestDate.month,sharedDB.earliestDate.day))	
+				phaseXGanttWidgetItem.setExpanded(0)
+				self._departmentXGanttWidget.syncView()
+				phaseXGanttWidgetItem.sync()
+
+	def syncSplitters(self,x, index):
+		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(1)
+		self._myXGanttWidget.uiGanttSPLT.blockSignals(1)
+		self._departmentXGanttWidget.uiGanttSPLT.moveSplitter(x,index)
+		self._myXGanttWidget.uiGanttSPLT.moveSplitter(x,index)
+		self._departmentXGanttWidget.uiGanttSPLT.blockSignals(0)
+		self._myXGanttWidget.uiGanttSPLT.blockSignals(0)
+
+	def UpdateDepartmentGanttDateRange(self):
+		self._departmentXGanttWidget.setDateStart(self._myXGanttWidget.dateStart())
+		self._departmentXGanttWidget.setDateEnd(self._myXGanttWidget.dateEnd())

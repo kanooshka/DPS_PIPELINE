@@ -2,6 +2,7 @@ from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import taskProgressButton
 from DPSPipeline.widgets import userLabel
 import sharedDB
+import operator
 
 class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
     
@@ -25,14 +26,18 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         
         #if tasklist less than lenshotphasenames - 2
         columnIndex = 2
+        
+        #sort phases
+        #sortedPhases = self.phases.values()
+        #sortedPhases.sort(key=operator.attrgetter('_startdate'))
+        
         for phase in self.phases:
             if phase._taskPerShot:
                 currentTask = None
                 
                 if self.shot._tasks is not None:
-                    for task in self.shot._tasks:
+                    for task in self.shot._tasks.values():
                         if task._idphases == phase._idphases:
-                            #print "MATCH FOUND Attaching Task"
                             currentTask = task
                 
                 
@@ -50,7 +55,7 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #btn = self.AddProgressButton(shotWidgetItem,columnIndex,85,currentTask._status)
                 
                 btn = taskProgressButton.TaskProgressButton(_task=currentTask,_shot = self.shot, _forPhase = phase._idphases)
-                
+
                 uLabel = userLabel.UserLabel(task = currentTask)
                 btn.stateChanged.connect(uLabel.getUserFromTask)
 

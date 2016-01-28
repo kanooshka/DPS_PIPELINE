@@ -223,10 +223,13 @@ class XGanttWidgetItem(XTreeWidgetItem):
         Sets the database entry to updated for save.
         """
         #if (sharedDB.freezeDBUpdates == 0):
-        self._dbEntry._updated = 1
-        #sharedDB.changesToBeSaved = 1
-        self._dbEntry._startdate = startdate.toPyDate()
-        self._dbEntry._enddate = enddate.toPyDate()
+        if self._dbEntry is not None:
+	    self._dbEntry._updated = 1
+	    #sharedDB.changesToBeSaved = 1
+	    self._dbEntry._startdate = startdate.toPyDate()
+	    self._dbEntry._enddate = enddate.toPyDate()
+	    if self._dbEntry._type == "phaseassignment":
+		self._dbEntry.updateAvailability()
         return 1
     
     def dateEnd( self ):
@@ -831,12 +834,13 @@ class XGanttWidgetItem(XTreeWidgetItem):
             #print self.property("Work Days")
             #print self._workdays
             #if !justWeekdays
-            if self._dbEntry._type == "project":
-                self._dateEnd   = dateEnd
+            if self._dbEntry is not None:
+		if self._dbEntry._type == "project":
+		    self._dateEnd   = dateEnd
+		else:
+		    self.setWorkdayDuration(self._workdays)
             else:
-                self.setWorkdayDuration(self._workdays)
-            #else:
-                #
+		    self.setWorkdayDuration(self._workdays)
             
             
             self.adjustChildren(delta)

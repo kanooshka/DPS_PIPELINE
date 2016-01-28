@@ -11,6 +11,15 @@ class Departments():
 		self._name               = _name
 		self._ganttChartColor    = _ganttChartColor
 		
+	def __eq__(self, another):
+		return hasattr(another, '_iddepartments') and self._iddepartments == another._iddepartments
+	
+	def __hash__(self):
+		return hash(self._iddepartments)
+		
+	def id(self):
+		return self._iddepartments
+		
 def GetDepartments():
 	departments = []
 	rows = sharedDB.mySQLConnection.query("SELECT iddepartments,name,ganttChartColor FROM departments")

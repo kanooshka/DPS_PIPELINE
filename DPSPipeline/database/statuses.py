@@ -20,6 +20,19 @@ class Statuses():
 		self._idstatuses           = _idstatuses
 		self._name               = _name
 
+	def __eq__(self, another):
+		return hasattr(another, '_idstatuses') and self._idstatuses == another._idstatuses
+	
+	def __hash__(self):
+		return hash(self._idstatuses)
+	
+	def id(self):
+		return self._idstatuses
+	
+	def name(self):
+		return self._name
+
+'''
 def GetStatuses():
 	statuses = []
 	
@@ -36,4 +49,4 @@ def getStatusById(sentid):
 	for s in sharedDB.myStatuses:
 		if s._idstatuses == sentid:
 			return s
-	
+'''

@@ -40,21 +40,33 @@ class Tasks(QObject):
 		self._new		     = _new
 		
 		if self._new:
-			for phase in sharedDB.myPhases:
-				if phase._idphases == self._idphases:
-					self._status = phase._defaultTaskStatus
-					break
+			if str(self._idphases) in sharedDB.myPhases:				
+				self._status = sharedDB.myPhases[str(self._idphases)]._defaultTaskStatus
+
 		
 		self.statusButton	= ''
 		self.phaseAssignment = ''
 		self.projects = ''
 
-		self.user = sharedDB.users.getUserByID(self._idusers)
-		self.childTasks = []
+		#self.user = sharedDB.users.getUserByID(self._idusers)
+		if str(self._idusers) in sharedDB.myUsers:
+			self.user = sharedDB.myUsers[str(self._idusers)]
+		else:
+			self.user = None
+		self.childTasks = {}
 
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
+	def __eq__(self, another):
+		return hasattr(another, '_idtasks') and self._idtasks == another._idtasks
+	
+	def __hash__(self):
+		return hash(self._idtasks)
+	
+	def id(self):
+		return self._idtasks
+	
 	def Save(self):
 
 		if self._new:	
@@ -73,7 +85,8 @@ class Tasks(QObject):
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
 		
-		sharedDB.myTasks.append(self)
+		sharedDB.myTasks[str(self.id())] = self
+		
 		self.taskAdded.emit(str(self._idtasks))
 	
 	def UpdateTaskInDB (self):
@@ -118,7 +131,8 @@ class Tasks(QObject):
 		if ( not self.signalsBlocked() ):
 		    self.taskChanged.emit(str(self._idtasks))
 	
+	'''
 	def AddTaskToList(self, task):
 		if str(self._idtasks) == str(task._parenttaskid):			
 			self.childTasks.append(task)
-			
+	'''		

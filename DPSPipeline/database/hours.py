@@ -33,6 +33,15 @@ class Hours(QObject):
 		self._hidden                 = False
 		
 		self._new		     = _new
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idhours') and self._idhours == another._idhours
+	
+	def __hash__(self):
+		return hash(self._idhours)
+		
+	def id(self):
+		return self._idhours
 			
 	def Save(self):
 		if self._new:	

@@ -198,6 +198,9 @@ class AEPhaseAssignment(QtGui.QWidget):
     def changeAlottedHours(self):
 	if not self._signalsBlocked:
 	    self._currentPhaseAssignment.setHoursAlotted(self.hoursalotted.value())
+	    
+	    #update colors
+	    self.userTable.setTotalAssignedHours()
     
     def changeCalendarDays(self):
 	if not self._signalsBlocked:
@@ -237,20 +240,28 @@ class AEPhaseAssignment(QtGui.QWidget):
 	
     def setStatus(self):
 	self.phaseStatus.blockSignals(1)
-	status = self._currentPhaseAssignment._idstatuses-1
-	if status<0:
-	    status = 0
-	self.phaseStatus.setCurrentIndex(status)
+	statusGoal = int(self._currentPhaseAssignment._idstatuses)
+	
+	if statusGoal<0:
+	    statusGoal = 0
+	    
+	for x in range(0,self.phaseStatus.count()):
+	    if 	self.phaseStatus.itemData(x).toString() == str(statusGoal):	
+		self.phaseStatus.setCurrentIndex(x)
+		break
+	
 	self.phaseStatus.blockSignals(0)
+	
     def saveStatus(self):
-	self._currentPhaseAssignment.setIdstatuses(self.phaseStatus.currentIndex()+1)
+	
+	self._currentPhaseAssignment.setIdstatuses(self.phaseStatus.itemData(self.phaseStatus.currentIndex()).toString())
     
         
     def propogateStatuses(self):
 	self.phaseStatus.blockSignals(1)
 	self.phaseStatus.clear()
-	for status in sharedDB.myStatuses:
-	    self.phaseStatus.addItem(status._name, QtCore.QVariant(status))
+	for status in sharedDB.myStatuses.values():
+	    self.phaseStatus.addItem(status._name, QtCore.QVariant(status._idstatuses))
 	self.phaseStatus.blockSignals(0)
     
     def duration( self ):

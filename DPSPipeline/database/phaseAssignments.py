@@ -3,7 +3,7 @@ from DPSPipeline.database.connection import Connection
 import sharedDB
 from PyQt4 import QtCore
 from PyQt4.QtCore import QDate, QObject
-from datetime import datetime
+from datetime import datetime,timedelta,date
 import operator
 
 class PhaseAssignments(QObject):
@@ -36,7 +36,7 @@ class PhaseAssignments(QObject):
 		self._type                         = "phaseassignment"
 		self.project                       = None
 		self._calendarWidgetItem	   = None
-		self._tasks			   = []
+		self._tasks			   = {}
 		self._iddepartments	           = 1
 		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
@@ -45,10 +45,27 @@ class PhaseAssignments(QObject):
 		
 		self.SetPhaseValues()
 		
-		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
-		self._userAssignments = []
-		#self._unassigned = []
+		self.updateAvailability()
 		
+		#connect to phase
+		sharedDB.myPhases[str(self._idphases)]._phaseAssignments[str(self.id())] = self
+		
+		#print self._startdate.strftime("%Y-%m-%d")
+		#print QDate(self._startdate).toString("yyyy-MM-dd")
+		
+		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
+		self._userAssignments = {}
+		#self._unassigned = []
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idphaseassignments') and self._idphaseassignments == another._idphaseassignments
+	
+	def __hash__(self):
+		return hash(self._idphaseassignments)	
+	
+	def id(self):
+		return self._idphaseassignments
+
 	def Save(self):		
 
 		if self._new:	
@@ -63,25 +80,28 @@ class PhaseAssignments(QObject):
 			if str(self._idphases) == '16':
 				self.project._updated = 1
 			print "Phase '"+str(self._idphaseassignments)+"' Updated in Database!"
+			
+			
+			
 			self._updated = 0
 		
 	def SetPhaseValues(self):
-		for phase in sharedDB.myPhases:
-			if phase._idphases == self._idphases:
-				self._name = phase._name
-				self._taskPerShot = phase._taskPerShot
-				self._iddepartments = phase._iddepartments
-				break
+		if str(self._idphases) in sharedDB.myPhases:
+			phase = sharedDB.myPhases[str(self._idphases)]
+
+			self._name = phase._name
+			self._taskPerShot = phase._taskPerShot
+			self._iddepartments = phase._iddepartments
 		
 	def AddPhaseAssignmentToDB(self):
 		
-		sharedDB.myPhaseAssignments.append(self)
+		
 		
 		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
-		
+		sharedDB.myPhaseAssignments[str(self.id())] = self
 	
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
@@ -106,10 +126,13 @@ class PhaseAssignments(QObject):
 
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 		
+		self.updateAvailability()
+	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
 			self._tasks.append(task)
 			return
+	'''
 	def setHoursAlotted(self, sent):
 		self._hoursalotted = sent
 		self._updated = 1
@@ -134,7 +157,7 @@ class PhaseAssignments(QObject):
 		return self._enddate
 	
 	def addUserAssignment(self, userAssignment ):	
-		self._userAssignments.append(userAssignment)
+		self._userAssignments[str(userAssignment.id())] = userAssignment
 		#self.updateAssigned()
 	
 	def userAssignments(self):
@@ -162,13 +185,28 @@ class PhaseAssignments(QObject):
 	
 	def idusers(self):
 		idusers = []
-		for ua in self._userAssignments:
-			idusers.append(ua.idUsers())
+		for ua in self._userAssignments.values():
+			#print ua.idUsers()
+			idusers.append(str(ua.idUsers()))
 			
 		return idusers
 	
+	def updateAvailability(self):
+		self._availability = {}
+		for n in range(int ((self._enddate - self._startdate).days)+1):
+			#print self._startdate + timedelta(n)
+			self._availability[str(self._startdate + timedelta(n))] = 10
+			
+		view = sharedDB.calendarview._departmentXGanttWidget.uiGanttVIEW.scene()
+		view.setDirty()
+		view.update()
+		#view.syncView()
+		
+	
+
 	def updateAssigned(self):
-		for user in self._userAssignments:
+		for userids in self._userAssignments:
+			user = self._userAssignments[str(userids)]
 			if user.hours()>0:
 				self.setAssigned(1)
 				self.userAssigned.emit()
@@ -177,10 +215,3 @@ class PhaseAssignments(QObject):
 		self.setAssigned(0)
 		self.unassignedSignal.emit(str(self.idphaseassignments()))
 		return
-		
-	
-	
-def getPhaseAssignmentByID(sentid):
-	for phase in sharedDB.myPhaseAssignments:		
-		if str(phase._idphaseassignments) == str(sentid):
-			return phase

@@ -44,18 +44,26 @@ class UserAssignment(QObject):
 			#self._hidden = True
 			
 		self.connectToDBClasses()
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_iduserassignments') and self._iduserassignments == another._iduserassignments
+	
+	def __hash__(self):
+		return hash(self._iduserassignments)
+	
+	def id(self):
+		return self._iduserassignments
+				
 	def Save(self):
 
 		if self._new:	
 			self.AddUserAssignmentToDB()
 			print "User Assignment '"+str(self._iduserassignments)+"' Added to Database!"
-			self._new = 0
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdateUserAssignmentInDB()
 			print "User Assignment '"+str(self._iduserassignments)+"' Updated in Database!"
-			self._updated = 0	
+				
 	
 	def AddUserAssignmentToDB(self):
 	
@@ -63,12 +71,16 @@ class UserAssignment(QObject):
 	
 		self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
-		sharedDB.myUserAssignments.append(self)
+		sharedDB.myUserAssignments[str(self._iduserassignments)] = self
 		self.userAssignmentAdded.emit(str(self._iduserassignments))
+		
+		self._new = 0
 	
 	def UpdateUserAssignmentInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+		if self.id() is not None:
+			sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+			self._updated = 0
 
 	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _hours = 0, _timestamp = datetime.now()):
 		print ("Downloaded update for UserAssignment '"+str(self._iduserassignments)+"'")
@@ -103,17 +115,19 @@ class UserAssignment(QObject):
 	def connectToDBClasses(self):
 		
 		#connect to users
-		for user in sharedDB.myUsers:
-			if str(user._idusers) == str(self._idusers):
-				user._assignments.append(self)
-				break
+		if str(self._idusers) in sharedDB.myUsers:
+			user = sharedDB.myUsers[str(self._idusers)]
+			user._assignments[str(self.id())] = self
+
 		if self.assignmentType() == "phase_assignment":
-			for phase in sharedDB.myPhaseAssignments:
-				if phase.idphaseassignments() == self.assignmentID():
-					phase.addUserAssignment(self)
-					if self.hours():
-						if not phase.assigned():
-							phase.setAssigned(1)
+			#for phase in sharedDB.myPhaseAssignments:
+				#if phase.idphaseassignments() == self.assignmentID():
+			if str(self.assignmentID()) in sharedDB.myPhaseAssignments:		
+				phase = sharedDB.myPhaseAssignments[str(self.assignmentID())]
+				phase.addUserAssignment(self)
+				if self.hours():
+					if not phase.assigned():
+						phase.setAssigned(1)
 					
 				
 	def assignmentID(self):
@@ -131,12 +145,6 @@ class UserAssignment(QObject):
 	
 	def hours(self):
 		return self._hours
-	
-def getUserAssignmentByID(sentid):
-	for userAssignment in sharedDB.myUserAssignments:		
-		if str(userAssignment._iduserassignments) == str(sentid):
-			return userAssignment
-
 	
 		#
 		

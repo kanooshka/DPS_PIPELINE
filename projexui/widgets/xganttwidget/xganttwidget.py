@@ -49,7 +49,7 @@ class XGanttWidget(QWidget):
     
     Timescale = enum('Week', 'Month', 'Year')
     
-    def __init__( self, parent = None ):
+    def __init__( self, parent = None, _availabilityEnabled = 0):
 	super(XGanttWidget, self).__init__( parent )
 	
 	'''
@@ -92,15 +92,24 @@ class XGanttWidget(QWidget):
 	
 	self._gridPen           = QPen(color.darker(135))
 	self._brush             = QBrush(color)
-	self._alternateBrush    = QBrush(color.darker(25))
+	self._alternateBrush    = QBrush(color.darker(105))	
 	self._currentDayBrush   = QBrush(QColor(146,252,186))
 	self._holidayBrush      = QBrush(QColor(166,46,46))
-	
+	self._bookedBrush      = QBrush(QColor(50,250,0))
+	self._unavailableBrush = QBrush(QColor(75,75,75))
 	weekendColor            = color.darker(148)
+	
+	
+	
+	self._availabilityEnabled = _availabilityEnabled
+	
 	self._weekendBrush      = QBrush(weekendColor)
 	
 	# setup the columns for the tree
-	self.setColumns(['Name', 'Start', 'End', 'Calendar Days', 'Work Days'])
+	if _availabilityEnabled:
+	    self.setColumns(['Name'])
+	else:
+	    self.setColumns(['Name', 'Start', 'End', 'Calendar Days', 'Work Days'])
 	header = self.uiGanttTREE.header()
 	header.setFixedHeight(self._cellHeight * 2)
 	header.setResizeMode(0, header.ResizeToContents)
@@ -154,6 +163,13 @@ class XGanttWidget(QWidget):
 	self.uiGanttTREE.itemSelectionChanged.connect(self.__selectView)
 	self.uiGanttVIEW.scene().selectionChanged.connect(self.__selectTree)
 	self.uiGanttTREE.itemChanged.connect(self.updateItemData)
+    
+	if self._availabilityEnabled:
+	    self._currentDayBrush   = None
+	    self._holidayBrush      = QBrush(QColor(75,75,75))
+	    weekendColor	= QBrush(QColor(75,75,75))
+	    self.uiGanttTREE.setEditable(False)
+	    #self._cellHeight = 12
     
     def __del__(self):
 	self.uiGanttVIEW.scene().selectionChanged.disconnect(self.__selectTree)
@@ -232,9 +248,10 @@ class XGanttWidget(QWidget):
 	vitem = item.viewItem()
 	
 	self.treeWidget().addTopLevelItem(item)
-	self.viewWidget().scene().addItem(vitem)
-	
-	item._viewItem = weakref.ref(vitem)
+	if not self._availabilityEnabled:
+	    self.viewWidget().scene().addItem(vitem)
+	    
+	    item._viewItem = weakref.ref(vitem)
 	
 	#set scrollbar offset
 	#item.treeWidget._scrollBar = self.uiGanttTREE.verticalScrollBar()
@@ -645,7 +662,7 @@ class XGanttWidget(QWidget):
 		    
 	    #if phase matches, change visibility
 	    
-	    for phase in sharedDB.myPhases:
+	    for phase in sharedDB.myPhases.values():
 		if (phase._name == phaseName):
 		    phase._visible = visibility
 	    
@@ -662,7 +679,7 @@ class XGanttWidget(QWidget):
 		projectWidgetItem.setHidden(not visibility)
 		
 	    
-	    for phase in sharedDB.myPhases:
+	    for phase in sharedDB.myPhases.values():
 		phase._visible = visibility
 	    #print ("Changing all phases to: "+ str(visibility))
 	    
@@ -683,3 +700,19 @@ class XGanttWidget(QWidget):
 	:return     <QBrush>
 	"""
 	return self._weekendBrush
+
+    def bookedBrush( self ):
+	"""
+	Returns the booked brush to be used for coloring in booked days.
+	
+	:return     <QBrush>
+	"""
+	return self._bookedBrush
+    
+    def unavailableBrush( self ):
+	"""
+	Returns the unavailable brush to be used for coloring in unavailable days.
+	
+	:return     <QBrush>
+	"""
+	return self._unavailableBrush

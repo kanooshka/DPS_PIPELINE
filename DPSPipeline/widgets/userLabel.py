@@ -12,48 +12,69 @@ class UserLabel(QtGui.QLabel):
         self.showAllEnabled = 0
         
         self.user = ''
+        self.noUserText = "----"
         
         self.setFixedWidth(50)
         self.getUserFromTask()
+        
         
         
 
     def getUserFromTask(self):
         
         if self.task == None:
-            self.setText("----")
+            self.setText(self.noUserText)
         else:
             self.task.taskChanged.connect(self.getUserFromTask)
             if str(self.task._idusers) == "0":
-                self.setText("----")
+                self.setText(self.noUserText)
             elif str(self.task._status) == "4":
                 self.setText("")
             else:
-                self.setText(sharedDB.users.getUserByID(self.task._idusers)._name)
+                self.setText(sharedDB.myUsers[str(self.task._idusers)]._name)
                 
         
     def mActions(self, username):
-        for u in sharedDB.myUsers:
+        if username.text() == " NONE":
+            self.task.setUserId("0")
+            self.getUserFromTask()
+            return
+        
+        for u in sharedDB.myUsers.values():
             if str(u._name) == username.text():
                 #self.setText(username.text())
                 self.task.setUserId(u._idusers)
                 self.getUserFromTask()
-                break
+                return
     
     def contextMenuEvent(self, ev):
         
         if self.task is not None and not self.task._status == 4 :
             menu	 = QtGui.QMenu()
             
-            userList = []
-            for user in sharedDB.myUsers:
+            userList = [" NONE"]
+            
+            #get phase assignment id from task
+            phaseAssignmentid = self.task._idphaseassignments
+            #get user assignments from phase assignment
+            uas = sharedDB.myPhaseAssignments[str(phaseAssignmentid)]._userAssignments.values()
+            
+            #get user from user assignment
+            userids = []
+            for ua in uas:
+                if ua.hours()>0:
+                    userids.append(str(ua._idusers))
+            
+            for user in sharedDB.myUsers.values():
                 #if in department
                 if self.showAllEnabled:
                     userList.append(user._name)
                 else:
-                    if user._active and str(sharedDB.phases.getPhaseByID(self.task._idphases)._iddepartments) in user.departments():
-                        userList.append(user._name)
-                    
+                    if user._active:
+                        #if str(sharedDB.myPhases[str(self.task._idphases)]._iddepartments) in user.departments():
+                        if str(user.id()) in userids:
+                            userList.append(user._name)
+            
             userList.sort(reverse=False)
              
             showAllDepartmentsAction = menu.addAction('Show All Departments')

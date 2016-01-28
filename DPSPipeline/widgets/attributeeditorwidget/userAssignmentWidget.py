@@ -42,12 +42,12 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		self.removeRow(0)
         
 	self.userList = []
-        for user in sharedDB.myUsers:
-            #if in department
+        for user in sharedDB.myUsers.values():
+	    #if in department
             #if self.showAllEnabled:
             #    userList.append(user._name)
             #else:
-            if user._active and (str(sharedDB.phases.getPhaseByID(self.aephaseAssignment._currentPhaseAssignment._idphases)._iddepartments) in user.departments() or user._idusers in self._parent._currentPhaseAssignment.idusers()):
+	    if user._active and (str(sharedDB.myPhases[str(self.aephaseAssignment._currentPhaseAssignment._idphases)]._iddepartments) in user.departments() or str(user._idusers) in self._parent._currentPhaseAssignment.idusers()):
                 self.userList.append(user)
                 
         #userList.sort(reverse=False)
@@ -120,16 +120,17 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		    item.setStyleSheet('color: red')
     
     def mActions(self, username):
-        for u in sharedDB.myUsers:
-            if str(u._name) == username.text():
-                print u._name
+        for u in sharedDB.myUsers.values():
+	    if str(u._name) == username.text():
+                #print u._name
 		#add user assignment with 0 hours
 		self.userList.append(u)
 		
-		self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = u._idusers,_assignmentid = self._parent._currentPhaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = 0, _new = 1)
+		self._userAssignment = sharedDB.userassignments.UserAssignment(_idusers = u._idusers,_assignmentid = self._parent._currentPhaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = 0, _new = 1)		
 		self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
+		self._userAssignment.Save()
 		#sharedDB.myTasksWidget.AddUserAssignment(ua = self._userAssignment)
-		sharedDB.myUserAssignments.append(self._userAssignment)
+		#sharedDB.myUserAssignments.append(self._userAssignment)
 		
 		self._parent._currentPhaseAssignment.addUserAssignment(self._userAssignment)
 		self.UpdateWidget()
@@ -144,9 +145,9 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	menu	 = QtGui.QMenu()
 	
 	userList = []
-	for user in sharedDB.myUsers:
+	for user in sharedDB.myUsers.values():
 	    #if in department
-	    if user not in self.userList:
+	    if user not in self.userList and user.isActive():
 		userList.append(user._name)
 	    '''if self.showAllEnabled:
 		userList.append(user._name)

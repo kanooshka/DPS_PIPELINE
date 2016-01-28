@@ -38,12 +38,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 
 	self._blockUpdates = 0
 	
-	sharedDB.myTasksWidget = self
+	sharedDB.myTasksWidget = self	
 	
-	if sharedDB.initialLoad:
-	    self.propogateUI
-	else:
-	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	
 	
 	#self.projectTaskItems = []
 	self.setEnabled(0)
@@ -73,6 +70,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    self.showOutForApprovalEnabled = 1
 	    self.allowedStatuses.append(7)
 
+	self.statusids = []
+	self.UpdateStatusList()
+	
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
 	    self.insertColumn(x)
@@ -113,6 +113,11 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
 	self._connectedPhaseAssignments = []
 	
+	if sharedDB.initialLoad:
+	    self.propogateUI
+	else:
+	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	
     def closeThreads(self):
 	self.myWaitTimer.quit()
     
@@ -126,21 +131,24 @@ class MyTasksWidget(QtGui.QTableWidget):
 	for i in range(0,self.rowCount()):
 	    self.setRowHidden(i,1)	
 	
-	for user in sharedDB.myUsers:
+	for userids in sharedDB.myUsers:
+	    user = sharedDB.myUsers[str(userids)]
 	    #if user == sharedDB.currentUser or self.showAllUsersEnabled or self.showAllUsersInDepartmentEnabled:	
-	    for userassignment in user._assignments:	    
-		if str(userassignment.assignmentType()) == "phase_assignment":
-		    found = 0
-		    
-		    #see if it already exists
-		    if self.myTaskItems is not None:
-			for t in self.myTaskItems:
-			    if t.userAssignment() == userassignment:
-				t.UpdateValues()
-				found = 1
-				break
+	    for userassignmentids in user._assignments:	    
+		if str(userassignmentids) in user._assignments:
+		    userassignment = user._assignments[str(userassignmentids)]
+		    if str(userassignment.assignmentType()) == "phase_assignment":
+			found = 0
+			
+			#see if it already exists
+			if self.myTaskItems is not None:
+			    for t in self.myTaskItems:
+				if t.userAssignment() == userassignment:
+				    t.UpdateValues()
+				    found = 1
+				    break
 	
-	#self.CheckForUnassigned()
+	self.CheckForUnassigned()
 
 	self.setSortingEnabled(1)
 
@@ -148,9 +156,10 @@ class MyTasksWidget(QtGui.QTableWidget):
     
     def CheckForUnassigned(self, sentphaseid = None):
 	if sentphaseid is None:
-	    phaselist = sharedDB.myPhaseAssignments
+	    phaselist = sharedDB.myPhaseAssignments.values()
 	else:
-	    phaselist = [sharedDB.phaseAssignments.getPhaseAssignmentByID(sentphaseid)]
+	    #phaselist = [sharedDB.phaseAssignments.getPhaseAssignmentByID(sentphaseid)]
+	    phaselist = [sharedDB.myPhaseAssignments[str(sentphaseid)]]
 	    
 	for phase in phaselist:
 	    if phase is not None:
@@ -174,19 +183,55 @@ class MyTasksWidget(QtGui.QTableWidget):
 				    self._unassignedTaskQueue.append(phase)
     
     def AddToUnassignedQueue(self, sentID):
-	for phase in sharedDB.myPhaseAssignments:
-	    if str(phase.idphaseassignments()) == sentID:
-		if self.unassignedItems is not None:
-		    for p in self.unassignedItems:
-			if p.phaseAssignment() == phase:
-			    p.UpdateValues()
-			    return
-			    
-		self._unassignedTaskQueue.append(phase)
+	self.UpdateStatusList()
+	
+	if str(sentID) in sharedDB.myPhaseAssignments:
+	    phase = sharedDB.myPhaseAssignments[str(sentID)]
+	    if str(phase._idstatuses) in self.statusids:
 		return
+	    
+	    
+	    if self.unassignedItems is not None:
+		for p in self.unassignedItems:
+		    if p.phaseAssignment() == phase:
+			p.UpdateValues()
+			return
+			
+	    self._unassignedTaskQueue.append(phase)
+	    return
+    
+    def UpdateStatusList(self):
+	self.statusids = []
+	
+	for status in sharedDB.myStatuses.values():
+	    if (status._name == "Finished" and not self.showFinishedEnabled) or (status._name == "Cancelled" and not self.showCancelledEnabled) or (status._name == "Deleted" and not self.showDeletedEnabled) or (status._name == "On Hold" and not self.showOnHoldEnabled) or (status._name == "Not Started" and not self.showNotStartedEnabled) or (status._name == "In Progress" and not self.showInProgressEnabled) or (status._name == "Out For Approval" and not self.showOutForApprovalEnabled):
+		self.statusids.append(str(status.id()))
     
     def AppendToUserAssignmentQueue(self, assignmentid):
+
+	self.UpdateStatusList()
+
+	ua = sharedDB.myUserAssignments[str(assignmentid)]
+	if ua.assignmentType() == "phase_assignment":	    
+	    pa = sharedDB.myPhaseAssignments[str(ua._assignmentid)]
+	    project = sharedDB.myProjects[str(pa._idprojects)] 
+	    
+	    
+	    if str(project._idstatuses) in self.statusids or str(pa._idstatuses) in self.statusids:
+		return
+	    
+	#user = sharedDB.myUsers[str(ua.idUsers())]
+	
+	#or (status._name == "Cancelled" and not self.showAllUsersEnabled)
+	#or (status._name == "Cancelled" and not self.showAllUsersInDepartmentEnabled)
+	#or (status._name == "Cancelled" and not self.showUnassignedEnabled)
+	
+	#print "Appending UA: "+str(assignmentid)
 	self._userAssignmentQueue.append(assignmentid)
+	
+	
+	
+	
     
     def ProcessQueue(self):
 	if len(self._userAssignmentQueue)>0:
@@ -200,30 +245,32 @@ class MyTasksWidget(QtGui.QTableWidget):
     
     def AddUserAssignment(self,sentIdUserAssignment):
 
-	userassignment = sharedDB.userassignments.getUserAssignmentByID(sentIdUserAssignment)
-	if userassignment is not None:
-	    phase = sharedDB.phaseAssignments.getPhaseAssignmentByID(userassignment._assignmentid)
+	if str(sentIdUserAssignment) in sharedDB.myUserAssignments:
+	    userassignment = sharedDB.myUserAssignments[str(sentIdUserAssignment)]
 	    
-	    #if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
-	    if str(userassignment.assignmentType()) == "phase_assignment":
-    
-		#add phase assignment to widget
+	    if str(userassignment._assignmentid) in sharedDB.myPhaseAssignments:
+		phase = sharedDB.myPhaseAssignments[str(userassignment._assignmentid)]
 		
-		#phase.setAssigned(1)
-		
-		if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
-		    self.insertRow(self.rowCount())
-    
-		    dateitem = QtGui.QTableWidgetItem()	
-		    dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+		#if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
+		if str(userassignment.assignmentType()) == "phase_assignment":
+	
+		    #add phase assignment to widget
 		    
-		    taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
-		    self.myTaskItems.append(taskItem)
-		    #phase.addUserAssignmentTaskItem(taskItem)
+		    #phase.setAssigned(1)
 		    
-		    self.setCellWidget(self.rowCount()-1,0,taskItem)
-		    self.setItem(self.rowCount()-1,1,dateitem)
-		    taskItem.SetVisibility()
+		    if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
+			self.insertRow(self.rowCount())
+	
+			dateitem = QtGui.QTableWidgetItem()	
+			dateitem.setText(phase.endDate().strftime('%Y/%m/%d'))
+			
+			taskItem = mytaskswidgetitem.MyTasksWidgetItem(parent = self, _project = phase.project, _userassignment = userassignment, _phaseassignment = phase, _rowItem = dateitem)	
+			self.myTaskItems.append(taskItem)
+			#phase.addUserAssignmentTaskItem(taskItem)
+			
+			self.setCellWidget(self.rowCount()-1,0,taskItem)
+			self.setItem(self.rowCount()-1,1,dateitem)
+			taskItem.SetVisibility()
 
     def AddUnassigned(self, phase):
 	if self.showUnassignedEnabled:
@@ -400,8 +447,16 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    sharedDB.sel.select([self.cellWidget(row,column),self.cellWidget(row,column)._phaseassignment])
     
     def loadinprojectview(self, row, column):
+	pa = self.cellWidget(row,column)._phaseassignment
+	
 	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
 	sharedDB.mainWindow.centralTabbedWidget.setCurrentIndex(0)
-        sharedDB.myProjectViewWidget._currentProject = self.cellWidget(row,column)._phaseassignment.project            
+        sharedDB.myProjectViewWidget._currentProject = pa.project            
         
 	sharedDB.myProjectViewWidget.LoadProjectValues()
+	
+	#if rigging, show rigging tab
+	if sharedDB.myPhases[str(pa._idphases)].name() == "Rigging":
+	    sharedDB.myProjectViewWidget.projectPartWidget.setCurrentIndex(1)
+	else:
+	    sharedDB.myProjectViewWidget.projectPartWidget.setCurrentIndex(0)

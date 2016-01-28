@@ -1,5 +1,6 @@
 
 from DPSPipeline.database.connection import Connection
+from DPSPipeline.database import temprigs
 from DPSPipeline.database import sequences
 from DPSPipeline.database import shots
 import sharedDB
@@ -41,10 +42,11 @@ class Projects(QObject):
 		self._type                   = "project"
 		self._hidden                 = False
 		
-		self._phases                 = []
+		self._phases                 = {}
 		#self._duePhase 		= []
-		self._sequences              = []
-		self._images		     = []
+		self._sequences              = {}
+		self._images		     = {}
+		self._rigs                   = {}
 		
 		self._new		     = _new
 		
@@ -60,7 +62,16 @@ class Projects(QObject):
 			
 		#Connect new project to UI elements
 		#self.projectAdded.connect(sharedDB.calendarview.AddNewProjects)
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idprojects') and self._idprojects == another._idprojects
+	
+	def __hash__(self):
+		return hash(self._idprojects)
+		
+	def id(self):
+		return self._idprojects
+		
 	def Save(self):
 		
 		#print self._name
@@ -82,28 +93,40 @@ class Projects(QObject):
 			self._new = 0
 			print "Project '"+self._name+"' Added to Database!"'''
 		for seq in self._sequences:
-			seq.Save()
+			self._sequences[str(seq)].Save()
 			
 		for shot in self._images:
-			shot.Save()
+			self._images[str(shot)].Save()
 		
 			
 		for phase in self._phases:
-			phase.Save()
+			self._phases[str(phase)].Save()
 		
+		
+		for rig in self._rigs.values():
+			rig.Save()
 		#sharedDB.mySQLConnection.closeConnection()
 
 	def AddSequenceToProject(self, newName):
 
 		seq = sequences.Sequences(_idsequences = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects)
-		self._sequences.append(seq)
-		sharedDB.mySequences.append(seq)
+		seq.Save()
+		
+		self._sequences[str(seq.id())] = seq
 		return seq
+	
+	def AddRigToProject(self, newName):
+
+		rig = temprigs.TempRigs(_name = newName,_idprojects = self._idprojects,_new = 1)
+		rig.Save()
+		
+		self._rigs[str(rig.id())] = rig
+		return rig
 	
 	def AddShotToProject(self, newName):
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = 0, _startframe = 101, _endframe = 101)
-		self._images.append(shot)
-		sharedDB.myShots.append(shot)
+		shot.Save()
+		self._images[str(shot.id())] = shot
 		
 		return shot
 	
@@ -146,11 +169,7 @@ class Projects(QObject):
 		
 		self._idprojects = sharedDB.mySQLConnection._lastInsertId
 	
-		#connect phases to projectid
-		for phase in self._phases:
-			phase._idprojects = self._idprojects
-			phase.project = self
-			phase._new = 1
+		sharedDB.myProjects[str(self.id())] = self	
 		
 		#self.projectAdded.emit(str(self._idprojects))
 		
@@ -189,7 +208,7 @@ class Projects(QObject):
 	#	self._calendarWidgetItem.setName(self._name)
 		
 	def SetDueDate(self):
-		for phase in self._phases:
+		for phase in self._phases.values():
 			#print phase._idphases
 			if str(phase._idphases) == "16":
 				self._due_date = phase._enddate
@@ -206,10 +225,12 @@ class Projects(QObject):
 	def emitProjectChanged( self ):
 		if ( not self.signalsBlocked() ):
 		    self.projectChanged.emit(str(self._idprojects))
-		    
+	
+	'''	    
 	def getPhaseAssignmentByIDPhases(self, idrequest):
 		for phase in phases:
 			if phase._idphases == idrequest:
 				return phase
 			
 		return 0
+	'''

@@ -30,19 +30,27 @@ class Clients(QObject):
 		self._hidden                 = False
 		
 		self._new		     = _new
-		self._ips		     = []
+		self._ips		     = {}
 		
 		if self._new:
 			self.AddClientToDB()
 			self._new = 0
-			sharedDB.myClients.append(self)
 			
 			sharedDB.mySQLConnection.newClientSignal.emit(str(self._idclients))
 			print "Client '"+self._name+"' Added to Database!"
 		
 		#if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
 			#self._hidden = True
-			
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idclients') and self._idclients == another._idclients
+	
+	def __hash__(self):
+		return hash(self._idclients)
+		
+	def id(self):
+		return self._idclients
+	
 	def Save(self):
 		
 		#print self._name
@@ -65,6 +73,7 @@ class Clients(QObject):
 		sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
 		self._idclients = sharedDB.mySQLConnection._lastInsertId
+		sharedDB.myClients[str(self.id())] = self
 		
 		self.clientAdded.emit(str(self._idclients))
 

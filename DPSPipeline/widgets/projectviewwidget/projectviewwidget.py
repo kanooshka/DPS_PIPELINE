@@ -16,6 +16,7 @@ from PyQt4 import QtGui,QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline.database import projects
+from DPSPipeline.widgets.temprigwidgetitem import temprigwidgetitem
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
 from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
@@ -65,11 +66,14 @@ class ProjectViewWidget(QWidget):
 	#self.progressListLayout.addWidget(self._shotTreeWidget)
 	#self.setProgressListVisibility()
 	
+	self.rigList.setColumnHidden(0,True)
+	
     def propogateUI(self, ):
 	self.setPrivelages()
 
 	#connects signals
 	sharedDB.mySQLConnection.newSequenceSignal.connect(self.AddSequenceToProgressList)
+	sharedDB.mySQLConnection.newTempRigSignal.connect(self.AddRigToRigList)
 	sharedDB.mySQLConnection.newShotSignal.connect(self.AddShotToProgressList)
 	self.refreshProjectValuesSignal.connect(self.LoadProjectValues)
 	
@@ -90,6 +94,7 @@ class ProjectViewWidget(QWidget):
 	
 	#self.sequenceStatus.currentIndexChanged[QtCore.QString].connect(self.SetSequenceValues)
 	self.addSequence.clicked.connect(self.AddSequence)
+	self.addRigButton.clicked.connect(self.AddRig)
 	self.updateFolderStructure.clicked.connect(self.CreateFolderStructure)
 	
 	self.setEnabled(1)
@@ -101,15 +106,15 @@ class ProjectViewWidget(QWidget):
     def CreateFolderStructure(self):
 	paths = []
 	if os.path.isdir(str(self.projectPath.text())):
-	    for seq in self._currentProject._sequences:
-		for shot in seq._shots:
+	    for seq in self._currentProject._sequences.values():
+		for shot in seq._shots.values():
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
 	    
-	    for image in self._currentProject._images:
+	    for image in self._currentProject._images.values():
 		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_SCENES\\"))
 		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_PREVIEWS\\"))
 		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_ASSETS\\"))
@@ -179,9 +184,9 @@ class ProjectViewWidget(QWidget):
 		return self.projectName.itemData(self.projectName.currentIndex(), Qt.ToolTipRole).toString()
 		
     def propogateStatuses(self):
-	for status in sharedDB.myStatuses:
-	    self.projectStatus.addItem(status._name, QVariant(status))
-	    self.sequenceStatus.addItem(status._name, QVariant(status))
+	for status in sharedDB.myStatuses.values():
+	    self.projectStatus.addItem(status._name, QVariant(status.id()))
+	    self.sequenceStatus.addItem(status._name, QVariant(status.id()))
 	    #self.shotStatus.addItem(status._name, QVariant(status))
 
     def changeProjectPath(self):
@@ -201,7 +206,7 @@ class ProjectViewWidget(QWidget):
     def SetProjectValues(self):
 	if not self._blockUpdates:
 	    #self._currentProject._name = self.projectName.currentText()
-	    self._currentProject._idstatuses = self.projectStatus.currentIndex()+1
+	    self._currentProject._idstatuses = self.projectStatus.itemData(self.projectStatus.currentIndex()).toString()
 	    self._currentProject._fps = self.fps.value()
 	    self._currentProject._due_date = self.dueDate.date().toPyDate()
 	    self._currentProject._renderWidth = self.renderWidth.value()
@@ -237,7 +242,14 @@ class ProjectViewWidget(QWidget):
 	    else:
 		self.projectPath.setText('')
 	    #set Status
-	    self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+	    
+	    for x in range(0,self.projectStatus.count()):
+		if self.projectStatus.itemData(x).toString() == str(self._currentProject._idstatuses):	
+		    self.projectStatus.setCurrentIndex(x)
+		    break	    
+	    
+	    #self.projectStatus.setCurrentIndex(self._currentProject._idstatuses-1)
+	    
 	    #set res
 	    self.renderWidth.setValue(self._currentProject._renderWidth)
 	    self.renderHeight.setValue(self._currentProject._renderHeight)
@@ -254,6 +266,7 @@ class ProjectViewWidget(QWidget):
 	    self.projectDescription.blockSignals = 0
 	    
 	    self.LoadProgressListValues()
+	    self.LoadRigListValues()
 	    
 	    self.setProgressListVisibility()
 	    
@@ -271,7 +284,7 @@ class ProjectViewWidget(QWidget):
 	if len(newName):
 	
 	    #iterate through sequences
-	    for image in self._currentProject._images:	    
+	    for image in self._currentProject._images.values():	    
 		#if image matches name
 		if newName == image._number:
 		    unique = 0
@@ -281,7 +294,8 @@ class ProjectViewWidget(QWidget):
 	    if unique:
 		#add image
 		im = self._currentProject.AddShotToProject(newName)
-		im.shotAdded.connect(self.CreateTasks)
+		self.CreateTasks(shot = im)
+		#im.shotAdded.connect(self.CreateTasks)
 		#im.shotAdded.connect(self.AddShotToProgressList)
 		
 	    else:
@@ -299,7 +313,7 @@ class ProjectViewWidget(QWidget):
 	newName = self.getSequenceName()
 	
 	#iterate through sequences
-	for sequence in self._currentProject._sequences:	    
+	for sequence in self._currentProject._sequences.values():	    
 	    #if sequence matches name
 	    if newName == sequence._number:
 		unique = 0
@@ -309,7 +323,8 @@ class ProjectViewWidget(QWidget):
 	if unique:
 	    #add sequence
 	    seq = self._currentProject.AddSequenceToProject(newName)
-	    seq.sequenceAdded.connect(self.AddSequenceToProgressList)
+	    self.AddSequenceToProgressList(sequence = seq)
+	    #seq.sequenceAdded.connect(self.AddSequenceToProgressList)
 	    
 	else:
 	    #warning message
@@ -336,8 +351,10 @@ class ProjectViewWidget(QWidget):
 	self._currentSequence = None
 	
 	if (self._currentProject._sequences):
-	    for x in range(0,len(self._currentProject._sequences)):
-		sequence = self._currentProject._sequences[x]
+	    for seqid in self._currentProject._sequences:
+		sequence = self._currentProject._sequences[str(seqid)]
+	    #for x in range(0,len(self._currentProject._sequences)):
+		#sequence = self._currentProject._sequences[x]
 		    
 		#Add Sequences to list
 		self.AddSequenceToProgressList(sequence = sequence)
@@ -346,10 +363,15 @@ class ProjectViewWidget(QWidget):
 	    self.stillImagesCheckbox.setChecked(1)
 	    self.CreateShotTreeWidget()
 	    
+	    for imageid in self._currentProject._images:
+		image = self._currentProject._images[str(imageid)]
+		self.AddShotToProgressList(shot = image)
+	    '''
 	    for x in range(0,len(self._currentProject._images)):
 		image = self._currentProject._images[x]
 		#Add Shot to list
 		self.AddShotToProgressList(shot = image)
+	    '''
     
     def CreateShotTreeWidget(self):
 	self.progressList.clear()
@@ -359,34 +381,30 @@ class ProjectViewWidget(QWidget):
 	#add shotwidget to progresslist
 	self.progressList.addTopLevelItem(self._shotTreeWidget.shotTreeItem)        
 	self.progressList.setItemWidget(self._shotTreeWidget.shotTreeItem,0,self._shotTreeWidget)
-    
-    def GetSequenceByID(self,seqid):
-	if self._currentProject is not None:
-		if self._currentProject._sequences is not None:
-			for seq in self._currentProject._sequences:
-			    if str(seq._idsequences) == str(seqid):
-				return seq    
-    
+
     def AddSequenceToProgressList(self, seqid = None, sequence = None):
 	if sequence is None:
 	    #print "getting sequence by id"
-	    sequence = self.GetSequenceByID(seqid)
+	    if str(seqid) in sharedDB.mySequences:
+		sequence = sharedDB.mySequences[str(seqid)]
 	
-	if sequence is not None:
-		if str(sequence._idprojects) == str(self._currentProject._idprojects):
-		
-		    #Add Sequences to list
-		    sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
-		    self.progressList.addTopLevelItem(sequenceTreeItem)
-		    sequenceTreeItem.setExpanded(True)
-		    #self.CreateFolderStructure()
+	if sequence is not None and self._currentProject is not None:
+	    if str(sequence._idprojects) == str(self._currentProject._idprojects):
+	    
+		#Add Sequences to list
+		sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
+		self.progressList.addTopLevelItem(sequenceTreeItem)
+		sequenceTreeItem.setExpanded(True)
+		#self.CreateFolderStructure()
     	
     def AddShotToProgressList(self, shotid = None, shot = None):
 	if shot is None:
 	    #print "getting shot by id"
-	    shot = self.GetShotByID(shotid)
+	    if str(shotid) in sharedDB.myShots:
+		shot = sharedDB.myShots[str(shotid)]
 	
-	if shot is not None:
+	if shot is not None and self._currentProject is not None:
+	    if str(shot._idprojects) == str(self._currentProject._idprojects):
 		if self.stillImagesCheckbox.isChecked():
 		    self._shotTreeWidget.AddShot(shot)
 		    #print "BLAH"
@@ -401,17 +419,7 @@ class ProjectViewWidget(QWidget):
 			    seqTreeItem._shotTreeWidget.AddShot(shot)		
 			    #self.CreateFolderStructure()
 			    break
-    
-    def GetShotByID(self,shotid):
-	if self._currentProject is not None:
-		for seq in self._currentProject._sequences:
-		    for shot in seq._shots:
-			if str(shot._idshots) == str(shotid):
-			    return shot
-		for shot in self._currentProject._images:
-		    if str(shot._idshots) == str(shotid):
-			    return shot
-		
+	
     def setProgressListVisibility(self):
 	if self._currentProject is not None:
 	
@@ -477,19 +485,20 @@ class ProjectViewWidget(QWidget):
 	    #add shot to that widget
 	    if self._shotTreeWidget is None:
 		self.CreateShotTreeWidget()
-	    self._shotTreeWidget.AddShot(shot)		
+	    		
 	    
 	    if not sharedDB.autoCreateShotTasks:
 		self.selectShotByName(shot._number)
-		for phase in self._currentProject._phases:	    
+		for phase in self._currentProject._phases.values():	    
 		    if phase._taskPerShot:
 			task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._currentProject._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
-			task.taskAdded.connect(self._shotTreeWidget.AttachTaskToButton)
+			task.taskAdded.connect(self._shotTreeWidget.AttachTaskToButton)			
+			task.Save()
 			
-			if shot._tasks is None:
-			    shot._tasks = [task]
-			else:
-			    shot._tasks.append(task)
+			shot._tasks[str(task.id())] = task
+			
+	    self._shotTreeWidget.AddShot(shot)
+	    
 	else:
 	    print "SHOT NOT FOUND!"
     def selectShotByName(self, sName):
@@ -503,3 +512,47 @@ class ProjectViewWidget(QWidget):
 		item = stree.topLevelItem(x)
 		stree.setCurrentItem(item)
 		break
+	    
+    def LoadRigListValues(self):
+	self.rigList.clear()
+	
+	#self._shotTreeWidget.addTopLevelItem(self._shotTreeWidget.shotTreeItem)
+	
+	#self.rigList.sortByColumn(0, QtCore.Qt.AscendingOrder);
+	#self.progressList.setSortingEnabled(True);
+	
+	if (self._currentProject._rigs):
+	    for rig in self._currentProject._rigs.values():
+
+		#Add Sequences to list
+		self.AddRigToRigList(rig = rig)
+		
+    def AddRigToRigList(self, rigid = None, rig = None):
+	if rig is None:
+	    #print "getting sequence by id"
+	    if str(rigid) in sharedDB.myTempRigs:
+		rig = sharedDB.myTempRigs[str(rigid)]
+	
+	if rig is not None and self._currentProject is not None:
+	    if str(rig._idprojects) == str(self._currentProject._idprojects):
+	    
+		#Add rig to list
+		self.rigItem = temprigwidgetitem.TempRigWidgetItem(parent = self.rigList, rig = rig)
+    
+    def AddRig(self):
+	
+	#get sequence name
+	rigName = self.addRigLine.text()
+	
+	
+	if len(rigName):
+	    #add sequence
+	    rig = self._currentProject.AddRigToProject(rigName)
+	    self.AddRigToRigList(rig = rig)
+	    self.addRigLine.setText("")
+	    #seq.sequenceAdded.connect(self.AddSequenceToProgressList)
+	    
+	else:
+	    #warning message
+	    message = QtGui.QMessageBox.question(self, 'Message',
+	"Please input rig name and try again.", QtGui.QMessageBox.Ok)

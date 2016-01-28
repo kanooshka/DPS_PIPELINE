@@ -33,7 +33,7 @@ class Shots(QObject):
 		
 		self._sequence               = self.GetSequenceById()
 		self._project		     = self.GetProjectById()
-		self._tasks                  = _tasks
+		self._tasks                  = {}
 		self._taskButtons            = []
 		self._updated                = _updated
 		self._type                   = "shot"
@@ -43,6 +43,15 @@ class Shots(QObject):
 		
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
+		
+	def __eq__(self, another):
+		return hasattr(another, '_idshots') and self._idshots == another._idshots
+	
+	def __hash__(self):
+		return hash(self._idshots)
+		
+	def id(self):
+		return self._idshots
 			
 	def Save(self):
 		if self._new:	
@@ -57,17 +66,15 @@ class Shots(QObject):
 
 		if self._tasks is not None:
 			for task in self._tasks:
-				task.Save()
+				self._tasks[str(task)].Save()
 		
 	def GetSequenceById(self):
-		for seq in sharedDB.mySequences:
-			if seq._idsequences == self._idsequences:
-				return seq
+		if str(self._idsequences) in sharedDB.mySequences:
+			return sharedDB.mySequences[str(self._idsequences)]
 			
 	def GetProjectById(self):
-		for proj in sharedDB.myProjects:
-			if proj._idprojects == self._idprojects:
-				return proj
+		if str(self._idprojects) in sharedDB.myProjects:
+			return sharedDB.myProjects[str(self._idprojects)]
 	
 	def AddShotToDB(self):
 		if isinstance(self._description, QtCore.QString):
@@ -86,6 +93,8 @@ class Shots(QObject):
 		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+notes+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
 		self._idshots = sharedDB.mySQLConnection._lastInsertId
+		
+		sharedDB.myShots[str(self.id())] = self
 		
 		self.shotAdded.emit(str(self._idshots))
 	
@@ -121,7 +130,7 @@ class Shots(QObject):
 		self._timestamp		      = _timestamp
 
 		self.shotChanged.emit()
-
+	'''
 	def AddTaskToList(self, task):
 		if str(self._idshots) == str(task._idshots):			
 			###add to shot's task list
@@ -129,7 +138,7 @@ class Shots(QObject):
 				self._tasks.append(task)
 			else:
 				self._tasks = [task]
-	
+	'''
 	
 	def emitShotChanged( self ):
 		if ( not self.signalsBlocked() ):

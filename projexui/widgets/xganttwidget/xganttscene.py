@@ -25,6 +25,8 @@ from PyQt4.QtGui    import QGraphicsScene,\
                                  QBrush,\
                                  QColor
 
+from datetime import datetime
+
 class XGanttScene(QGraphicsScene):
     def __init__( self, ganttWidget ):
         super(XGanttScene, self).__init__(ganttWidget)
@@ -35,6 +37,8 @@ class XGanttScene(QGraphicsScene):
         self._vlines            = []
         self._alternateRects    = []
         self._weekendRects      = []
+	self._bookedRects      = []
+	self._unavailableRects      = []
         self._topLabels         = []
         self._labels            = []
         self._dirty             = True
@@ -151,13 +155,23 @@ class XGanttScene(QGraphicsScene):
 	    painter.drawRect(rect)
 	    
 	# draw the currentday
-	painter.setBrush(gantt._currentDayBrush)
-        for rect in self._currentDayRects:
-            painter.drawRect(rect)
+	if gantt._currentDayBrush is not None:
+	    painter.setBrush(gantt._currentDayBrush)
+	    for rect in self._currentDayRects:
+		painter.drawRect(rect)
 	
         # draw the default background
         painter.setPen(gantt.gridPen())
         painter.drawLines(self._hlines + self._vlines)
+    
+	#draw the booked
+	for rect in self._bookedRects:
+	    painter.setBrush(gantt.bookedBrush())
+	    painter.drawRect(rect)
+	    
+	for rect in self._unavailableRects:
+	    painter.setBrush(gantt.unavailableBrush())
+	    painter.drawRect(rect)
     
     def ganttWidget( self ):
         """
@@ -200,6 +214,8 @@ class XGanttScene(QGraphicsScene):
         self._hlines            = []
         self._vlines            = []
         self._weekendRects      = []
+	self._bookedRects       = []
+	self._unavailableRects = []
 	self._holidayRects      = []
 	self._currentDayRects   = []
         self._alternateRects    = []
@@ -244,24 +260,44 @@ class XGanttScene(QGraphicsScene):
             rect  = QRect(x, half, cell_width, half)
             self._labels.append((rect, label))
             
+	    # store weekend rectangles
+            if ( curr.dayOfWeek() in (6, 7) ):
+                rect = QRect(x, 0, cell_width, height)
+                self._weekendRects.append(rect)
+	    
 	    # store current day rectangle
-	    if ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
+	    elif ( curr.toString("ddMMyyyy") == QDate.currentDate().toString("ddMMyyyy") ):
                 rect = QRect(x, 0, cell_width, height)
                 self._currentDayRects.append(rect)
 		
-            # store weekend rectangles
-            elif ( curr.dayOfWeek() in (6, 7) ):
-                rect = QRect(x, 0, cell_width, height)
-                self._weekendRects.append(rect)
             
+            
+	    # store holiday rectangles
 	    
-		
+	    
+	    
             # increment the dates
             curr = curr.addDays(increment)
             x += cell_width
             i += 1
-        
-        # update the month rect
+
+        if gantt._availabilityEnabled:
+	    #iterate through rows
+	    for itemcount in range(0,gantt.topLevelItemCount()):
+		#check top item, then check child items
+		item = gantt.topLevelItem(itemcount)
+		if item._dbEntry is not None:
+		    if item._dbEntry._type == "phase":
+			for pa in item._dbEntry._phaseAssignments.values():
+			    for key in pa._availability.keys():						    
+				if pa._availability[key] > 8:
+				    if QDate.fromString(key,"yyyy-MM-dd") >= start:
+					diff = start.daysTo(QDate.fromString(key,"yyyy-MM-dd"))
+					rect = QRect((diff)*cell_width, header_height+cell_height*(itemcount), cell_width, cell_height)
+					self._unavailableRects.append(rect)
+	
+	
+	# update the month rect
         top_rect.setRight(x)
         top_label = end.toString(top_format)
         self._topLabels.append((top_rect, top_label))

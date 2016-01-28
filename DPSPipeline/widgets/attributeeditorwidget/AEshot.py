@@ -116,7 +116,7 @@ class AEShot(QWidget):
 	else:
 	    sentShot = self._currentShot
 
-	for proj in sharedDB.myProjects:
+	for proj in sharedDB.myProjects.values():
 	    if str(proj._idprojects) == str(sentShot._idprojects):
 		self.project = proj
 		break
@@ -124,7 +124,7 @@ class AEShot(QWidget):
 	if self._currentShot is not None:
 	    if len(sharedDB.sel.items):
 		if hasattr(sharedDB.sel.items[len(sharedDB.sel.items)-1], "_type") and sharedDB.sel.items[len(sharedDB.sel.items)-1]._type == "shot":
-		    print "SHOWING SHOT"
+		    #print "SHOWING SHOT"
 		    self.setEnabled(1)
 		    self.setHidden(0)
 		    

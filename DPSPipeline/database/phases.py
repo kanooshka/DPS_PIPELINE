@@ -1,7 +1,7 @@
 import mysql.connector
 import sharedDB
 from DPSPipeline.database.connection import Connection
-
+from PyQt4 import QtCore
 '''
 '1', 'Storyboarding'
 '2', 'Modeling'
@@ -22,8 +22,10 @@ from DPSPipeline.database.connection import Connection
 '17', 'Sound (Rough)'
 '''
 
-class Phases():
 
+
+class Phases():
+	
 	def __init__(self,_idphases = 0,_name = '',_ganttChartBGColor = '255,0,0',_ganttChartTextColor = '0,0,0',_manHoursToMinuteRatio = "0.1",_iddepartments = 0,_taskPerShot = 1,_defaultTaskStatus = 0):
 		
 		# define custom properties
@@ -35,28 +37,47 @@ class Phases():
 		self._iddepartments    = _iddepartments
 		self._taskPerShot     = _taskPerShot
 		self._defaultTaskStatus = _defaultTaskStatus
+		self._type                   = "phase"
+		
+		self._phaseAssignments = {}
+		self._availability = {}
 		
 		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1
 		else:
 			self._visible = 0
-			
+		
+		#sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
+	
+	def __eq__(self, another):
+		return hasattr(another, '_idphases') and self._idphases == another._idphases
+	
+	def __hash__(self):
+		return hash(self._idphases)
+	
+	def id(self):
+		return self._idphases
+	
+	def name(self):
+		return self._name
+
 	def isVisible(self):
 		return self._visible
 	
-			
+'''
 def GetPhaseNames():
-	phases = []
+	phases = {}
 
 	rows = sharedDB.mySQLConnection.query("SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus FROM phases")
 	
 	for row in rows:
 		#print row[0]
-		phases.append(Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7]))
-
+		phases[str(row[0])] = Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
+		
 	return phases
 
 def getPhaseByID(sentid):
 	for phase in sharedDB.myPhases:		
 		if str(phase._idphases) == str(sentid):
 			return phase
+'''

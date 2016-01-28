@@ -50,17 +50,18 @@ class CreateProjectWidget(QWidget):
 
     def UpdateClientList(self):
 	self.clientComboBox.clear()
-	for client in sharedDB.myClients:
+	for client in sharedDB.myClients.values():
 	    self.clientComboBox.addItem(client._name,QtCore.QVariant(client._idclients))
     
-    def UpdateIPList(self, sentclientid):
+    def UpdateIPList(self, sentclientcmboboxindex):
 	self.ipComboBox.clear()
-	for client in sharedDB.myClients:
-	    if str(client._idclients) == self.clientComboBox.itemData(sentclientid).toString():
-		for ip in client._ips:
-		    self.ipComboBox.addItem(ip._name,QtCore.QVariant(ip._idips))
-		    
-		return
+	print sharedDB.myClients[str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())]
+	if str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString()) in sharedDB.myClients:
+	    client = sharedDB.myClients[str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())]
+	    #if str(client._idclients) == self.clientComboBox.itemData(sentclientid).toString():
+	    for ip in client._ips.values():
+		self.ipComboBox.addItem(ip._name,QtCore.QVariant(ip._idips))
+
 
     def cancel(self):
         self.close()
@@ -71,7 +72,7 @@ class CreateProjectWidget(QWidget):
         self.xres_spinBox.setValue(1280)
         self.yres_spinBox.setValue(720)
         
-        for myPhase in sharedDB.myPhases:        
+        for myPhase in sharedDB.myPhases.values():        
             if myPhase._name != "DUE":
                 item = QtGui.QListWidgetItem(myPhase._name)
                 self.phaseListWidget.addItem(item)
@@ -107,8 +108,8 @@ class CreateProjectWidget(QWidget):
             for x in range(0,len(sharedDB.myPhases))[::-1]:
                 #print sharedDB.myPhases[x]._name
                 #print item.text
-                if sharedDB.myPhases[x]._name == item.text():                    
-                    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = x+1, _startdate = due_date,_enddate = due_date,_updated = 0))
+                if sharedDB.myPhases.values()[x]._name == item.text():                    
+		    phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = sharedDB.myPhases.values()[x].id(), _startdate = due_date,_enddate = due_date,_updated = 0))
                     continue
             #start from due date and work backwards
             #for 
@@ -119,13 +120,28 @@ class CreateProjectWidget(QWidget):
         phases.append(sharedDB.phaseAssignments.PhaseAssignments(_idphases = 16, _startdate = due_date,_enddate = due_date,_updated = 0))
         
         newProj = sharedDB.projects.Projects(_name = name, _folderLocation = '', _idstatuses = 1, _fps = fps, _renderWidth = renderWidth, _renderHeight = renderHeight, _due_date = due_date, _renderPriority = renderPriority, _description = description, _idips = idips, _idclients = idclients, _new = 0)
-	newProj._phases = phases
-	newProj._new = 1
-	sharedDB.myProjects.append(newProj)
 	
-	for ip in sharedDB.myIps:
-	    if str(ip._idips) == str(idips):
-		ip._projects.append(newProj)
+	newProj._new = 1
+	newProj.Save()
+	#sharedDB.myProjects.append(newProj)
+	
+	#connect phases to projectid
+	
+		
+		
+		
+	
+	for phase in phases:
+	    phase._idprojects = newProj._idprojects
+	    phase.project = newProj
+	    phase._new = 1
+	    phase.Save()
+	    newProj._phases[str(phase.id())] = phase
+	    
+	
+	if str(idips) in sharedDB.myIps:
+	    ip = sharedDB.myIps[str(idips)]
+	    ip._projects[str(newProj.id())] = newProj
 	
         self.close();
         
@@ -136,20 +152,20 @@ def InitializeDates(phases,due_date,duration):
         phase._enddate = currentDate - timedelta(days=1)
         
         #iterate through phases until there's a match
-        for myPhase in sharedDB.myPhases:
-            if myPhase._idphases == phase._idphases:
-                #multiply duration(minutes) by _manHoursToMinuteRatio / work hours in a day       
-                daysGoal = math.ceil(QTime().secsTo(duration)/60.0*myPhase._manHoursToMinuteRatio/8.0)
-                #print daysGoal
-                numdays = 0
-                #while numdays < work days
-                while numdays<daysGoal:
-                    #subtract day from currentDate
-                    currentDate = currentDate - timedelta(days=1)
-                    #if workday
-                    if currentDate.weekday()<5:
-                        numdays = numdays+1
-                #phase start date = currentdate
-                phase._startdate = currentDate
+        if str(phase._idphases) in sharedDB.myPhases:
+	    myPhase = sharedDB.myPhases[str(phase._idphases)]
+	    #multiply duration(minutes) by _manHoursToMinuteRatio / work hours in a day       
+	    daysGoal = math.ceil(QTime().secsTo(duration)/60.0*myPhase._manHoursToMinuteRatio/8.0)
+	    #print daysGoal
+	    numdays = 0
+	    #while numdays < work days
+	    while numdays<daysGoal:
+		#subtract day from currentDate
+		currentDate = currentDate - timedelta(days=1)
+		#if workday
+		if currentDate.weekday()<5:
+		    numdays = numdays+1
+	    #phase start date = currentdate
+	    phase._startdate = currentDate
                 
     return phases
