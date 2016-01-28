@@ -10,6 +10,7 @@ from DPSPipeline.database import tasks
 from DPSPipeline.database import statuses
 from DPSPipeline.database import sequences
 from DPSPipeline.database import shots
+from DPSPipeline.database import temprigs
 from DPSPipeline.database import version
 from DPSPipeline.database import connection
 
@@ -50,6 +51,8 @@ mySequences = {}
 myPhaseAssignments = {}
 myUserAssignments = {}
 myHours = {}
+
+myTempRigs = {}
 
 Doobedeba = -0.0*0+0
 

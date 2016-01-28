@@ -1,5 +1,6 @@
 
 from DPSPipeline.database.connection import Connection
+from DPSPipeline.database import temprigs
 from DPSPipeline.database import sequences
 from DPSPipeline.database import shots
 import sharedDB
@@ -45,6 +46,7 @@ class Projects(QObject):
 		#self._duePhase 		= []
 		self._sequences              = {}
 		self._images		     = {}
+		self._rigs                   = {}
 		
 		self._new		     = _new
 		
@@ -100,6 +102,9 @@ class Projects(QObject):
 		for phase in self._phases:
 			self._phases[str(phase)].Save()
 		
+		
+		for rig in self._rigs.values():
+			rig.Save()
 		#sharedDB.mySQLConnection.closeConnection()
 
 	def AddSequenceToProject(self, newName):
@@ -109,6 +114,14 @@ class Projects(QObject):
 		
 		self._sequences[str(seq.id())] = seq
 		return seq
+	
+	def AddRigToProject(self, newName):
+
+		rig = temprigs.TempRigs(_name = newName,_idprojects = self._idprojects,_new = 1)
+		rig.Save()
+		
+		self._rigs[str(rig.id())] = rig
+		return rig
 	
 	def AddShotToProject(self, newName):
 		shot = shots.Shots(_idshots = None,_number = newName,_idstatuses = 1,_description = '',_timestamp = None,_new = 1,_idprojects = self._idprojects, _idsequences = 0, _startframe = 101, _endframe = 101)

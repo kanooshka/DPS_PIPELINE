@@ -47,14 +47,16 @@ class processQueries(QtCore.QThread):
 			else:
 				print "Commencing initial Database load"
 				
-				sharedDB.myStatuses = sharedDB.statuses.GetStatuses()				
+				#sharedDB.myStatuses = sharedDB.statuses.GetStatuses()				
 				#sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
 			
-			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","statuses","SELECT idstatuses,name,appsessionid FROM statuses WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","temprigs","SELECT idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid FROM temprigs WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
@@ -71,6 +73,9 @@ class processQueries(QtCore.QThread):
 						
 						rows = sharedDB.mySQLConnection.query(self._currentQuery)
 	
+						if self._currentDB == "statuses":						
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._statusesToBeParsed.extend(rows)
 						if self._currentDB == "phases":						
 							rows.sort(key=lambda x: x[2])
 							sharedDB.mySQLConnection._phasesToBeParsed.extend(rows)
@@ -83,6 +88,9 @@ class processQueries(QtCore.QThread):
 						elif self._currentDB == "projects":
 							rows = sorted(rows, key=lambda x: x[2])
 							sharedDB.mySQLConnection._projectsToBeParsed.extend(rows)
+						elif self._currentDB == "temprigs":
+							rows = sorted(rows, key=lambda x: x[2])
+							sharedDB.mySQLConnection._tempRigsToBeParsed.extend(rows)							
 						elif self._currentDB == "phaseassignments":
 							rows = sorted(rows, key=lambda x: x[3])
 							sharedDB.mySQLConnection._phaseassignmentsToBeParsed.extend(rows)
@@ -124,10 +132,12 @@ class processQueries(QtCore.QThread):
     
 class Connection(QObject):
 	newUserSignal = QtCore.pyqtSignal(QtCore.QString)
+	newStatusSignal = QtCore.pyqtSignal(QtCore.QString)
 	newPhaseSignal = QtCore.pyqtSignal(QtCore.QString)
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
 	newIpSignal = QtCore.pyqtSignal(QtCore.QString)
 	newProjectSignal = QtCore.pyqtSignal(QtCore.QString)
+	newTempRigSignal = QtCore.pyqtSignal(QtCore.QString)
 	newPhaseAssignmentSignal = QtCore.pyqtSignal(QtCore.QString)
 	newSequenceSignal = QtCore.pyqtSignal(QtCore.QString)
 	newShotSignal = QtCore.pyqtSignal(QtCore.QString)
@@ -173,6 +183,7 @@ class Connection(QObject):
 		
 		self.wrongVersionSignal.connect(self.wrongVersion)
 		
+		self._statusesToBeParsed = []
 		self._phasesToBeParsed = []
 		self._clientsToBeParsed = []
 		self._ipsToBeParsed = []
@@ -184,6 +195,7 @@ class Connection(QObject):
 		self._tasksToBeParsed = []
 		self._userAssignmentsToBeParsed = []
 		self._hoursToBeParsed = []
+		self._tempRigsToBeParsed = []
 		
 		self._queryProcessor = processQueries()
 		self._queryProcessor.finished.connect(self._queryProcessor.start)
@@ -240,6 +252,29 @@ class Connection(QObject):
 	def ParseUpdatesFromDB(self):
 		#sharedDB.blockSignals = 1
 		
+		#statuses
+		while True:
+			if len(self._statusesToBeParsed)>0:
+				row = self._statusesToBeParsed[0]			
+			
+				if str(row[0]) in sharedDB.myStatuses:
+					status = sharedDB.myStatuses[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[3]) or sharedDB.testing:
+						phase.SetValues(_idstatuses = row[0],_name = row[1])
+				else:
+					#create status
+					print "New Status found in database CREATING status: "+str(row[0])
+					myStatus =sharedDB.statuses.Statuses(_idstatuses = row[0],_name = row[1])
+					#add status to status list
+					sharedDB.myStatuses[str(row[0])] = myStatus
+					
+					#emit new status signal
+					sharedDB.mySQLConnection.newStatusSignal.emit(str(myStatus._idstatuses))
+					
+				#remove row from list
+				del self._statusesToBeParsed[0]
+			else:
+				break
 		#phases
 		while True:
 			if len(self._phasesToBeParsed)>0:
@@ -247,16 +282,16 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myPhases:
 					phase = sharedDB.myPhases[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[4]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
 						phase.SetValues(_idclients = row[0],_name = row[1])
 				else:
 					#create phase
 					print "New Phase found in database CREATING phase: "+str(row[0])
 					myPhase =sharedDB.phases.Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
-					#add ip to ip list
+					#add phase to phase list
 					sharedDB.myPhases[str(row[0])] = myPhase
 					
-					#emit new client signal
+					#emit new phase signal
 					sharedDB.mySQLConnection.newPhaseSignal.emit(str(myPhase._idphases))
 					
 				#remove row from list
@@ -352,6 +387,40 @@ class Connection(QObject):
 				del self._projectsToBeParsed[0]
 			else:
 				break
+		
+		#TempRigs  ************   idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid
+		while True:
+			#print "Queue Lenght: "+str(x)
+			if len(self._tempRigsToBeParsed)>0:
+				row = self._tempRigsToBeParsed[0]
+				#print "Adding temp rig "+str(row[1])
+
+				if str(row[0]) in sharedDB.myTempRigs:
+					rig = sharedDB.myTempRigs[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+						rig.SetValues(_idtemprigs = row[0],_name = row[1],_idprojects = row[2],_setnumber = row[3],_typ = row[4],_status = row[5],_description = row[6],_folderLocation = row[7])
+
+				else:
+					#create rig
+					print "New RIG found in database CREATING rig: "+str(row[1])					
+					myRig =sharedDB.temprigs.TempRigs(_idtemprigs = row[0],_name = row[1],_idprojects = row[2],_setnumber = row[3],_typ = row[4],_status = row[5],_description = row[6],_folderLocation = row[7],_new = 0)
+					#add rig to rig list
+					sharedDB.myTempRigs[str(row[0])] = myRig
+					
+					#connect rig to project
+					if str(myRig._idprojects) in sharedDB.myProjects:
+						proj = sharedDB.myProjects[str(myRig._idprojects)]
+						if str(myRig.id()) not in proj._rigs:
+							proj._rigs[str(myRig.id())] = myRig
+
+					#emit new sequence signal
+					sharedDB.mySQLConnection.newTempRigSignal.emit(str(myRig._idtemprigs))
+					
+				#remove row from list
+				del self._tempRigsToBeParsed[0]
+			else:
+				break
+		
 		
 		#Phase Assignments           **** idphaseassignments, idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip *****
 		while True:
