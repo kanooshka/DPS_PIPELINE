@@ -57,11 +57,14 @@ class Phases():
 	
 	def id(self):
 		return self._idphases
+	
+	def name(self):
+		return self._name
 
 	def isVisible(self):
 		return self._visible
 	
-			
+'''
 def GetPhaseNames():
 	phases = {}
 
@@ -72,7 +75,7 @@ def GetPhaseNames():
 		phases[str(row[0])] = Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
 		
 	return phases
-'''
+
 def getPhaseByID(sentid):
 	for phase in sharedDB.myPhases:		
 		if str(phase._idphases) == str(sentid):
