@@ -38,12 +38,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 
 	self._blockUpdates = 0
 	
-	sharedDB.myTasksWidget = self
+	sharedDB.myTasksWidget = self	
 	
-	if sharedDB.initialLoad:
-	    self.propogateUI
-	else:
-	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
+	
 	
 	#self.projectTaskItems = []
 	self.setEnabled(0)
@@ -73,6 +70,9 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    self.showOutForApprovalEnabled = 1
 	    self.allowedStatuses.append(7)
 
+	self.statusids = []
+	self.UpdateStatusList()
+	
 	self.horizontalHeaderLabels = ["Task","Due Date","ID User Assignment"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
 	    self.insertColumn(x)
@@ -112,6 +112,11 @@ class MyTasksWidget(QtGui.QTableWidget):
 	self._unassignedTaskQueue = []
 	
 	self._connectedPhaseAssignments = []
+	
+	if sharedDB.initialLoad:
+	    self.propogateUI
+	else:
+	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)
 	
     def closeThreads(self):
 	self.myWaitTimer.quit()
@@ -178,8 +183,14 @@ class MyTasksWidget(QtGui.QTableWidget):
 				    self._unassignedTaskQueue.append(phase)
     
     def AddToUnassignedQueue(self, sentID):
+	self.UpdateStatusList()
+	
 	if str(sentID) in sharedDB.myPhaseAssignments:
 	    phase = sharedDB.myPhaseAssignments[str(sentID)]
+	    if str(phase._idstatuses) in self.statusids:
+		return
+	    
+	    
 	    if self.unassignedItems is not None:
 		for p in self.unassignedItems:
 		    if p.phaseAssignment() == phase:
@@ -189,18 +200,24 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    self._unassignedTaskQueue.append(phase)
 	    return
     
-    def AppendToUserAssignmentQueue(self, assignmentid):
-	statusids = []
+    def UpdateStatusList(self):
+	self.statusids = []
 	
+	for status in sharedDB.myStatuses.values():
+	    if (status._name == "Finished" and not self.showFinishedEnabled) or (status._name == "Cancelled" and not self.showCancelledEnabled) or (status._name == "Deleted" and not self.showDeletedEnabled) or (status._name == "On Hold" and not self.showOnHoldEnabled) or (status._name == "Not Started" and not self.showNotStartedEnabled) or (status._name == "In Progress" and not self.showInProgressEnabled) or (status._name == "Out For Approval" and not self.showOutForApprovalEnabled):
+		self.statusids.append(str(status.id()))
+    
+    def AppendToUserAssignmentQueue(self, assignmentid):
+
+	self.UpdateStatusList()
+
 	ua = sharedDB.myUserAssignments[str(assignmentid)]
 	if ua.assignmentType() == "phase_assignment":	    
 	    pa = sharedDB.myPhaseAssignments[str(ua._assignmentid)]
-	    project = sharedDB.myProjects[str(pa._idprojects)]
-	    for status in sharedDB.myStatuses.values():
-		if (status._name == "Finished" and not self.showFinishedEnabled) or (status._name == "Cancelled" and not self.showCancelledEnabled) or (status._name == "Deleted" and not self.showDeletedEnabled) or (status._name == "On Hold" and not self.showOnHoldEnabled) or (status._name == "Not Started" and not self.showNotStartedEnabled) or (status._name == "In Progress" and not self.showInProgressEnabled) or (status._name == "Out For Approval" and not self.showOutForApprovalEnabled):
-		    statusids.append(str(status.id()))
+	    project = sharedDB.myProjects[str(pa._idprojects)] 
 	    
-	    if str(project._idstatuses) in statusids or str(pa._idstatuses) in statusids:
+	    
+	    if str(project._idstatuses) in self.statusids or str(pa._idstatuses) in self.statusids:
 		return
 	    
 	#user = sharedDB.myUsers[str(ua.idUsers())]
