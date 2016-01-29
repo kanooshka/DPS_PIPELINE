@@ -43,7 +43,8 @@ class UserAssignment(QObject):
 		#if self._idstatuses == 3 or self._idstatuses == 5:
 			#self._hidden = True
 			
-		self.connectToDBClasses()
+		if not self._new:
+			self.connectToDBClasses()
 	
 	def __eq__(self, another):
 		return hasattr(another, '_iduserassignments') and self._iduserassignments == another._iduserassignments
