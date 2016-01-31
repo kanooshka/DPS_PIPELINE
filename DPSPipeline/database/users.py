@@ -1,7 +1,10 @@
 from DPSPipeline.database.connection import Connection
 import sharedDB
 
+import operator
 from PyQt4 import QtCore
+
+sortedUserList = []
 
 class Users():
 
@@ -90,6 +93,10 @@ def GetAllUsers():
 		users[str(row[0])]=Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6])
 		
 		sharedDB.mySQLConnection.newUserSignal.emit(str(row[0]))
+	
+	myUsers = users
+	sortUserListByAbility()
+	
 	return users
 
 def GetCurrentUser(username = ''):
@@ -107,6 +114,19 @@ def GetCurrentUser(username = ''):
 		#users.append(Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6]))
 		users[str(row[0])]=Users(_idusers = row[0],_username = row[1],_name = row[2],_password = row[3],_iddepartments = row[4],_idPrivileges = priv,_active = row[6])
 	return users
+
+def sortUserListByAbility():
+	global sortedUserList
+	
+	userList = {}
+	
+	#iterate through users, create new dictionary of just idusers and len of phases
+	for u in sharedDB.myUsers.values():
+		userList[u.id()] = len(u._phases)
+	
+	sortedUserList = sorted(userList.items(), key=operator.itemgetter(1))
+
+
 '''
 def getUserByID(sentid):
 	for user in sharedDB.myUsers:		
