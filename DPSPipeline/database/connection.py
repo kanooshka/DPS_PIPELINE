@@ -51,6 +51,7 @@ class processQueries(QtCore.QThread):
 				#sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
 				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
 			
+			self._queries.append(["SELECT","departments","SELECT iddepartments,name,appsessionid FROM departments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","statuses","SELECT idstatuses,name,appsessionid FROM statuses WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
@@ -74,9 +75,13 @@ class processQueries(QtCore.QThread):
 						rows = sharedDB.mySQLConnection.query(self._currentQuery)
 	
 						if self._currentDB == "statuses":						
+						if self._currentDB == "departments":						
+							rows.sort(key=lambda x: x[2])
+							sharedDB.mySQLConnection._departmentsToBeParsed.extend(rows)
+						elif self._currentDB == "statuses":						
 							rows.sort(key=lambda x: x[2])
 							sharedDB.mySQLConnection._statusesToBeParsed.extend(rows)
-						if self._currentDB == "phases":						
+						elif self._currentDB == "phases":						
 							rows.sort(key=lambda x: x[2])
 							sharedDB.mySQLConnection._phasesToBeParsed.extend(rows)
 						elif self._currentDB == "clients":						
@@ -132,6 +137,7 @@ class processQueries(QtCore.QThread):
     
 class Connection(QObject):
 	newUserSignal = QtCore.pyqtSignal(QtCore.QString)
+	newDepartmentSignal = QtCore.pyqtSignal(QtCore.QString)
 	newStatusSignal = QtCore.pyqtSignal(QtCore.QString)
 	newPhaseSignal = QtCore.pyqtSignal(QtCore.QString)
 	newClientSignal = QtCore.pyqtSignal(QtCore.QString)
@@ -183,6 +189,7 @@ class Connection(QObject):
 		
 		self.wrongVersionSignal.connect(self.wrongVersion)
 		
+		self._departmentsToBeParsed = []
 		self._statusesToBeParsed = []
 		self._phasesToBeParsed = []
 		self._clientsToBeParsed = []
@@ -252,6 +259,29 @@ class Connection(QObject):
 	def ParseUpdatesFromDB(self):
 		#sharedDB.blockSignals = 1
 		
+		#departments
+		while True:
+			if len(self._departmentsToBeParsed)>0:
+				row = self._departmentsToBeParsed[0]			
+			
+				if str(row[0]) in sharedDB.myDepartments:
+					department = sharedDB.myDepartments[str(row[0])]
+					if not str(sharedDB.app.sessionId()) == str(row[2]) or sharedDB.testing:
+						department.SetValues(_iddepartments = row[0],_name = row[1])
+				else:
+					#create department
+					print "New Department found in database CREATING department: "+str(row[0])
+					myDepartment =sharedDB.departments.Departments(_iddepartments = row[0],_name = row[1])
+					#add department to department list
+					sharedDB.myDepartments[str(row[0])] = myDepartment
+					
+					#emit new department signal
+					sharedDB.mySQLConnection.newDepartmentSignal.emit(str(myDepartment._iddepartments))
+				
+				#remove row from list
+				del self._departmentsToBeParsed[0]
+			else:
+				break		
 		#statuses
 		while True:
 			if len(self._statusesToBeParsed)>0:

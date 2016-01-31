@@ -4,13 +4,20 @@ from DPSPipeline.database.connection import Connection
 
 class Departments():
 
-	def __init__(self,_iddepartments = 0,_name = '',_ganttChartColor = '255,0,0'):
+	def __init__(self,_iddepartments = 0,_name = ''):
 		
 		# define custom properties
 		self._iddepartments      = _iddepartments
 		self._name               = _name
-		self._ganttChartColor    = _ganttChartColor
 		
+		self.users = {}
+		self.capacity  = {}
+	
+	def CalculateCapacityOnDate(self,date):
+		pass
+	
+	
+	
 	def __eq__(self, another):
 		return hasattr(another, '_iddepartments') and self._iddepartments == another._iddepartments
 	
@@ -19,7 +26,7 @@ class Departments():
 		
 	def id(self):
 		return self._iddepartments
-		
+'''	
 def GetDepartments():
 	departments = []
 	rows = sharedDB.mySQLConnection.query("SELECT iddepartments,name,ganttChartColor FROM departments")
@@ -29,3 +36,4 @@ def GetDepartments():
 		departments.append(Departments(_iddepartments = row[0],_name = row[1],_ganttChartColor = row[2]))
 	
 	return departments
+'''
