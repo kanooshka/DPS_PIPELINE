@@ -509,8 +509,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
                     value   | <variant>
         """
         if key == 'Name':
-            self.setName(value)            
-            self._dbEntry.setProperty(propertyname = key, value = value)
+            if self._dbEntry._type == "project":
+		self.setName(value)            
+		self._dbEntry.setProperty(propertyname = key, value = value)
             #self.sync()
         elif key == 'Start':
             if self.dateStart() != value:
