@@ -2378,6 +2378,9 @@ class XTreeWidget(QTreeWidget):
         
         :param      event | <QMousePressEvent>
         """
+        
+        super(XTreeWidget, self).mousePressEvent(event)
+        '''
         item = self.itemAt(event.pos())
         column = self.columnAt(event.pos().x())
         
@@ -2402,6 +2405,7 @@ class XTreeWidget(QTreeWidget):
             event.accept()
         else:
             super(XTreeWidget, self).mousePressEvent(event)
+        '''
     
     def mouseMoveEvent( self, event ):
         """
