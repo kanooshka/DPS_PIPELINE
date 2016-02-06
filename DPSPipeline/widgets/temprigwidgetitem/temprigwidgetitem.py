@@ -12,7 +12,7 @@ class TempRigWidgetItem(QTreeWidgetItem):
         self.parent.addTopLevelItem(self)
         
         self.types = ["NONE","Product Rig","TV Rig","Vehicle"]
-        self.statuses = ["Not Started","In Progress","Finished","NEEDS ATTENTION"]
+        self.statuses = ["Not Started","Prepped","Rigging","Finished"]
         
         self.UpdateValues()
 	
