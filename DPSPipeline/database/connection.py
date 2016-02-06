@@ -73,8 +73,7 @@ class processQueries(QtCore.QThread):
 						self._currentQuery = self._queries[0][2]
 						
 						rows = sharedDB.mySQLConnection.query(self._currentQuery)
-	
-						if self._currentDB == "statuses":						
+					
 						if self._currentDB == "departments":						
 							rows.sort(key=lambda x: x[2])
 							sharedDB.mySQLConnection._departmentsToBeParsed.extend(rows)
