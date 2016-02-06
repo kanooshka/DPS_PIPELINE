@@ -40,7 +40,10 @@ class Phases():
 		self._type                   = "phase"
 		
 		self._phaseAssignments = {}
+		self._capacity = {}
 		self._availability = {}
+		
+		#self._users = {}
 		
 		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1

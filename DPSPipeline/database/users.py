@@ -29,7 +29,7 @@ class Users():
 		self._type                   = "user"
 		self._hidden                 = False
 		
-		self._availibility = {}
+		self._availability = {}
 		
 		if self._active == 0:
 			self._hidden = True
