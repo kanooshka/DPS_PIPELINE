@@ -248,14 +248,17 @@ class MyTasksWidget(QtGui.QTableWidget):
 	    if str(userassignment._assignmentid) in sharedDB.myPhaseAssignments:
 		phase = sharedDB.myPhaseAssignments[str(userassignment._assignmentid)]
 		
-		#if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
-		if str(userassignment.assignmentType()) == "phase_assignment":
-	
-		    #add phase assignment to widget
-		    
-		    #phase.setAssigned(1)
-		    
-		    if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
+		#if starting at most a week from now
+		if date.today()+timedelta(days=7) >= phase._startdate:
+		
+		    #if userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.showAllUsersEnabled or (sharedDB.currentUser._idPrivileges == 2 and phase._iddepartments in sharedDB.currentUser.departments()):	    
+		    if str(userassignment.assignmentType()) == "phase_assignment":
+	    
+			#add phase assignment to widget
+			
+			#phase.setAssigned(1)
+			
+			#if sharedDB.currentUser._idPrivileges < 3 or date.today()+timedelta(days=5) >= phase._startdate:
 			self.insertRow(self.rowCount())
 	
 			dateitem = QtGui.QTableWidgetItem()	

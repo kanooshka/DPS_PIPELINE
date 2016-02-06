@@ -32,7 +32,7 @@ from PyQt4.QtGui    import QWidget,\
 				 QPen,\
 				 QBrush,\
 				 QPalette,\
-				 QColor, QMenuBar
+				 QColor, QMenuBar, QCursor
 
 from projex.enum import enum
 
@@ -116,6 +116,11 @@ class XGanttWidget(QWidget):
 	header.setDefaultSectionSize(60)
 	headerItem = self.uiGanttTREE.headerItem()
 	headerItem.setSizeHint(0, QSize(10, header.height()))
+	
+	self.uiGanttTREE.setContextMenuPolicy( Qt.CustomContextMenu )
+        
+        # connect signals
+        self.uiGanttTREE.customContextMenuRequested.connect( self.showProjectMenu)
 	
 	# initialize the tree widget
 	self.uiGanttTREE.setShowGrid(False)
@@ -716,3 +721,57 @@ class XGanttWidget(QWidget):
 	:return     <QBrush>
 	"""
 	return self._unavailableBrush
+
+    def showProjectMenu( self, pos):
+        """
+        Displays the header menu for this tree widget.
+        
+        :param      pos | <QPoint> || None
+        """
+        '''
+	
+	header = self.header()
+        index  = header.logicalIndexAt(pos)
+        self._headerIndex = index
+        
+        # show a pre-set menu
+        if self._headerMenu:
+            menu = self._headerMenu
+        else:
+            menu = self.createHeaderMenu(index)
+        '''
+        # determine the point to show the menu from
+        #if pos is not None:
+        #    point = header.mapToGlobal(pos)
+        #else:
+        index = self.uiGanttTREE.indexAt(pos)
+	
+	if not index.isValid() or not index.parent().isValid():	    
+	    return
+	
+	print self.uiGanttTREE.itemFromIndex(index)._dbEntry._type
+	
+	point = QCursor.pos()
+        
+        #self.headerMenuAboutToShow.emit(menu, index)
+	
+	menu	 = QtGui.QMenu()
+        
+        statusMenu = menu.addMenu("Status Visibility")
+	
+        menu.exec_(point)
+    '''
+    def contextMenuEvent(self, ev):
+        
+        #if self.isEnabled():
+        
+        menu	 = QtGui.QMenu()
+        
+        statusMenu = menu.addMenu("Status Visibility")
+	
+	#self.showNotStartedEnabled = 1
+	showNotStartedAction = statusMenu.addAction('Show Not Started')
+	showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
+                
+        menu.exec_(ev.globalPos())
+    '''

@@ -39,6 +39,8 @@ class PhaseAssignments(QObject):
 		self._tasks			   = {}
 		self._iddepartments	           = 1
 		
+		self._estimatedHoursLeft           = 0
+		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 		#sharedDB.mySQLConnection.newTaskSignal.connect(self.AddTaskToList)
@@ -89,6 +91,7 @@ class PhaseAssignments(QObject):
 		if str(self._idphases) in sharedDB.myPhases:
 			phase = sharedDB.myPhases[str(self._idphases)]
 
+			self._phase = phase
 			self._name = phase._name
 			self._taskPerShot = phase._taskPerShot
 			self._iddepartments = phase._iddepartments

@@ -63,4 +63,6 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
             #connect to update
             self._userAssignment.userAssignmentChanged.connect(self.getHours)
 	    self._userAssignment.Save()
+	    self._userAssignment.connectToDBClasses()
+	    
         

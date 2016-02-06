@@ -31,6 +31,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         #sortedPhases = self.phases.values()
         #sortedPhases.sort(key=operator.attrgetter('_startdate'))
         
+	self.setToolTip(1,("ShotID: "+str(self.shot._idshots)))
+	
         for phase in self.phases:
             if phase._taskPerShot:
                 currentTask = None
@@ -44,11 +46,11 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 #if task didn't exist, create task  
                 if currentTask is None and sharedDB.autoCreateShotTasks:
                     currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self.project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
-                    if self.shot._tasks is not None:
-                        self.shot._tasks.append(currentTask)
-                    else:
-                        self.shot._tasks = [currentTask]
-                    sharedDB.myTasks.append(currentTask)
+                    
+		    self.shot._tasks[str(currentTask.id())] = (currentTask)
+
+                    currentTask.Save()
+		    #sharedDB.myTasks.append(currentTask)
                         
                 
                 #create button for currentTask

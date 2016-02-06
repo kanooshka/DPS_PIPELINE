@@ -129,6 +129,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		self._userAssignment = sharedDB.userassignments.UserAssignment(_idusers = u._idusers,_assignmentid = self._parent._currentPhaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = 0, _new = 1)		
 		self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
 		self._userAssignment.Save()
+		self._userAssignment.connectToDBClasses()
 		#sharedDB.myTasksWidget.AddUserAssignment(ua = self._userAssignment)
 		#sharedDB.myUserAssignments.append(self._userAssignment)
 		
