@@ -31,6 +31,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
         #sortedPhases = self.phases.values()
         #sortedPhases.sort(key=operator.attrgetter('_startdate'))
         
+	self.setToolTip(1,("ShotID: "+str(self.shot._idshots)))
+	
         for phase in self.phases:
             if phase._taskPerShot:
                 currentTask = None
