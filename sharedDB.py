@@ -21,7 +21,7 @@ from DPSPipeline import selection
 from PyQt4.QtCore   import QDate
 from datetime import date,datetime,timedelta
 
-myVersion = version.Version("0.1.03")
+myVersion = version.Version("0.1.04")
 
 #TEST SETTINGS
 ignoreVersion = 0
