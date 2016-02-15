@@ -73,7 +73,7 @@ class CalendarViewWidget(QtGui.QWidget):
 		#sharedDB.leftWidget = dockWidget
 		#sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
 
-		self.availabilityPhasesSkip = ["DUE","Revision 1","Revision 2","Approval"]
+		self.availabilityPhasesSkip = ["DUE","Revision 1","Revision 2","Approval","Delivery","Rendering","Internal Review"]
 
 		reload(projex)
 		reload(projexui)
@@ -152,9 +152,7 @@ class CalendarViewWidget(QtGui.QWidget):
 			
 			projectXGanttWidgetItem.setHidden(True)
 			
-			phaselist = []
-			for p in project._phases.values():
-				phaselist.append(p)
+			phaselist = project._phases.values()
 				
 			phaselist.sort(key=operator.attrgetter('_startdate'))
 

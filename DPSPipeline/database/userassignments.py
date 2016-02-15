@@ -45,6 +45,15 @@ class UserAssignment(QObject):
 			
 		if not self._new:
 			self.connectToDBClasses()
+		
+		self._estimatedHoursLeft           = 0
+		'''
+		if self.assignmentType() == "phase_assignment":
+			self._scarcityIndex = sharedDB.myPhaseAssignments(str(self._assignmentid))._scarcityIndex
+		else:
+			self._scarcityIndex = 0
+		'''
+		self.userAssignmentChanged.connect(sharedDB.myAvailabilityManager.CalculateBooking)
 	
 	def __eq__(self, another):
 		return hasattr(another, '_iduserassignments') and self._iduserassignments == another._iduserassignments

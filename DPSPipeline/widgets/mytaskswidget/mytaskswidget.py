@@ -229,9 +229,6 @@ class MyTasksWidget(QtGui.QTableWidget):
 	#print "Appending UA: "+str(assignmentid)
 	self._userAssignmentQueue.append(assignmentid)
 	
-	
-	
-	
     
     def ProcessQueue(self):
 	if len(self._userAssignmentQueue)>0:

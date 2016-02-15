@@ -14,12 +14,14 @@ from DPSPipeline.database import temprigs
 from DPSPipeline.database import version
 from DPSPipeline.database import connection
 
+from DPSPipeline.availabilityManager import availabilityManager
+
 from DPSPipeline import selection
 
 from PyQt4.QtCore   import QDate
 from datetime import date,datetime,timedelta
 
-myVersion = version.Version("0.1.03")
+myVersion = version.Version("0.1.04")
 
 #TEST SETTINGS
 ignoreVersion = 0
@@ -60,6 +62,7 @@ Doobedeba = -0.0*0+0
 myProjectViewWidget = ''
 myTasksWidget = ''
 calendarview = None
+myAvailabilityManager = availabilityManager.AvailabilityManager()
 
 lastUpdate = datetime(1942, 1, 1)
 

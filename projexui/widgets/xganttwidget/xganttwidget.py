@@ -95,8 +95,12 @@ class XGanttWidget(QWidget):
 	self._alternateBrush    = QBrush(color.darker(105))	
 	self._currentDayBrush   = QBrush(QColor(146,252,186))
 	self._holidayBrush      = QBrush(QColor(166,46,46))
-	self._bookedBrush      = QBrush(QColor(50,250,0))
+	self._bookedBrush      = QBrush(QColor(20,250,0))
 	self._unavailableBrush = QBrush(QColor(75,75,75))
+	self._underbookedBrush = QBrush(QColor(255,255,20))
+	self._overbookedBrush = QBrush(QColor(255,25,25))
+	self._unassignedBrush = QBrush(QColor(25,25,255))
+	
 	weekendColor            = color.darker(148)
 	
 	
@@ -662,7 +666,7 @@ class XGanttWidget(QWidget):
 			projectWidgetItem.setHidden(False)
 		elif (not visibility):
 		    if (not projectWidgetItem.isHidden()):
-			self.syncView()
+			#self.syncView()
 			projectWidgetItem.setHidden(True)
 		    
 	    #if phase matches, change visibility
@@ -675,12 +679,15 @@ class XGanttWidget(QWidget):
 	    #iterate through all projects
 	    #iterate through all phases
 	    #change visibility
+	    if visibility == False:
+		self.collapseAllTrees()
+	    
 	    for x in range(0,self.treeWidget().topLevelItemCount()):
 		projectWidgetItem = self.treeWidget().topLevelItem(x)		
 		for c in range(projectWidgetItem.childCount()):
 		    child = projectWidgetItem.child(c)
 		    child.setHidden(not visibility)
-		self.syncView()
+		#self.syncView()
 		projectWidgetItem.setHidden(not visibility)
 		
 	    
@@ -721,6 +728,30 @@ class XGanttWidget(QWidget):
 	:return     <QBrush>
 	"""
 	return self._unavailableBrush
+    
+    def underbookedBrush( self ):
+	"""
+	Returns the underbookedBrush brush to be used for coloring in underbooked days.
+	
+	:return     <QBrush>
+	"""
+	return self._underbookedBrush
+    
+    def overbookedBrush( self ):
+	"""
+	Returns the overbookedBrush brush to be used for coloring in overbooked days.
+	
+	:return     <QBrush>
+	"""
+	return self._overbookedBrush
+    
+    def unassignedBrush( self ):
+	"""
+	Returns the unassignedBrush brush to be used for coloring in unassigned days.
+	
+	:return     <QBrush>
+	"""
+	return self._unassignedBrush
 
     def showProjectMenu( self, pos):
         """
@@ -749,7 +780,7 @@ class XGanttWidget(QWidget):
 	if not index.isValid() or not index.parent().isValid():	    
 	    return
 	
-	print self.uiGanttTREE.itemFromIndex(index)._dbEntry._type
+	#print self.uiGanttTREE.itemFromIndex(index)._dbEntry._type
 	
 	point = QCursor.pos()
         
