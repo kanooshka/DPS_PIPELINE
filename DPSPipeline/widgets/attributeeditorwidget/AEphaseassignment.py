@@ -201,6 +201,8 @@ class AEPhaseAssignment(QtGui.QWidget):
 	    
 	    #update colors
 	    self.userTable.setTotalAssignedHours()
+	    
+	    sharedDB.myAvailabilityManager.CalculateBooking()
     
     def changeCalendarDays(self):
 	if not self._signalsBlocked:
