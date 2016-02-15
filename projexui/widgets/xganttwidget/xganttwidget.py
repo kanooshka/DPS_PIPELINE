@@ -662,7 +662,7 @@ class XGanttWidget(QWidget):
 			projectWidgetItem.setHidden(False)
 		elif (not visibility):
 		    if (not projectWidgetItem.isHidden()):
-			self.syncView()
+			#self.syncView()
 			projectWidgetItem.setHidden(True)
 		    
 	    #if phase matches, change visibility
@@ -675,12 +675,15 @@ class XGanttWidget(QWidget):
 	    #iterate through all projects
 	    #iterate through all phases
 	    #change visibility
+	    if visibility == False:
+		self.collapseAllTrees()
+	    
 	    for x in range(0,self.treeWidget().topLevelItemCount()):
 		projectWidgetItem = self.treeWidget().topLevelItem(x)		
 		for c in range(projectWidgetItem.childCount()):
 		    child = projectWidgetItem.child(c)
 		    child.setHidden(not visibility)
-		self.syncView()
+		#self.syncView()
 		projectWidgetItem.setHidden(not visibility)
 		
 	    
