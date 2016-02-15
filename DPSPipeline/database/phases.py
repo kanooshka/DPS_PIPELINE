@@ -1,7 +1,10 @@
 import mysql.connector
 import sharedDB
 from DPSPipeline.database.connection import Connection
+from DPSPipeline.database import users
 from PyQt4 import QtCore
+import operator
+
 '''
 '1', 'Storyboarding'
 '2', 'Modeling'
@@ -22,7 +25,8 @@ from PyQt4 import QtCore
 '17', 'Sound (Rough)'
 '''
 
-
+sortedPhaseList = []
+phaseDictToSort = {}
 
 class Phases():
 	
@@ -40,15 +44,23 @@ class Phases():
 		self._type                   = "phase"
 		
 		self._phaseAssignments = {}
-		self._capacity = {}
+		#self._capacity = {}
+		
 		self._availability = {}
 		
-		#self._users = {}
+		self._users = {}
+		self.ConnectUsers()
+		
+		self.CalculateCapacityPerDay()
 		
 		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
 			self._visible = 1
 		else:
 			self._visible = 0
+		
+		
+		self._scarcityIndex = 0
+		self.addToSortedPhaseList()
 		
 		#sharedDB.mySQLConnection.newPhaseSignal.emit(str(self._idphases))
 	
@@ -66,7 +78,45 @@ class Phases():
 
 	def isVisible(self):
 		return self._visible
+
+	def addToSortedPhaseList(self):
+		global phaseDictToSort
+		
+		count = 0
+		
+		#iterate through users, add 1 for each phase assignment they can do
+		for uid in users.sortedUserList:
+			for pid in sharedDB.myUsers[str(uid[0])]._phases:
+				if str(pid) == str(self.id()):
+					count = count+1
+					
+		if count > 0:
+			phaseDictToSort[str(self.id())] = count		
+			self.sortPhaseListByScarcity()
 	
+	def sortPhaseListByScarcity(self):
+		global sortedPhaseList
+		
+		sortedPhaseList = sorted(phaseDictToSort.items(), key=operator.itemgetter(1))
+		
+		for x in range(0,len(sortedPhaseList)):
+			if str(sortedPhaseList[x][0]) == str(self.id()):
+				self._scarcityIndex = x
+				break
+		#print sortedPhaseList
+		
+	def ConnectUsers(self):
+		for user in sharedDB.myUsers.values():
+			if str(self.id()) in user._phases and str(user._active) == "1":
+				self._users[str(user.id())] = user
+
+	def CalculateCapacityPerDay(self):
+		self._capacity = 0
+		
+		for u in self._users.values():
+			self._capacity = self._capacity+8
+		
+		#print "Phase "+self._name+" capacity: "+str(self._capacity)
 '''
 def GetPhaseNames():
 	phases = {}

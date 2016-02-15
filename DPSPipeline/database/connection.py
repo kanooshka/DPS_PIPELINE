@@ -158,6 +158,8 @@ class Connection(QObject):
 		
 		super(QObject, self).__init__()
 		
+		self.firstLoadComplete.connect(sharedDB.myAvailabilityManager.CalculateBooking)
+		
 		# define custom properties
 		self._user = _user
 		self._password = _password

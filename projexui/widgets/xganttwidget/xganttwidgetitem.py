@@ -228,8 +228,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
 	    #sharedDB.changesToBeSaved = 1
 	    self._dbEntry._startdate = startdate.toPyDate()
 	    self._dbEntry._enddate = enddate.toPyDate()
-	    if self._dbEntry._type == "phaseassignment":
-		self._dbEntry.updateAvailability()
+            sharedDB.myAvailabilityManager.CalculateBooking()
+	    #if self._dbEntry._type == "phaseassignment":
+		#self._dbEntry.updateAvailability()
         return 1
     
     def dateEnd( self ):

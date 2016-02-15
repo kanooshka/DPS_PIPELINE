@@ -1,6 +1,7 @@
 import projexui
 import sharedDB
 import sys
+from datetime import timedelta
 
 from PyQt4 import QtGui,QtCore
 
@@ -22,7 +23,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
 	self.setShowGrid(1)
 	
-	self.horizontalHeaderLabels = ["Name","Availability","Hours"]
+	self.horizontalHeaderLabels = ["Name","Sugg.","Avail.","Assigned"]
 	for x in range(0,len(self.horizontalHeaderLabels)):
 	    self.insertColumn(x)
 	self.setHorizontalHeaderLabels(self.horizontalHeaderLabels)
@@ -36,8 +37,11 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
 	self.userlist = []
 	
+	sharedDB.myAvailabilityManager.availabilityCalcUpdated.connect(self.UpdateWidget)
+	
     def UpdateWidget(self):
         self.setSortingEnabled(0)
+	self.blockSignals(1)
 	for x in range(0,self.rowCount()):
 		self.removeRow(0)
         
@@ -47,7 +51,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
             #if self.showAllEnabled:
             #    userList.append(user._name)
             #else:
-	    if user._active and (str(sharedDB.myPhases[str(self.aephaseAssignment._currentPhaseAssignment._idphases)]._iddepartments) in user.departments() or str(user._idusers) in self._parent._currentPhaseAssignment.idusers()):
+	    if self.aephaseAssignment._currentPhaseAssignment is not None and user._active and (str(sharedDB.myPhases[str(self.aephaseAssignment._currentPhaseAssignment._idphases)]._iddepartments) in user.departments() or str(user._idusers) in self._parent._currentPhaseAssignment.idusers()):
                 self.userList.append(user)
                 
         #userList.sort(reverse=False)
@@ -58,8 +62,9 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	self.setSortingEnabled(1)
 	
 	self.totalHoursChanged.connect(self._parent.UpdateHourValues)
+	self.resizeColumnsToContents()
+	self.blockSignals(0)
 	self.setTotalAssignedHours()
-	
     def AddUserToList(self, user, availhours = 8, hours = 0):
 	name = user._name
 	nameitem = QtGui.QTableWidgetItem()	
@@ -67,8 +72,13 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	nameitem.setFlags( nameitem.flags() ^ QtCore.Qt.ItemIsEditable ^ QtCore.Qt.ItemIsSelectable)
         #nameitem.setReadOnly(1)
         
+	rechoursItem = QtGui.QTableWidgetItem()	
+	rechoursItem.setText(str(self.GetUserTimeRecommendation(user)))
+	rechoursItem.setFlags( rechoursItem.flags() ^ QtCore.Qt.ItemIsEditable ^ QtCore.Qt.ItemIsSelectable)
+	
         availhoursItem = QtGui.QTableWidgetItem()
-        availhoursItem.setText(str(int(availhours)*self._parent.workDays.value()))
+        #availhoursItem.setText(str(int(availhours)*self._parent.workDays.value()))
+	availhoursItem.setText(str(self.GetAvailability(user)))
 	availhoursItem.setFlags( availhoursItem.flags() ^ QtCore.Qt.ItemIsEditable ^ QtCore.Qt.ItemIsSelectable)
         #availhoursItem.setValidator(validator)
 	#availhoursItem.setReadOnly(1)
@@ -76,7 +86,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	#hoursItem = IntQTableWidgetItem.IntQTableWidgetItem()
 	hoursItem = UserAssignmentSpinBox.UserAssignmentSpinBox(_phaseAssignment = self._parent._currentPhaseAssignment,_user = user,_parent = self)
         #hoursItem.setValue(int(hours))
-	hoursItem.setMaximum(int(availhoursItem.text()))
+	hoursItem.setMaximum(float(availhoursItem.text()))
 	hoursItem.setKeyboardTracking(0)
 	#hoursItem.setToolTip(name)
         #hoursItem.setFrame(0)
@@ -89,14 +99,15 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
         self.insertRow(self.rowCount())
         self.setItem(self.rowCount()-1,0,nameitem)
-	self.setItem(self.rowCount()-1,1,availhoursItem)
-        self.setCellWidget(self.rowCount()-1,2,hoursItem)
+	self.setItem(self.rowCount()-1,1,rechoursItem)
+	self.setItem(self.rowCount()-1,2,availhoursItem)
+        self.setCellWidget(self.rowCount()-1,3,hoursItem)
     
     def setTotalAssignedHours(self):
 	totalhours = 0
 	
 	for i in range(0,self.rowCount()):
-	    item = self.cellWidget(i,2)
+	    item = self.cellWidget(i,3)
 	    if item is not None:
 		totalhours = totalhours + int(item.value())
 		#print item.text()
@@ -112,7 +123,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
     def setHoursColor(self,status):
 	for i in range(0,self.rowCount()):
-	    item = self.cellWidget(i,2)
+	    item = self.cellWidget(i,3)
 	    if item is not None:
 		if status:
 		    item.setStyleSheet('color: green')
@@ -174,3 +185,39 @@ class UserAssignmentWidget(QtGui.QTableWidget):
         
     def toggleShowAllAction(self):
         self.showAllEnabled = not self.showAllEnabled
+	
+    def GetAvailability(self, user):
+	hours = 0
+	pa = self.aephaseAssignment._currentPhaseAssignment
+	
+	for d in self.daterange(pa._startdate, pa._enddate):
+	    if not d.isoweekday() in range(1, 6):
+		continue
+	    
+	    dayshours = 8
+	    if str(d) in user._bookingDict:
+		for book in user._bookingDict[str(d)]:
+		    if str(book._idphaseassignments) != str(pa.id()) and str(book._iduserassignments) != "-1":
+			dayshours -= book._hours
+		    
+	    hours += dayshours
+		
+	
+	return int(hours)
+    
+    
+    def GetUserTimeRecommendation(self,user):
+	hours = 0
+	pa = self.aephaseAssignment._currentPhaseAssignment
+	
+	for d in self.daterange(pa._startdate, pa._enddate):
+	    if str(d) in user._bookingDict:
+		for book in user._bookingDict[str(d)]:
+		    if str(book._idphaseassignments) == str(pa.id()):
+			hours += book._hours
+	
+	return int(hours)
+	
+    def daterange(self,start_date, end_date):
+	for n in range(int ((end_date - start_date).days)+1):
+	    yield start_date + timedelta(n)

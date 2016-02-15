@@ -39,7 +39,10 @@ class PhaseAssignments(QObject):
 		self._tasks			   = {}
 		self._iddepartments	           = 1
 		
-		self._estimatedHoursLeft           = 0
+		self._estimatedHoursLeft           = -1
+		
+		self._weekdays = 0
+		self.CalculateWeekdays()
 		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
@@ -47,10 +50,11 @@ class PhaseAssignments(QObject):
 		
 		self.SetPhaseValues()
 		
-		self.updateAvailability()
+		self._scarcityIndex = self._phase._scarcityIndex
+		#self.updateAvailability()
 		
 		#connect to phase
-		sharedDB.myPhases[str(self._idphases)]._phaseAssignments[str(self.id())] = self
+		self._phase._phaseAssignments[str(self.id())] = self
 		
 		#print self._startdate.strftime("%Y-%m-%d")
 		#print QDate(self._startdate).toString("yyyy-MM-dd")
@@ -58,6 +62,8 @@ class PhaseAssignments(QObject):
 		#******SWITCH TO USERASSIGNMENT, NOT WIDGET*********
 		self._userAssignments = {}
 		#self._unassigned = []
+		
+		#self.phaseAssignmentChanged.connect(sharedDB.myAvailabilityManager.CalculateBooking)
 	
 	def __eq__(self, another):
 		return hasattr(another, '_idphaseassignments') and self._idphaseassignments == another._idphaseassignments
@@ -126,10 +132,14 @@ class PhaseAssignments(QObject):
 		self._assigned               = _assigned
 		self._archived               = _archived
 		self._timestamp                    = _timestamp
-
+		
+		
+		self.CalculateWeekdays()
+		self.phaseAssignmentChanged.connect(sharedDB.myAvailabilityManager.CalculateBooking)
+		
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 		
-		self.updateAvailability()
+		#self.updateAvailability()
 	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
@@ -194,17 +204,19 @@ class PhaseAssignments(QObject):
 			
 		return idusers
 	
+	'''
 	def updateAvailability(self):
 		self._availability = {}
 		for n in range(int ((self._enddate - self._startdate).days)+1):
 			#print self._startdate + timedelta(n)
 			self._availability[str(self._startdate + timedelta(n))] = 10
+			#booking = sharedDB.myAvailabilityManager.AddBookingAtDate(str(self._startdate + timedelta(n)))
 			
 		view = sharedDB.calendarview._departmentXGanttWidget.uiGanttVIEW.scene()
 		view.setDirty()
 		view.update()
 		#view.syncView()
-		
+	'''
 	
 
 	def updateAssigned(self):
@@ -218,3 +230,18 @@ class PhaseAssignments(QObject):
 		self.setAssigned(0)
 		self.unassignedSignal.emit(str(self.idphaseassignments()))
 		return
+	
+	def CalculateWeekdays(self):
+		daygenerator = (self._startdate + timedelta(x) for x in xrange((self._enddate - self._startdate).days + 1))
+
+		self._weekdays = sum(day.weekday() < 5 for day in daygenerator)
+		
+		#print "Num Weekdays: "+ str(self._weekdays)
+	
+	def WeekdaysFromStartDate(self, startdate = None):
+		if startdate == None:
+			startdate = self._startdate
+			
+		daygenerator = (startdate + timedelta(x) for x in xrange((self._enddate - startdate).days + 1))
+
+		return sum(day.weekday() < 5 for day in daygenerator)

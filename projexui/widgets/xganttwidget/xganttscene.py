@@ -38,7 +38,9 @@ class XGanttScene(QGraphicsScene):
         self._alternateRects    = []
         self._weekendRects      = []
 	self._bookedRects      = []
-	self._unavailableRects      = []
+	self._overbookedRects      = []
+	self._underbookedRects      = []
+	self._unassignedRects      = []
         self._topLabels         = []
         self._labels            = []
         self._dirty             = True
@@ -172,6 +174,22 @@ class XGanttScene(QGraphicsScene):
 	for rect in self._unavailableRects:
 	    painter.setBrush(gantt.unavailableBrush())
 	    painter.drawRect(rect)
+	    
+	for rect in self._bookedRects:
+	    painter.setBrush(gantt.bookedBrush())
+	    painter.drawRect(rect)    
+	    
+	for rect in self._underbookedRects:
+	    painter.setBrush(gantt.underbookedBrush())
+	    painter.drawRect(rect)
+	
+	for rect in self._unassignedRects:
+	    painter.setBrush(gantt.unassignedBrush())
+	    painter.drawRect(rect)
+	
+	for rect in self._overbookedRects:
+	    painter.setBrush(gantt.overbookedBrush())
+	    painter.drawRect(rect)
     
     def ganttWidget( self ):
         """
@@ -216,6 +234,9 @@ class XGanttScene(QGraphicsScene):
         self._weekendRects      = []
 	self._bookedRects       = []
 	self._unavailableRects = []
+	self._overbookedRects      = []
+	self._underbookedRects      = []
+	self._unassignedRects  = []
 	self._holidayRects      = []
 	self._currentDayRects   = []
         self._alternateRects    = []
@@ -288,13 +309,26 @@ class XGanttScene(QGraphicsScene):
 		item = gantt.topLevelItem(itemcount)
 		if item._dbEntry is not None:
 		    if item._dbEntry._type == "phase":
+			phase = item._dbEntry
+			for key in phase._availability.keys():			    
+			    if QDate.fromString(key,"yyyy-MM-dd") >= start:
+				diff = start.daysTo(QDate.fromString(key,"yyyy-MM-dd"))
+				rect = QRect((diff)*cell_width, header_height+cell_height*(itemcount), cell_width, cell_height)
+				if phase._availability[key] == 1:
+				    self._underbookedRects.append(rect)
+				elif phase._availability[key] == 2:
+				    self._bookedRects.append(rect)
+				elif phase._availability[key] == 3:
+				    self._overbookedRects.append(rect)
+			'''
 			for pa in item._dbEntry._phaseAssignments.values():
 			    for key in pa._availability.keys():						    
 				if pa._availability[key] > 8:
 				    if QDate.fromString(key,"yyyy-MM-dd") >= start:
 					diff = start.daysTo(QDate.fromString(key,"yyyy-MM-dd"))
 					rect = QRect((diff)*cell_width, header_height+cell_height*(itemcount), cell_width, cell_height)
-					self._unavailableRects.append(rect)
+					self._overbookedRects.append(rect)
+			'''
 	
 	
 	# update the month rect
