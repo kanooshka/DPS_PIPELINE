@@ -65,4 +65,5 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
 	    self._userAssignment.Save()
 	    self._userAssignment.connectToDBClasses()
 	    
-        
+    def wheelEvent(self, event):
+        pass
