@@ -180,13 +180,18 @@ class MyTasksWidget(QtGui.QTableWidget):
 			if not found:
 			    if phase.project is not None and phase.name().upper() != "DUE" and phase.name().upper() != "APPROVAL":
 				if phase not in self._unassignedTaskQueue:
-				    self._unassignedTaskQueue.append(phase)
+				    self.AddToUnassignedQueue(phase.id())
+				    #self._unassignedTaskQueue.append(phase)
     
     def AddToUnassignedQueue(self, sentID):
 	self.UpdateStatusList()
 	
 	if str(sentID) in sharedDB.myPhaseAssignments:
 	    phase = sharedDB.myPhaseAssignments[str(sentID)]
+	    
+	    if phase._enddate < date.today():
+		return
+	    
 	    if str(phase._idstatuses) in self.statusids:
 		return
 	    
@@ -231,15 +236,23 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
     
     def ProcessQueue(self):
-	if len(self._userAssignmentQueue)>0:
+	#if len(self._userAssignmentQueue)>0:
+	self.blockSignals(1)
+	while len(self._userAssignmentQueue):	    
 	    self.AddUserAssignment(self._userAssignmentQueue[0])
 	    del self._userAssignmentQueue[0]
-	else:
-	    if len(self._unassignedTaskQueue)>0:
-		if not self._unassignedTaskQueue[0].assigned():
-		    self.AddUnassigned(self._unassignedTaskQueue[0])
-		del self._unassignedTaskQueue[0]
-    
+		
+	    
+	    #self.AddUserAssignment(self._userAssignmentQueue[0])
+	    #del self._userAssignmentQueue[0]
+	#else:
+	#if len(self._unassignedTaskQueue)>0:
+	while len(self._unassignedTaskQueue):
+	    if not self._unassignedTaskQueue[0].assigned():
+		self.AddUnassigned(self._unassignedTaskQueue[0])
+	    del self._unassignedTaskQueue[0]
+	    
+	self.blockSignals(0)
     def AddUserAssignment(self,sentIdUserAssignment):
 
 	if str(sentIdUserAssignment) in sharedDB.myUserAssignments:
