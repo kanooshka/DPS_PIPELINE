@@ -108,7 +108,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
 	for i in range(0,self.rowCount()):
 	    item = self.cellWidget(i,3)
-	    if item is not None:
+	    if item is not None and item.value()>1:
 		totalhours = totalhours + int(item.value())
 		#print item.text()
 	    
