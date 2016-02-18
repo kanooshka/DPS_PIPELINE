@@ -113,6 +113,21 @@ class ProjectViewWidget(QWidget):
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
+		    paths.append(str(self.projectPath.text()+"\\Editing\\Builds\\For_Sound\\"))
+		    paths.append(str(self.projectPath.text()+"\\Editing\\AE_Comps\\"))
+		    paths.append(str(self.projectPath.text()+"\\Editing\\PREMIERE_Comps\\"))
+		    paths.append(str(self.projectPath.text()+"\\Editing\\Builds\\From_Sound\\"))
+		    paths.append(str(self.projectPath.text()+"\\Editing\\Builds\\_FINALS\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\ADDITIONAL FILES\\CREDENTIALS\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\ADDITIONAL FILES\\LOW RES FILES\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\AUDIO\\Dialogue_Mix\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\AUDIO\\Full_Mix\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\AUDIO\\Music_Mix\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\AUDIO\\SFX_Mix\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\Graphics\\FONTS\\"))
+		    paths.append(str(self.projectPath.text()+"\\_SENDS\\VIDEO\\HD\\PRO4444\\"))
+		    
+		    
 	    
 	    for image in self._currentProject._images.values():
 		paths.append(str(self.projectPath.text()+"\\"+image._number+"\\_SCENES\\"))
