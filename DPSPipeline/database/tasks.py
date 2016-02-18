@@ -12,7 +12,7 @@ class Tasks(QObject):
 	taskChanged = QtCore.pyqtSignal(QtCore.QString)
 	taskAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0,_parenttaskid = None,_timestamp = datetime.now(), _updated = 0, _new = 0):
+	def __init__(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _approved = 0, _status = 0,_parenttaskid = None,_timestamp = datetime.now(), _updated = 0, _new = 0):
 		
 		super(QObject, self).__init__()
 		
@@ -27,7 +27,7 @@ class Tasks(QObject):
 		self._idsequences	     = _idsequences
 		self._duedate		     = _duedate
 		self._percentcomplete	     = _percentcomplete
-		self._done		     = _done
+		self._approved		     = _approved
 		self._status		     = _status
 		self._timestamp		     = _timestamp
 		self._parenttaskid	     = _parenttaskid
@@ -81,7 +81,7 @@ class Tasks(QObject):
 	
 	def AddTaskToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, status, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._done)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, status, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._approved)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
 		self._idtasks = sharedDB.mySQLConnection._lastInsertId
 		
@@ -91,9 +91,9 @@ class Tasks(QObject):
 	
 	def UpdateTaskInDB (self):
 		
-		sharedDB.mySQLConnection.query("UPDATE tasks SET idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', done = '"+str(self._done)+"', status = '"+str(self._status)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idtasks = "+str(self._idtasks)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE tasks SET idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', approved = '"+str(self._approved)+"', status = '"+str(self._status)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idtasks = "+str(self._idtasks)+";","commit")
 
-	def SetValues(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _done = 0, _status = 0, _timestamp = datetime.now()):
+	def SetValues(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _approved = 0, _status = 0, _timestamp = datetime.now()):
 		print ("Downloaded updated for Task '"+str(self._idtasks)+"'")
 		
 		self._idtasks             = _idtasks
@@ -106,7 +106,7 @@ class Tasks(QObject):
 		self._idsequences	     = _idsequences
 		self._duedate		     = _duedate
 		self._percentcomplete		     = _percentcomplete
-		self._done		     = _done
+		self._approved		     = _approved
 		self._status		     = _status
 		self._timestamp		     = _timestamp
 		
@@ -121,6 +121,11 @@ class Tasks(QObject):
 	def setStatus(self,newStatus):
 		#print "TASK STATUS CHANGED"
 		self._status = newStatus
+		self.setApproved(0)
+		self._updated = 1
+		
+	def setApproved(self,newApproval):
+		self._approved = newApproval
 		self._updated = 1
 	
 	def setUserId(self, newid):

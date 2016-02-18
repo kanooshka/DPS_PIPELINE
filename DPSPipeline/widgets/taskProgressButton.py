@@ -11,6 +11,7 @@ class TaskProgressButton(QtGui.QLabel):
         
         self._notStarted = projexui.resources.find('img/DP/Statuses/notStarted.png')
         self._inProgress = projexui.resources.find('img/DP/Statuses/inProgress.png')
+        self._readyForApproval = projexui.resources.find('img/DP/Statuses/readyForApproval.png')
         self._needsAttention = projexui.resources.find('img/DP/Statuses/needsAttention.png')
         self._done = projexui.resources.find('img/DP/Statuses/done.png')
         self._none = projexui.resources.find('img/DP/Statuses/none.png')
@@ -20,8 +21,8 @@ class TaskProgressButton(QtGui.QLabel):
         self._shot = _shot
         self._currentState = 0
         
-        self.states = [self._notStarted,self._inProgress,self._done,self._needsAttention,self._none]
-        self.stateNames = ["Not Started","In Progress", "DONE", "Needs Attention", "None"]
+        self.states = [self._notStarted,self._inProgress,self._readyForApproval,self._needsAttention,self._none,self._done]
+        self.stateNames = ["Not Started","In Progress", "READY FOR APPROVAL", "Needs Attention", "None"]
         
         self.setAlignment(QtCore.Qt.AlignHCenter)
         
@@ -46,6 +47,11 @@ class TaskProgressButton(QtGui.QLabel):
             self.setText("loading")
         
     def mActions(self, action):
+        if action.text() == "APPROVED!":
+            self._task._approved = 1
+            self.updateApproval()
+            return
+        
         for x in range(0,len(self.stateNames)):
             if self.stateNames[x] == action.text():
                 self._currentState = x
@@ -54,7 +60,12 @@ class TaskProgressButton(QtGui.QLabel):
     def contextMenuEvent(self, ev):
         
         menu	 = QtGui.QMenu()
-         
+        
+        if sharedDB.currentUser._idPrivileges < 3:
+            menu.addAction("APPROVED!")
+            menu.addSeparator()
+        
+        
         for txt in self.stateNames:
             menu.addAction(str(txt))     
         
@@ -75,16 +86,25 @@ class TaskProgressButton(QtGui.QLabel):
             self._currentState += 1
         
         self.updateState()        
-    '''   
+    '''
+    
+    def updateApproval(self):
+        self._task.setApproved(1)
+        self.updateImage()
+    
     def updateState(self):
         self._task.setStatus(self._currentState)
         self.updateImage()
         
     def updateImage(self):
-        self.setPixmap(QtGui.QPixmap(self.states[self._currentState]))
+        if self._task._approved:
+            self.setPixmap(QtGui.QPixmap(self._done))
+        else:
+            self.setPixmap(QtGui.QPixmap(self.states[self._currentState]))
     
     
     def getTaskState(self):
         self._currentState = self._task._status
+        
         self.updateImage()
     

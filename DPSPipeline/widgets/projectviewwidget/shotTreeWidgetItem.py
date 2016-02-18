@@ -64,6 +64,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
                 taskBtnWidget = QtGui.QWidget()
                 vLayout = QtGui.QHBoxLayout()
                 taskBtnWidget.setLayout(vLayout)
+		taskBtnWidget._btn = btn
+		taskBtnWidget._uLabel = uLabel
                 vLayout.addWidget(btn)
                 vLayout.addWidget(uLabel)
                 self.shotWidget.setItemWidget(self,columnIndex,taskBtnWidget)
@@ -77,6 +79,8 @@ class ShotTreeWidgetItem(QtGui.QTreeWidgetItem):
 
                 columnIndex +=1
                 
+	 
+		
     def deselect(self):
         self.shotWidget.UpdateBackgroundColors()
         

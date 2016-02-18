@@ -61,7 +61,7 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hours FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			self._queries.append(["SELECT","hours","SELECT idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM hours WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			
@@ -569,14 +569,14 @@ class Connection(QObject):
 				if str(row[0]) in sharedDB.myTasks:
 					task = sharedDB.myTasks[str(row[0])]						
 					if not str(sharedDB.app.sessionId()) == str(row[15]) or sharedDB.testing:
-						#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, done, timestamp
-						task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
+						#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp
+						task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _approved = row[10], _timestamp = row[11], _status = row[14])
 					
 				else:
 				#create project
 					print "New TASK found in database CREATING task: "+str(row[0])
 					#create instance of shot class				
-					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _done = row[10], _timestamp = row[11], _status = row[14])
+					myTask =sharedDB.tasks.Tasks(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _approved = row[10], _timestamp = row[11], _status = row[14])
 					#add task to task list
 					sharedDB.myTasks[str(row[0])] = myTask
 					#iterate through shots

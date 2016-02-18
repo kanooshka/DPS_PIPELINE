@@ -15,10 +15,7 @@ class UserLabel(QtGui.QLabel):
         self.noUserText = "----"
         
         self.setFixedWidth(50)
-        self.getUserFromTask()
-        
-        
-        
+        self.getUserFromTask()        
 
     def getUserFromTask(self):
         
@@ -40,8 +37,12 @@ class UserLabel(QtGui.QLabel):
             self.getUserFromTask()
             return
         
+        
+        self.setUserFromName(username.text())
+    
+    def setUserFromName(self,username):
         for u in sharedDB.myUsers.values():
-            if str(u._name) == username.text():
+            if str(u._name) == username:
                 #self.setText(username.text())
                 self.task.setUserId(u._idusers)
                 self.getUserFromTask()

@@ -1,5 +1,7 @@
 import sharedDB
 
+import re
+
 from PyQt4 import QtCore,QtGui
 from DPSPipeline.widgets import noWheelCombobox
 from DPSPipeline.widgets.projectviewwidget import shotTreeWidgetItem
@@ -36,6 +38,9 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         
         sharedDB.mySQLConnection.newTaskSignal.connect(self.AttachTaskToButton)
         
+	self.header().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+	self.header().customContextMenuRequested.connect( self.showProjectMenu)
+	
         #disables vertical scroll bar
         #self.setHorizontalScrollBarPolicy( QtCore.Qt.ScrollBarAlwaysOff )
     
@@ -163,3 +168,77 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     
     def ChangeSelection(self,itemwidget, column):
         sharedDB.sel.select([itemwidget,itemwidget.shot])
+	
+    def showProjectMenu( self, pos):
+        """
+        Displays the header menu for this tree widget.
+        
+        :param      pos | <QPoint> || None
+        """
+        '''
+	
+	header = self.header()
+        index  = header.logicalIndexAt(pos)
+        self._headerIndex = index
+        
+        # show a pre-set menu
+        if self._headerMenu:
+            menu = self._headerMenu
+        else:
+            menu = self.createHeaderMenu(index)
+        '''
+	#print self.uiGanttTREE.itemFromIndex(index)._dbEntry._type
+	
+	#point = QtGui.QCursor.pos()
+        
+        #self.headerMenuAboutToShow.emit(menu, index)
+	
+	#menu	 = QtGui.QMenu()
+        
+        #statusMenu = menu.addMenu("Status Visibility")
+	
+        #menu.exec_(point)
+	
+	headerText = self.headerItem().text(self.header().logicalIndexAt(pos))
+	
+	#globalPos = self.mapToGlobal(pos)
+	menu = QtGui.QMenu()
+	
+	point = QtGui.QCursor.pos()
+        
+	if headerText != "Name":
+	    #statusMenu = menu.addMenu("Status Visibility")
+	    if sharedDB.currentUser._idPrivileges < 3:
+		menu.addAction(('APPROVE ALL '+ headerText))
+		#approveAll.triggered.connect(self.toggleShowNotStartedAction)
+		menu.addSeparator()
+	    
+	    menu.addAction("Claim all shots - "+headerText)
+	    
+	    
+	    menu.triggered.connect( self.contextMenuActions )
+	    menu.exec_(point)
+	    
+    
+    def contextMenuActions(self, action):
+	#go through rows of text	
+	if ( action.text().contains("APPROVE ALL") ):
+	    headerText = re.sub("APPROVE ALL ","",str(action.text()))
+	    for x in range(0,self.columnCount()):
+		if self.headerItem().text(x) == headerText:
+		    for y in range(0,self.topLevelItemCount()):
+			taskwidget = self.itemWidget(self.topLevelItem(y),x)
+			if taskwidget._btn._task is not None and taskwidget._btn._currentState == 2:
+			    taskwidget._btn.updateApproval()
+	elif ( action.text().contains("Claim all shots") ):
+	    headerText = re.sub("Claim all shots - ","",str(action.text()))
+	    username = sharedDB.currentUser._name
+	    for x in range(0,self.columnCount()):
+		if self.headerItem().text(x) == headerText:
+		    for y in range(0,self.topLevelItemCount()):
+			taskwidget = self.itemWidget(self.topLevelItem(y),x)
+			if taskwidget._uLabel.task is not None and taskwidget._uLabel.task._idusers == 0:
+			    taskwidget._uLabel.setUserFromName(username)
+		    
+	    
+	
