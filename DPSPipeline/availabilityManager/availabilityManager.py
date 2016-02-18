@@ -26,9 +26,9 @@ class updateAvailability(QtCore.QThread):
 	for ua in sharedDB.myUserAssignments.values():
 	    ua._estimatedHoursLeft = ua._hours
 	
-	#needs to just add phases that are in calendar range
+	#needs to just add phases that end beforce current date
 	for pa in sharedDB.myPhaseAssignments.values():
-	    if int(sharedDB.myProjects[str(pa._idprojects)]._idstatuses) < 3:
+	    if int(sharedDB.myProjects[str(pa._idprojects)]._idstatuses) < 3 and pa._enddate >= date.today():
 	    #if QDate(pa._enddate) <= sharedDB.calendarview._myXGanttWidget.dateStart() and int(sharedDB.myProjects[str(pa._idprojects)]._idstatuses) < 3:
 		pa._estimatedHoursLeft = int(pa._hoursalotted)
 		sortedPhaseAssignmentList.append(pa)
