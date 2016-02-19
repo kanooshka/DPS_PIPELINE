@@ -86,7 +86,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	#hoursItem = IntQTableWidgetItem.IntQTableWidgetItem()
 	hoursItem = UserAssignmentSpinBox.UserAssignmentSpinBox(_phaseAssignment = self._parent._currentPhaseAssignment,_user = user,_parent = self)
         #hoursItem.setValue(int(hours))
-	hoursItem.setMaximum(float(availhoursItem.text()))
+	hoursItem.setMaximum(float(availhoursItem.text())+1)
 	hoursItem.setKeyboardTracking(0)
 	#hoursItem.setToolTip(name)
         #hoursItem.setFrame(0)
