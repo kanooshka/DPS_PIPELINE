@@ -3,6 +3,7 @@ import sharedDB
 import sys
 
 from DPSPipeline.widgets.attributeeditorwidget import userAssignmentWidget
+from DPSPipeline.widgets import textEditAutosave
 
 from PyQt4 import QtGui,QtCore
 
@@ -45,6 +46,20 @@ class AEPhaseAssignment(QtGui.QWidget):
 	self.statusLayout.setContentsMargins(2,2,2,2)
 	self.statusBox.setLayout(self.statusLayout)
 	self.statusLayout.addWidget(self.phaseStatus,0,0)
+	
+	#Status Description Box
+	self.statusDescrBox = QtGui.QGroupBox()
+	self.statusDescrBox.setFixedHeight(70)
+	self.statusDescrBox.setTitle("Status Description")
+	self.aephaseassignmentlayout.addWidget(self.statusDescrBox)
+	
+	self.statusDescription = textEditAutosave.TextEditAutoSave()
+	self.statusDescription.save.connect(self.SaveStatusDescription)
+	
+	self.statusDescrLayout = QtGui.QVBoxLayout()
+	self.statusDescrLayout.setContentsMargins(2,2,2,2)
+	self.statusDescrBox.setLayout(self.statusDescrLayout)
+	self.statusDescrLayout.addWidget(self.statusDescription)
 	
 	#Date box
 	self.datesBox = QtGui.QGroupBox()
@@ -164,6 +179,17 @@ class AEPhaseAssignment(QtGui.QWidget):
 	#set title
 	self.PhaseAssignmentBox.setTitle(str(self._currentPhaseAssignment.project._name)+" : "+str(self._currentPhaseAssignment._name))
 	
+	#set Description
+	self.statusDescription.blockSignals = 1
+	
+	self.statusDescription.setText("")
+	if self._currentPhaseAssignment._description is not None:			
+	    self.statusDescription.setSource(self._currentPhaseAssignment,'_description')
+	    self.statusDescription.getSourceText()	
+	    
+	self.statusDescription.blockSignals = 0
+	
+	
 	if self.startDate.date().toPyDate() != pa._startdate:
 	    #print "Start Date updating"
 	    self.startDate.setDate(pa._startdate)
@@ -222,23 +248,28 @@ class AEPhaseAssignment(QtGui.QWidget):
     
     def setPrivileges (self):
         if sharedDB.currentUser._idPrivileges == 2:
-            self.startDate.setReadOnly(1)
-	    self.endDate.setReadOnly(1)
-	    self.workDays.setReadOnly(1)
-	    self.calendarDays.setReadOnly(1)
-	    self.hoursalotted.setReadOnly(1)
+            self.startDate.setEnabled(0)
+	    self.endDate.setEnabled(0)
+	    self.workDays.setEnabled(0)
+	    self.calendarDays.setEnabled(0)
+	    self.hoursalotted.setEnabled(0)
 	    if str(self._currentPhaseAssignment.iddepartments()) not in sharedDB.currentUser.departments():
 		self.phaseStatus.setEnabled(0)
+		self.statusDescription.setEnabled(0)
+		self.userBox.setEnabled(0)
 	    else:
 		self.phaseStatus.setEnabled(1)
+		self.statusDescription.setEnabled(1)
+		self.userBox.setEnabled(1)
 	    
 	if sharedDB.currentUser._idPrivileges == 3:
-	    self.startDate.setReadOnly(1)
-	    self.endDate.setReadOnly(1)
-	    self.workDays.setReadOnly(1)
-	    self.calendarDays.setReadOnly(1)
+	    self.statusDescription.setEnabled(0)
+	    self.startDate.setEnabled(0)
+	    self.endDate.setEnabled(0)
+	    self.workDays.setEnabled(0)
+	    self.calendarDays.setEnabled(0)
 	    self.phaseStatus.setEnabled(0)
-	    self.userBox.setVisible(0)
+	    self.userBox.setEnabled(0)
 	
     def setStatus(self):
 	self.phaseStatus.blockSignals(1)
@@ -284,6 +315,13 @@ class AEPhaseAssignment(QtGui.QWidget):
 	dend   = self.endDate.date().toPyDate()
 	self._workdays = projex.dates.weekdays(dstart, dend)
 	return self._workdays  
+    
+    def SaveStatusDescription(self):
+	#if not self._blockUpdates:
+	if self._currentPhaseAssignment is not None:
+	    if not (self.statusDescription.toPlainText() == self._currentPhaseAssignment._description):
+		    self._currentPhaseAssignment._description = self.statusDescription.toPlainText()
+		    self._currentPhaseAssignment._updated = 1
     
     '''
     def setShotSettingsEnabled(self, v):
