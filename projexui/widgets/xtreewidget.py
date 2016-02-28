@@ -21,6 +21,7 @@ import datetime
 import os
 import re
 import weakref
+import operator
 
 from xml.etree import ElementTree
 
@@ -1722,11 +1723,22 @@ class XTreeWidget(QTreeWidget):
         phaseFilterMenu.addSeparator()
         
         hitem = self.headerItem()        
-        phases = sharedDB.myPhases
-        for phaseid in sorted(sharedDB.myPhases):
-            phase = sharedDB.myPhases[str(phaseid)]
+        phases = sharedDB.myPhases.values()        
+        phases.sort(key=operator.attrgetter('_name'))
+        
+        middleChar = phases[len(phases)/2]._name[0]
+        
+        AMMenu = phaseFilterMenu.addMenu('A - '+middleChar)
+        NZMenu = phaseFilterMenu.addMenu(chr(ord(middleChar) + 1)+' - Z')
+        
+        for x in range(0,len(phases)):
+            phase = phases[x]
             #col    = self.column(column)
-            action = phaseFilterMenu.addAction(phase._name)
+            if x<len(phases)/2 or phase._name[0] == middleChar:
+                action = AMMenu.addAction(phase._name)
+            else:
+                action = NZMenu.addAction(phase._name)
+            
             action.setCheckable(True)
             action.setChecked(phase._visible)
         
