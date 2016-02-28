@@ -40,7 +40,10 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
 	sharedDB.myTasksWidget = self	
 	
-	
+	self.dockWidget = QtGui.QDockWidget()
+        parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea,self.dockWidget)
+        self.dockWidget.setWindowTitle("Assignments")
+        self.dockWidget.setWidget(self)
 	
 	#self.projectTaskItems = []
 	self.setEnabled(0)

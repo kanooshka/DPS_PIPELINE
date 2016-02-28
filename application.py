@@ -72,14 +72,16 @@ class MainWindow(QtGui.QMainWindow):
         
         if sharedDB.currentUser._idPrivileges > 1:
             self.createProjectMenuItem.setEnabled(0)
-
 	
 	#self._userMenu = menubar.addMenu('&Users')
 	
 	windowMenu = menubar.addMenu('&Windows')
 	#self._windowMenuMenuItem = windowMenu.addAction('Weeklies')
+	windowMenu.addAction('Assignments')
+	windowMenu.addAction('Attribute Editor')
 	windowMenu.addAction('Weeklies')	
         windowMenu.triggered.connect( self.windowMenuActions )
+	
         self.setMenuBar(menubar)
           
         self.resize(1280,720)
@@ -96,15 +98,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def CreateProjectWidget(self):
 	
-        dockWidget1 = QtGui.QDockWidget(sharedDB.mainWindow)
-        self._CreateProjectWidget = createprojectwidget.CreateProjectWidget()
-        dockWidget1.setWindowTitle("Create Project")
-        dockWidget1.setWidget(self._CreateProjectWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget1)
-        dockWidget1.setFloating(1)
-        #sharedDB.mainWindow.setTabPosition(QtCore.Qt.LeftDockWidgetArea,4)
-        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget2)
-    
+	if not hasattr(sharedDB, 'myCreateProjectWidget'):
+	    sharedDB.myCreateProjectWidget = createprojectwidget.CreateProjectWidget(sharedDB.mainWindow)
+		
+	sharedDB.myCreateProjectWidget.setDefaults()
+	sharedDB.myCreateProjectWidget.dockWidget.show()
+
     def CreateProjectViewWidget(self):
 	
         self._ProjectViewWidget = projectviewwidget.ProjectViewWidget()
@@ -120,27 +119,21 @@ class MainWindow(QtGui.QMainWindow):
 	self.centralTabbedWidget.addTab(self._HoursWidget, "Hours View")
     
     def CreateAttributeEditorWidget(self):
-        dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
-        self._AttributeEditorWidget = attributeeditorwidget.AttributeEditorWidget()
-        dockWidget.setWindowTitle("Attribute Editor")
-        dockWidget.setWidget(self._AttributeEditorWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockWidget)
-        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
-        dockWidget.show()
-        dockWidget.raise_()
-    
+        if not hasattr(sharedDB, 'myAttributeEditorWidget'):
+	    sharedDB.myAttributeEditorWidget = attributeeditorwidget.AttributeEditorWidget(sharedDB.mainWindow)
+		
+	#sharedDB.myAttributeEditorWidget.setDefaults()
+	sharedDB.myAttributeEditorWidget.dockWidget.show()
+
     def CreateMyTasksWidget(self):	
-        dockWidget = QtGui.QDockWidget(sharedDB.mainWindow)
-        self._MyTasksWidget = mytaskswidget.MyTasksWidget()
-        dockWidget.setWindowTitle("Assignments")
-        dockWidget.setWidget(self._MyTasksWidget)
-        sharedDB.mainWindow.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)
-        #sharedDB.mainWindow.tabifyDockWidget(sharedDB.leftWidget,dockWidget)
-	dockWidget.setMinimumWidth(195);
-	dockWidget.setMaximumWidth(195);
-        dockWidget.show()
-        dockWidget.raise_()
-	dockWidget.setMaximumWidth(9999999);
+        if not hasattr(sharedDB, 'myAssignmentsWidget'):
+	    sharedDB.myAssignmentsWidget = mytaskswidget.MyTasksWidget(sharedDB.mainWindow)
+		
+	#sharedDB.myAttributeEditorWidget.setDefaults()
+	sharedDB.myAssignmentsWidget.dockWidget.setMinimumWidth(195);
+	sharedDB.myAssignmentsWidget.dockWidget.setMaximumWidth(195);
+	sharedDB.myAssignmentsWidget.dockWidget.show()
+	sharedDB.myAssignmentsWidget.dockWidget.setMaximumWidth(9999999);
 
     def fileMenuActions( self, action ):
 	"""
@@ -163,6 +156,10 @@ class MainWindow(QtGui.QMainWindow):
 		
 	    sharedDB.myWeekliesWidget.CalculateWeeklies()
 	    sharedDB.myWeekliesWidget.dockWidget.show()
+	if (action.text() == 'Assignments'):		
+	    sharedDB.myAssignmentsWidget.dockWidget.show()
+	if (action.text() == 'Attribute Editor'):		
+	    sharedDB.myAttributeEditorWidget.dockWidget.show()
             
     def projectMenuActions( self, action ):
 	"""

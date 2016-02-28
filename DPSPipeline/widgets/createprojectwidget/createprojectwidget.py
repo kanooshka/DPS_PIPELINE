@@ -7,7 +7,7 @@ import sys
 from datetime import timedelta
 #from projexui import qt import Signal
 from PyQt4 import QtGui,QtCore
-from PyQt4.QtGui    import QWidget
+from PyQt4.QtGui    import QWidget,QDockWidget
 from PyQt4.QtCore   import QDate,QTime
 from DPSPipeline.database import projects
 #from DPSPipeline.widgets.createprojectwidget import clientIPLineEdit
@@ -28,6 +28,14 @@ class CreateProjectWidget(QWidget):
         #projexui.loadUi(__file__, self)
         
         # define custom properties
+	
+	self.dockWidget = QDockWidget()
+        parent.addDockWidget(QtCore.Qt.LeftDockWidgetArea,self.dockWidget)
+        self.dockWidget.setFloating(1)
+        self.dockWidget.setWindowTitle("Create Project")
+        self.dockWidget.setWidget(self)
+	
+	#self.setWindowFlags(QtCore.Qt.Tool)
         
         self._backend               = None
         
@@ -40,11 +48,7 @@ class CreateProjectWidget(QWidget):
         self.UpdateClientList()
 	self.clientComboBox.currentIndexChanged.connect(self.UpdateIPList)
 	
-	self.UpdateIPList(self.clientComboBox.currentIndex())
-	
-	self.setDefaults()
-	
-        
+	self.UpdateIPList(self.clientComboBox.currentIndex())        
 	
         #self.open()
 
@@ -55,7 +59,7 @@ class CreateProjectWidget(QWidget):
     
     def UpdateIPList(self, sentclientcmboboxindex):
 	self.ipComboBox.clear()
-	print sharedDB.myClients[str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())]
+	#print sharedDB.myClients[str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())]
 	if str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString()) in sharedDB.myClients:
 	    client = sharedDB.myClients[str(self.clientComboBox.itemData(self.clientComboBox.currentIndex()).toString())]
 	    #if str(client._idclients) == self.clientComboBox.itemData(sentclientid).toString():
@@ -72,6 +76,8 @@ class CreateProjectWidget(QWidget):
         self.xres_spinBox.setValue(1280)
         self.yres_spinBox.setValue(720)
         
+	self.phaseListWidget.clear()
+	
         for myPhase in sharedDB.myPhases.values():        
             if myPhase._name != "DUE":
                 item = QtGui.QListWidgetItem(myPhase._name)
@@ -127,17 +133,15 @@ class CreateProjectWidget(QWidget):
 	
 	#connect phases to projectid
 	
-		
-		
-		
-	
 	for phase in phases:
+	    newProj.AddPhase(phase)
+	    '''
 	    phase._idprojects = newProj._idprojects
 	    phase.project = newProj
 	    phase._new = 1
 	    phase.Save()
 	    newProj._phases[str(phase.id())] = phase
-	    
+	    '''
 	
 	if str(idips) in sharedDB.myIps:
 	    ip = sharedDB.myIps[str(idips)]

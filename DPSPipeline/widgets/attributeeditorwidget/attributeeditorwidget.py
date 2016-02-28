@@ -16,6 +16,11 @@ class AttributeEditorWidget(QtGui.QStackedWidget):
 
 	sharedDB.sel.selectionChangedSignal.connect(self.LoadSelection)
 	
+	self.dockWidget = QtGui.QDockWidget()
+        parent.addDockWidget(QtCore.Qt.RightDockWidgetArea,self.dockWidget)
+        self.dockWidget.setWindowTitle("Attribute Editor")
+        self.dockWidget.setWidget(self)
+	
 	self.widgets = []
 	
 	#add shot widget
