@@ -174,71 +174,70 @@ class CalendarViewWidget(QtGui.QWidget):
 	
 	def AddPhase(self, phase):
 		
-		if phase.project is not None:
-			if phase.project._calendarWidgetItem is not None:
+		if phase.project is not None and phase.project._calendarWidgetItem is not None and int(phase._idstatuses) != 6 and int(phase._idstatuses) != 5:
 
-				#if not already attached
-				for c in range(0,phase.project._calendarWidgetItem.childCount()):
-					if phase.project._calendarWidgetItem.child(c)._dbEntry == phase:
-						return
+			#if not already attached
+			for c in range(0,phase.project._calendarWidgetItem.childCount()):
+				if phase.project._calendarWidgetItem.child(c)._dbEntry == phase:
+					return
+			
+			parentItem = phase.project._calendarWidgetItem
+			
+			department = 0
+			
+			if str(phase._idphases) in sharedDB.myPhases:
+				myPhase = sharedDB.myPhases[str(phase._idphases)]
+	
+				name = myPhase._name
 				
-				parentItem = phase.project._calendarWidgetItem
+				BGcolor = myPhase._ganttChartBGColor.split(',')
+				#print BGcolor[0]
+				BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
 				
-				department = 0
+				textColor = myPhase._ganttChartTextColor.split(',')
+				#print textColor[0]
+				textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
 				
-				if str(phase._idphases) in sharedDB.myPhases:
-					myPhase = sharedDB.myPhases[str(phase._idphases)]
-
-					name = myPhase._name
-					
-					BGcolor = myPhase._ganttChartBGColor.split(',')
-					#print BGcolor[0]
-					BGcolor = QColor(int(BGcolor[0]),int(BGcolor[1]),int(BGcolor[2]))
-					
-					textColor = myPhase._ganttChartTextColor.split(',')
-					#print textColor[0]
-					textColor = QColor(int(textColor[0]),int(textColor[1]),int(textColor[2]))
-					
-					department = myPhase._iddepartments
-
+				department = myPhase._iddepartments
+	
+			
+			startDate = phase._startdate
+			endDate = phase._enddate
+			
+			if (startDate<sharedDB.earliestDate):
+				sharedDB.earliestDate = startDate
+				#print (startDate)
+			
+			
+			childItem = XGanttWidgetItem(self._myXGanttWidget)
+			childItem._dbEntry = phase
+			phase._calendarWidgetItem = childItem
+			
+			childItem.setName(name)		
+			childItem._name = name
 				
-				startDate = phase._startdate
-				endDate = phase._enddate
-				
-				if (startDate<sharedDB.earliestDate):
-					sharedDB.earliestDate = startDate
-					#print (startDate)
-				
-				
-				childItem = XGanttWidgetItem(self._myXGanttWidget)
-				childItem._dbEntry = phase
-				phase._calendarWidgetItem = childItem
-				
-				childItem.setName(name)		
-				childItem._name = name
-					
-				#if (qStartDate.isValid()):
-				#childItem.setDateStart(QDate(startDate.year,startDate.month,startDate.day))
-				#childItem.setDateEnd(QDate(endDate.year,endDate.month,endDate.day))
-				#sets view Item
-				viewItem = childItem.viewItem()
-				viewItem.setText(name)
-				viewItem.setColor(BGcolor)
-				viewItem.setTextColor(textColor)			
-				
-				childItem.GetDatesFromDBEntry()
-				phase.phaseAssignmentChanged.connect(childItem.GetDatesFromDBEntry)
-				
-				parentItem.addChild(childItem)
-				
-				if "0" in sharedDB.currentUser.departments() or (str(phase._idphases) in sharedDB.myPhases and sharedDB.myPhases[str(phase._idphases)].isVisible()):
-					childItem.setHidden(False)
-					parentItem.setHidden(False)
-				else:
-					childItem.setHidden(True)
-
-
-				parentItem.adjustRange()
+			#if (qStartDate.isValid()):
+			#childItem.setDateStart(QDate(startDate.year,startDate.month,startDate.day))
+			#childItem.setDateEnd(QDate(endDate.year,endDate.month,endDate.day))
+			#sets view Item
+			viewItem = childItem.viewItem()
+			viewItem.setText(name)
+			viewItem.setColor(BGcolor)
+			viewItem.setTextColor(textColor)			
+			
+			childItem.GetDatesFromDBEntry()
+			phase.phaseAssignmentChanged.connect(childItem.GetDatesFromDBEntry)
+			
+			parentItem.addChild(childItem)
+			
+			if "0" in sharedDB.currentUser.departments() or (str(phase._idphases) in sharedDB.myPhases and sharedDB.myPhases[str(phase._idphases)].isVisible()):
+				childItem.setHidden(False)
+				parentItem.setHidden(False)
+			else:
+				childItem.setHidden(True)
+	
+	
+			parentItem.adjustRange()
 	def updateDate(self):
 		
 		#self._myXGanttWidget.frameCurrentDate()

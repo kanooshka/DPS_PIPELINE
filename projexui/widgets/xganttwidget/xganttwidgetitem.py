@@ -446,9 +446,9 @@ class XGanttWidgetItem(XTreeWidgetItem):
     
     def projectChanged(self):
         #set project name
-        self.setName(self._dbEntry._name)
-
-        
+        if self._dbEntry is not None:
+	    self.setHidden(self._dbEntry._hidden)	
+	    self.setName(self._dbEntry._name)        
     
     def setDuration( self, duration ):
         """
