@@ -25,7 +25,9 @@ class LoginWidget(QWidget):
 	sharedDB.loginWidget = self
         
         self._backend               = None
-
+	self.setWindowFlags(QtCore.Qt.Tool)
+	
+	
         #connects buttons
         self.loginButton.clicked.connect(self.Login)
 	self.user.returnPressed.connect(self.Login)
