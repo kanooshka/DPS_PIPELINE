@@ -12,7 +12,7 @@ class PhaseAssignments(QObject):
 	userAssigned = QtCore.pyqtSignal()
 	unassignedSignal = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _assigned = 0, _timestamp = datetime.now()):
+	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _assigned = 0, _description = '', _timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		
@@ -27,7 +27,10 @@ class PhaseAssignments(QObject):
 		self._hoursalotted		   = _hoursalotted
 		self._assigned		   	   = _assigned
 		self._archived                     = _archived
+		self._description                  = _description
 		self._timestamp		     	   = _timestamp
+		
+		self._hidden                 = False
 		
 		self._updated                      = _updated
 		self._new                    	   = _new
@@ -64,6 +67,8 @@ class PhaseAssignments(QObject):
 		#self._unassigned = []
 		
 		#self.phaseAssignmentChanged.connect(sharedDB.myAvailabilityManager.CalculateBooking)
+		
+		self.UpdateVisibility()
 	
 	def __eq__(self, another):
 		return hasattr(another, '_idphaseassignments') and self._idphaseassignments == another._idphaseassignments
@@ -84,6 +89,7 @@ class PhaseAssignments(QObject):
 		elif self._updated:
 			#print self._number+" Updated!"
 			self.UpdatePhaseAssignmentInDB()
+			self.UpdateVisibility()
 			self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 			if str(self._idphases) == '16':
 				self.project._updated = 1
@@ -103,23 +109,40 @@ class PhaseAssignments(QObject):
 			self._iddepartments = phase._iddepartments
 		
 	def AddPhaseAssignmentToDB(self):
+		if self._description is None:
+			self._description = "None"
+
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
 		
+		self._description = self._description.replace("\\","/")
 		
+		descr = self._description.replace("\'","\'\'")	
 		
-		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
+		sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, description, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+descr+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
 	
 		self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
-		sharedDB.myPhaseAssignments[str(self.id())] = self
-	
+		sharedDB.myPhaseAssignments[str(self.id())] = self	
+		
 		self.phaseAssignmentAdded.emit(str(self._idphaseassignments))
 		
 	def UpdatePhaseAssignmentInDB (self):
-		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hoursalotted = '"+str(self._hoursalotted)+"', assigned = '"+str(self._assigned)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
+		if self._description is None:
+			self._description = "None"
+
+		if isinstance(self._description, QtCore.QString):
+			self._description = unicode(self._description.toUtf8(), encoding="UTF-8")
+		
+		self._description = self._description.replace("\\","/")
+		
+		descr = self._description.replace("\'","\'\'")
+		
+		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hoursalotted = '"+str(self._hoursalotted)+"', assigned = '"+str(self._assigned)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		
-	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 1 ,_archived = 0, _timestamp = '', _hoursalotted = 0, _assigned = 0):
+	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 1 ,_archived = 0, _timestamp = '', _hoursalotted = 0, _assigned = 0, _description = ''):
 		print ("Downloaded updated for PhaseAssignment '"+str(self._idphaseassignments)+"'")
 		
 		self._idphaseassignments             = _idphaseassignments
@@ -131,15 +154,26 @@ class PhaseAssignments(QObject):
 		self._hoursalotted               = _hoursalotted
 		self._assigned               = _assigned
 		self._archived               = _archived
+		self._description               = _description
 		self._timestamp                    = _timestamp
 		
 		
 		self.CalculateWeekdays()
+		
+		self.UpdateVisibility()
+		
 		self.phaseAssignmentChanged.connect(sharedDB.myAvailabilityManager.CalculateBooking)
 		
 		self.phaseAssignmentChanged.emit(str(self._idphaseassignments))
 		
 		#self.updateAvailability()
+	
+	def UpdateVisibility(self):
+		if self._idstatuses == 5 or self._idstatuses == 6:
+			self._hidden = True
+		else:
+			self._hidden = False
+	
 	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
