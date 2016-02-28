@@ -26,7 +26,7 @@ from PyQt4    import QtCore,QtGui
 from PyQt4.QtCore   import QDate,\
 				 QSize,\
 				 QDateTime,\
-				 Qt
+				 Qt, QString
 
 from PyQt4.QtGui    import QWidget,\
 				 QPen,\
@@ -40,6 +40,7 @@ import projexui
 
 #from projexui.qt import unwrapVariant, wrapVariant
 from projexui.widgets.xganttwidget.xganttscene   import XGanttScene
+from DPSPipeline.widgets.createprojectwidget import createprojectwidget
 
 
 from datetime import datetime 
@@ -777,10 +778,12 @@ class XGanttWidget(QWidget):
         #else:
         index = self.uiGanttTREE.indexAt(pos)
 	
-	if not index.isValid() or not index.parent().isValid():	    
-	    return
-	
-	#print self.uiGanttTREE.itemFromIndex(index)._dbEntry._type
+	typ = "None"
+	if index.isValid():	    
+	    dbentry = self.uiGanttTREE.itemFromIndex(index)._dbEntry
+	    if hasattr(dbentry, '_type'):
+		typ = dbentry._type
+
 	
 	point = QCursor.pos()
         
@@ -788,21 +791,50 @@ class XGanttWidget(QWidget):
 	
 	menu	 = QtGui.QMenu()
         
-        statusMenu = menu.addMenu("Status Visibility")
-	
+	if typ == "phaseassignment":
+	    statusMenu = menu.addMenu("TEST")
+	elif typ == "project":
+	    statusAction = menu.addAction("Open in Project View")
+	    statusAction.setData(dbentry.id())
+	    menu.addSeparator()
+	    if sharedDB.currentUser._idPrivileges < 2:
+		addPhaseMenu = menu.addMenu("Add Phase")
+		for phase in sharedDB.myPhases.values():
+		    if phase._name != "DUE":
+			addPhaseAction = addPhaseMenu.addAction(phase._name)
+			addPhaseAction.setData("addphase_"+str(phase.id())+"_"+str(dbentry.id()))
+	else:
+	    if sharedDB.currentUser._idPrivileges < 2:
+		menu.addAction("Create Project")
+	    
+	menu.triggered.connect(self.mActions)
+	    
         menu.exec_(point)
-    '''
-    def contextMenuEvent(self, ev):
-        
-        #if self.isEnabled():
-        
-        menu	 = QtGui.QMenu()
-        
-        statusMenu = menu.addMenu("Status Visibility")
+    
+    def mActions(self, action):
+	act = action.text()
 	
-	#self.showNotStartedEnabled = 1
-	showNotStartedAction = statusMenu.addAction('Show Not Started')
-	showNotStartedAction.triggered.connect(self.toggleShowNotStartedAction)
-                
-        menu.exec_(ev.globalPos())
-    '''
+	if act == "Open in Project View":
+	    self.loadinprojectview(sharedDB.myProjects[str(action.data().toPyObject())])
+	    #print sharedDB.myProjects[str(projectId)]._name
+	elif act == "Create Project":
+	    if not hasattr(sharedDB, 'myCreateProjectWidget'):
+		sharedDB.myCreateProjectWidget = createprojectwidget.CreateProjectWidget(sharedDB.mainWindow)
+		
+	    sharedDB.myCreateProjectWidget.setDefaults()
+	    sharedDB.myCreateProjectWidget.dockWidget.show()
+	elif "addphase" in str(action.data().toPyObject()):
+	    phaseId = str(action.data().toPyObject()).split("_")[1]
+	    proj = sharedDB.myProjects[str(action.data().toPyObject()).split("_")[2]]
+	    phase = sharedDB.phaseAssignments.PhaseAssignments(_idphases = phaseId, _startdate = proj._startdate,_enddate = proj._startdate,_updated = 0)
+	    proj.AddPhase(phase)
+	    
+	    
+    def loadinprojectview(self, project):
+	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
+	sharedDB.mainWindow.centralTabbedWidget.setCurrentIndex(0)
+        sharedDB.myProjectViewWidget._currentProject = project            
+        
+	sharedDB.myProjectViewWidget.LoadProjectValues()
+	
+	sharedDB.myProjectViewWidget.projectPartWidget.setCurrentIndex(0)
