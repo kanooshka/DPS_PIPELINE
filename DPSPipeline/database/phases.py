@@ -117,6 +117,21 @@ class Phases():
 			self._capacity = self._capacity+8
 		
 		#print "Phase "+self._name+" capacity: "+str(self._capacity)
+		
+	def SetValues(self,_idphases , _name , _ganttChartBGColor, _ganttChartTextColor, _manHoursToMinuteRatio, _iddepartments, _taskPerShot, _defaultTaskStatus):
+		print ("Downloaded updated for Phase '"+str(self._name)+"'")
+		
+		self._idphases           = _idphases
+		self._name               = _name
+		self._ganttChartBGColor    = _ganttChartBGColor
+		self._ganttChartTextColor    = _ganttChartTextColor
+		self._manHoursToMinuteRatio    = _manHoursToMinuteRatio
+		self._iddepartments    = _iddepartments
+		self._taskPerShot     = _taskPerShot
+		self._defaultTaskStatus = _defaultTaskStatus
+
+		#self.emitPhaseChanged()
+
 '''
 def GetPhaseNames():
 	phases = {}

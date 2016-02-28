@@ -267,8 +267,8 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myDepartments:
 					department = sharedDB.myDepartments[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[2]) or sharedDB.testing:
-						department.SetValues(_iddepartments = row[0],_name = row[1])
+					#if not str(sharedDB.app.sessionId()) == str(row[2]) or sharedDB.testing:
+					#	department.SetValues(_iddepartments = row[0],_name = row[1])
 				else:
 					#create department
 					print "New Department found in database CREATING department: "+str(row[0])
@@ -290,8 +290,8 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myStatuses:
 					status = sharedDB.myStatuses[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[3]) or sharedDB.testing:
-						phase.SetValues(_idstatuses = row[0],_name = row[1])
+					#if not str(sharedDB.app.sessionId()) == str(row[3]) or sharedDB.testing:
+						#phase.SetValues(_idstatuses = row[0],_name = row[1])
 				else:
 					#create status
 					print "New Status found in database CREATING status: "+str(row[0])
@@ -306,7 +306,7 @@ class Connection(QObject):
 				del self._statusesToBeParsed[0]
 			else:
 				break
-		#phases
+		#phases  _idphases , _name = '', _ganttChartBGColor, _ganttChartTextColor, _manHoursToMinuteRatio, _iddepartments, _taskPerShot, _defaultTaskStatus
 		while True:
 			if len(self._phasesToBeParsed)>0:
 				row = self._phasesToBeParsed[0]			
@@ -314,7 +314,7 @@ class Connection(QObject):
 				if str(row[0]) in sharedDB.myPhases:
 					phase = sharedDB.myPhases[str(row[0])]
 					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
-						phase.SetValues(_idclients = row[0],_name = row[1])
+						phase.SetValues(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
 				else:
 					#create phase
 					print "New Phase found in database CREATING phase: "+str(row[0])
