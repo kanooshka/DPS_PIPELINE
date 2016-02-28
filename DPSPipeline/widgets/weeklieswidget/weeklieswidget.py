@@ -124,7 +124,7 @@ class WeekliesWidget(QWidget):
                             userInfo += ", "+sharedDB.myUsers[str(ua._idusers)]._name
                 
                 pname = sharedDB.myPhases[str(phase._idphases)]._name
-                if  pname in ["Approval","DUE","Delivery","Internal Review"]:
+                if  pname in ["Approval","DUE","Delivery","Internal Review","Rendering"]:
                     userInfo = ""
                 
                 #if phase or project on hold
