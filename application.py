@@ -15,6 +15,7 @@ from DPSPipeline.widgets.projectviewwidget import projectviewwidget
 from DPSPipeline.widgets.mytaskswidget import mytaskswidget
 from DPSPipeline.widgets.attributeeditorwidget import attributeeditorwidget
 from DPSPipeline.widgets.hourswidget import hourswidget
+from DPSPipeline.widgets.weeklieswidget import weeklieswidget
 
 #import DPSPipeline.createprojecttest
 
@@ -52,12 +53,15 @@ class MainWindow(QtGui.QMainWindow):
 	self._fileMenu = menubar.addMenu('&File')
 	
 	
+	
 	self._fileMenu.addSeparator()
+	'''
 	autosaveAction = self._fileMenu.addAction('Autosave Enabled')
         autosaveAction.setEnabled(0)
         self._fileMenu.addAction('Save')
         
 	self._fileMenu.addSeparator()
+	'''
 	self._fileMenu.addAction('Exit')
 	self._fileMenu.triggered.connect( self.fileMenuActions )
         
@@ -69,6 +73,13 @@ class MainWindow(QtGui.QMainWindow):
         if sharedDB.currentUser._idPrivileges > 1:
             self.createProjectMenuItem.setEnabled(0)
 
+	
+	#self._userMenu = menubar.addMenu('&Users')
+	
+	windowMenu = menubar.addMenu('&Windows')
+	#self._windowMenuMenuItem = windowMenu.addAction('Weeklies')
+	windowMenu.addAction('Weeklies')	
+        windowMenu.triggered.connect( self.windowMenuActions )
         self.setMenuBar(menubar)
           
         self.resize(1280,720)
@@ -139,6 +150,19 @@ class MainWindow(QtGui.QMainWindow):
 	"""
 	if (action.text() == 'Exit'):
             self.app.closeAllWindows()
+	    
+    def windowMenuActions( self, action ):
+	"""
+	Handles window menu actions
+	
+	:param      action | <QAction>
+	"""
+	if (action.text() == 'Weeklies'):
+            if not hasattr(sharedDB, 'myWeekliesWidget'):
+		sharedDB.myWeekliesWidget = weeklieswidget.WeekliesWidget(sharedDB.mainWindow)
+		
+	    sharedDB.myWeekliesWidget.CalculateWeeklies()
+	    sharedDB.myWeekliesWidget.dockWidget.show()
             
     def projectMenuActions( self, action ):
 	"""
