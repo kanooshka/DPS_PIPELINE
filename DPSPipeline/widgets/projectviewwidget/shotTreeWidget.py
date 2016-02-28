@@ -122,7 +122,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         #for phaseid in self._phases:
         #    phase = self._phases[str(phaseid)]
 	for phase in self._phases:
-	    if phase._taskPerShot:
+	    if phase._taskPerShot and str(phase._idstatuses) != '5' and str(phase._idstatuses) != '6':
                 self.shotPhaseNames.append(phase._name)        
     
     def AttachTaskToButton(self, idtasks):
