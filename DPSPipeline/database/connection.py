@@ -56,9 +56,9 @@ class processQueries(QtCore.QThread):
 			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","temprigs","SELECT idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid FROM temprigs WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
@@ -393,14 +393,14 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myProjects:
 					proj = sharedDB.myProjects[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[13]) or sharedDB.testing:
-						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12])
+					if not str(sharedDB.app.sessionId()) == str(row[14]) or sharedDB.testing:
+						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_statusDescription = row[7],_folderLocation = row[8],_fps = row[9],_idclients = row[12], _idips = row[13])
 
 				else:
 					#create project
 					print "New PROJECT found in database CREATING project: "+str(row[0])
 					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
-					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_idclients = row[11], _idips = row[12],_new = 0)
+					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_statusDescription = row[7],_folderLocation = row[8],_fps = row[9],_idclients = row[12], _idips = row[13],_new = 0)
 					#add project to project list
 					sharedDB.myProjects[str(row[0])] = myProj
 					#iterate through projects
@@ -453,7 +453,7 @@ class Connection(QObject):
 				break
 		
 		
-		#Phase Assignments           **** idphaseassignments, idprojects, idphases, startdate, enddate, idstatuses, archived, timestamp, lasteditedbyname, lasteditedbyip *****
+		#Phase Assignments           **** idphaseassignments, idprojects, idphases, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip *****
 		while True:
 			#print "Queue Lenght: "+str(x)
 			if len(self._phaseassignmentsToBeParsed)>0:
@@ -461,14 +461,14 @@ class Connection(QObject):
 				
 				if str(row[0]) in sharedDB.myPhaseAssignments:
 					phase = sharedDB.myPhaseAssignments[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[10]) or sharedDB.testing:
-						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7],_hoursalotted = row[11],_assigned = row[12])
+					if not str(sharedDB.app.sessionId()) == str(row[11]) or sharedDB.testing:
+						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_description = row[7],_timestamp = row[8],_hoursalotted = row[12],_assigned = row[13])
 
 				else:
 					#create phase assignment
 					print "New PHASE ASSIGNMENT found in database CREATING phase assignment: "+str(row[0])
 					#create instance of phase assignment class				
-					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_timestamp = row[7], _new = 0, _hoursalotted = row[11], _assigned = row[12])
+					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_description = row[7],_timestamp = row[8], _new = 0, _hoursalotted = row[12], _assigned = row[13])
 					#add phase to phase assignment list
 					sharedDB.myPhaseAssignments[str(row[0])] = myPhase
 					
@@ -478,6 +478,7 @@ class Connection(QObject):
 						if str(myPhase.id()) not in proj._phases:
 							proj._phases[str(myPhase.id())] = myPhase
 							myPhase.project = proj
+							myPhase.phaseAssignmentChanged.connect(proj.UpdateStartDate)
 
 					sharedDB.mySQLConnection.newPhaseAssignmentSignal.emit(str(myPhase._idphaseassignments))
 					
