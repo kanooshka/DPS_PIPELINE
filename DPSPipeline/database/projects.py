@@ -193,9 +193,9 @@ class Projects(QObject):
 		name = self._name.replace("\'","\'\'")
 		#print ("Adding project to DB: "+str(self._idprojects))
 
-		sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, statusDescription, fps, idips, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+name+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+descr+"', '"+statdescr+"', '"+str(self._fps)+"', '"+str(self._idips)+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
+		rows,self._idprojects = sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, statusDescription, fps, idips, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+name+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+descr+"', '"+statdescr+"', '"+str(self._fps)+"', '"+str(self._idips)+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
-		self._idprojects = sharedDB.mySQLConnection._lastInsertId
+		#self._idprojects = sharedDB.mySQLConnection._lastInsertId
 	
 		sharedDB.myProjects[str(self.id())] = self	
 		

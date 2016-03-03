@@ -111,7 +111,7 @@ class Users():
 def GetAllUsers():
 	users = {}
 
-	rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active, fulltime, idphaseslist FROM users")
+	rows,lastrowid = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active, fulltime, idphaseslist FROM users")
 	
 	for row in rows:
 		if sharedDB.testPrivileges == 0:
@@ -134,7 +134,7 @@ def GetCurrentUser(username = ''):
 
 	users = {}
 
-	rows = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active, fulltime, idphaseslist FROM users WHERE username = \""+username+"\";")	
+	rows,lastrowid = sharedDB.mySQLConnection.query("SELECT idusers, username, name, password, idDepartment, idPrivileges, active, fulltime, idphaseslist FROM users WHERE username = \""+username+"\";")	
 	
 	for row in rows:
 		if sharedDB.testPrivileges == 0:

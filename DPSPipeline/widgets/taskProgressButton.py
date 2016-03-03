@@ -37,7 +37,7 @@ class TaskProgressButton(QtGui.QLabel):
             self.getTaskState()
         else:
             if self._shot._tasks is not None:
-                for t in self._shot._tasks:
+                for t in self._shot._tasks.values():
                     if t._idphases == self._forPhase:
                         self._task = t
                         self.getTaskState()

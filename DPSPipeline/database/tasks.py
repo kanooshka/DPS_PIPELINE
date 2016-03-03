@@ -39,11 +39,6 @@ class Tasks(QObject):
 		
 		self._new		     = _new
 		
-		if self._new:
-			if str(self._idphases) in sharedDB.myPhases:				
-				self._status = sharedDB.myPhases[str(self._idphases)]._defaultTaskStatus
-
-		
 		self.statusButton	= ''
 		self.phaseAssignment = ''
 		self.projects = ''
@@ -81,9 +76,9 @@ class Tasks(QObject):
 	
 	def AddTaskToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, status, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._approved)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		rows,self._idtasks = sharedDB.mySQLConnection.query("INSERT INTO tasks (idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, status, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(self._idshots)+"', '"+str(self._idusers)+"', '"+str(self._idphases)+"', '"+str(self._timealotted)+"', '"+str(self._idsequences)+"', '"+str(self._duedate)+"', '"+str(self._percentcomplete)+"', '"+str(self._approved)+"', '"+str(self._status)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
-		self._idtasks = sharedDB.mySQLConnection._lastInsertId
+		#self._idtasks = sharedDB.mySQLConnection._lastInsertId
 		
 		sharedDB.myTasks[str(self.id())] = self
 		
@@ -117,6 +112,10 @@ class Tasks(QObject):
 		#self.UpdateProjectView()
 		##if current project changed, update values
 		##else just update project list
+	
+	def setDefaultStatus(self):
+		if str(self._idphases) in sharedDB.myPhases:				
+			self._status = sharedDB.myPhases[str(self._idphases)]._defaultTaskStatus
 	
 	def setStatus(self,newStatus):
 		#print "TASK STATUS CHANGED"

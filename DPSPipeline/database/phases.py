@@ -129,23 +129,3 @@ class Phases():
 		self._iddepartments    = _iddepartments
 		self._taskPerShot     = _taskPerShot
 		self._defaultTaskStatus = _defaultTaskStatus
-
-		#self.emitPhaseChanged()
-
-'''
-def GetPhaseNames():
-	phases = {}
-
-	rows = sharedDB.mySQLConnection.query("SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus FROM phases")
-	
-	for row in rows:
-		#print row[0]
-		phases[str(row[0])] = Phases(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
-		
-	return phases
-
-def getPhaseByID(sentid):
-	for phase in sharedDB.myPhases:		
-		if str(phase._idphases) == str(sentid):
-			return phase
-'''

@@ -31,22 +31,3 @@ class Statuses():
 	
 	def name(self):
 		return self._name
-
-'''
-def GetStatuses():
-	statuses = []
-	
-
-	rows = sharedDB.mySQLConnection.query("SELECT idstatuses,name FROM statuses")
-	
-	for row in rows:
-		#print row[0]
-		statuses.append(Statuses(_idstatuses = row[0],_name = row[1]))
-			
-	return statuses
-
-def getStatusById(sentid):
-	for s in sharedDB.myStatuses:
-		if s._idstatuses == sentid:
-			return s
-'''

@@ -90,9 +90,10 @@ class Shots(QObject):
 		
 		#descr = descr.replace("\"","\"\"")
 	
-		sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+notes+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		rows,self._idshots = sharedDB.mySQLConnection.query("INSERT INTO shots (number, startframe, endframe, idsequences, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid) VALUES ('"+str(self._number)+"', '"+str(self._startframe)+"', '"+str(self._endframe)+"', '"+str(self._idsequences)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+notes+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
-		self._idshots = sharedDB.mySQLConnection._lastInsertId
+		#print sharedDB.mySQLConnection._lastInsertId
+		#self._idshots = sharedDB.mySQLConnection._lastInsertId
 		
 		sharedDB.myShots[str(self.id())] = self
 		

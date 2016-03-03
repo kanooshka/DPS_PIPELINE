@@ -74,9 +74,9 @@ class Ips(QObject):
 	
 	def AddIpToDB (self):
 
-		sharedDB.mySQLConnection.query("INSERT INTO ips (name, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
+		rows,self._idips = sharedDB.mySQLConnection.query("INSERT INTO ips (name, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
-		self._idips = sharedDB.mySQLConnection._lastInsertId
+		#self._idips = sharedDB.mySQLConnection._lastInsertId
 		
 		self.ipAdded.emit(str(self._idips))
 

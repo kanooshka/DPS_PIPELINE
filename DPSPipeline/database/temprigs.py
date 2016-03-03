@@ -67,9 +67,9 @@ class TempRigs(QObject):
 				
 		#descr = descr.replace("\"","\"\"")
 	
-		sharedDB.mySQLConnection.query("INSERT INTO temprigs (idprojects, name, setNumber, type, status, description, folderlocation, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idprojects)+"', '"+str(self._name)+"', '"+str(self._setnumber)+"', '"+str(self._typ)+"', '"+str(self._status)+"', '"+descr+"', '"+str(self._folderLocation)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		rows,self._idtemprigs = sharedDB.mySQLConnection.query("INSERT INTO temprigs (idprojects, name, setNumber, type, status, description, folderlocation, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idprojects)+"', '"+str(self._name)+"', '"+str(self._setnumber)+"', '"+str(self._typ)+"', '"+str(self._status)+"', '"+descr+"', '"+str(self._folderLocation)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
-		self._idtemprigs = sharedDB.mySQLConnection._lastInsertId
+		#self._idtemprigs = sharedDB.mySQLConnection._lastInsertId
 		
 		sharedDB.myTempRigs[str(self.id())] = self
 		

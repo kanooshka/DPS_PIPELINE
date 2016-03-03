@@ -78,7 +78,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 		for x in range(0, len(sortedShots)):
 		    shot=sortedShots[x]                    
 		    if str(shot._idstatuses) != "5" and str(shot._idstatuses) != "6":
-			shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
+			shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self.phaseList, project = self._project)
 			shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
 		self.sortItems(1,QtCore.Qt.AscendingOrder)
 		
@@ -112,7 +112,7 @@ class ShotTreeWidget(QtGui.QTreeWidget):
         #print shot._number
         #print self._phases
         #print self._project._name
-        shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self._phases, project = self._project)
+        shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self.phaseList, project = self._project)
         self.sortItems(1,QtCore.Qt.AscendingOrder)
         self.UpdateBackgroundColors()
         shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
@@ -121,9 +121,11 @@ class ShotTreeWidget(QtGui.QTreeWidget):
     def SetShotPhaseNames(self):        
         #for phaseid in self._phases:
         #    phase = self._phases[str(phaseid)]
+	self.phaseList = []
 	for phase in self._phases:
 	    if phase._taskPerShot and str(phase._idstatuses) != '5' and str(phase._idstatuses) != '6':
-                self.shotPhaseNames.append(phase._name)        
+                self.phaseList.append(phase)
+		self.shotPhaseNames.append(phase._name)        
     
     def AttachTaskToButton(self, idtasks):
         #find task with id

@@ -65,9 +65,9 @@ class Hours(QObject):
 		self._description =self._description.replace("\\","/")		
 		descr = self._description.replace("\'","\'\'")
 	
-		sharedDB.mySQLConnection.query("INSERT INTO hours (idusers, idphaseassignments, idprojects, description, hours, date, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idusers)+"', '"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(descr)+"', '"+str(self._hours)+"', '"+str(self._date)+"', '"+descr+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		rows,self._idhours = sharedDB.mySQLConnection.query("INSERT INTO hours (idusers, idphaseassignments, idprojects, description, hours, date, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._idusers)+"', '"+str(self._idphaseassignments)+"', '"+str(self._idprojects)+"', '"+str(descr)+"', '"+str(self._hours)+"', '"+str(self._date)+"', '"+descr+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
-		self._idhours = sharedDB.mySQLConnection._lastInsertId
+		#self._idhours = sharedDB.mySQLConnection._lastInsertId
 		
 		self.hoursAdded.emit(str(self._idhours))
 	

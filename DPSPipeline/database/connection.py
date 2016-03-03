@@ -72,7 +72,7 @@ class processQueries(QtCore.QThread):
 						self._currentDB = self._queries[0][1]		
 						self._currentQuery = self._queries[0][2]
 						
-						rows = sharedDB.mySQLConnection.query(self._currentQuery)
+						rows,lastrowid = sharedDB.mySQLConnection.query(self._currentQuery)
 					
 						if self._currentDB == "departments":						
 							rows.sort(key=lambda x: x[2])
@@ -242,7 +242,7 @@ class Connection(QObject):
 		
 		cnx.close()
 
-		return rows
+		return rows,cursor.lastrowid
 
 	def GetTimestamp(self):
 		rows = ""

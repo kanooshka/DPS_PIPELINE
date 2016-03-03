@@ -77,9 +77,9 @@ class UserAssignment(QObject):
 	
 	def AddUserAssignmentToDB(self):
 	
-		sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid, hours) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hours)+"');","commit")	
+		rows,self._iduserassignments = sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid, hours) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hours)+"');","commit")	
 	
-		self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
+		#self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
 		sharedDB.myUserAssignments[str(self._iduserassignments)] = self
 		self.userAssignmentAdded.emit(str(self._iduserassignments))

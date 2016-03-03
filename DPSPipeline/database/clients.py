@@ -70,9 +70,9 @@ class Clients(QObject):
 	
 	def AddClientToDB (self):
 
-		sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
+		rows,self._idclients = sharedDB.mySQLConnection.query("INSERT INTO clients (name, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+self._name+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
-		self._idclients = sharedDB.mySQLConnection._lastInsertId
+		#self._idclients = sharedDB.mySQLConnection._lastInsertId
 		sharedDB.myClients[str(self.id())] = self
 		
 		self.clientAdded.emit(str(self._idclients))

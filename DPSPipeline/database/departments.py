@@ -26,14 +26,3 @@ class Departments():
 		
 	def id(self):
 		return self._iddepartments
-'''	
-def GetDepartments():
-	departments = []
-	rows = sharedDB.mySQLConnection.query("SELECT iddepartments,name,ganttChartColor FROM departments")
-	
-	for row in rows:
-		#print row[0]
-		departments.append(Departments(_iddepartments = row[0],_name = row[1],_ganttChartColor = row[2]))
-	
-	return departments
-'''

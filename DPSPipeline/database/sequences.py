@@ -64,9 +64,9 @@ class Sequences(QObject):
 		self._description = self._description.replace("\\","/")
 		descr = self._description.replace("\'","\'\'")
 		
-		sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
+		rows,self._idsequences = sharedDB.mySQLConnection.query("INSERT INTO sequences (number, idprojects, description, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+str(self._number)+"', '"+str(self._idprojects)+"', '"+descr+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")	
 	
-		self._idsequences = sharedDB.mySQLConnection._lastInsertId
+		#self._idsequences = sharedDB.mySQLConnection._lastInsertId
 	
 		sharedDB.mySequences[str(self.id())] = self
 	

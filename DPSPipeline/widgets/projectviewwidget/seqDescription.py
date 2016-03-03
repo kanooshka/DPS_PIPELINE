@@ -58,6 +58,7 @@ class SeqDescription(QtGui.QWidget):
 	    self.newShotNumber.setValue(int(self._sequenceTreeItem._shotTreeWidget.currentItem().shot._number)+10)
     
     def AddShot(self):
+	self.addShot.blockSignals(1)
 	unique = 1
 	
 	#get sequence name
@@ -66,7 +67,7 @@ class SeqDescription(QtGui.QWidget):
 	#iterate through sequences
 	for shot in self._sequence._shots.values():	    
 	    #if sequence matches name
-	    if newName == shot._number:
+	    if str(newName) == str(shot._number):
 		unique = 0
 		break
 	    
@@ -74,7 +75,7 @@ class SeqDescription(QtGui.QWidget):
 	if unique:
 	    #add sequence
 	    shot = self._sequence.AddShotToSequence(newName)
-	    self.CreateTasks(str(shot.id()))
+	    self.CreateTasks(shot = shot)
 	    #shot.shotAdded.connect(self.CreateTasks)
 	    
 	    self.newShotNumber.setValue(self.newShotNumber.value()+10)
@@ -84,14 +85,15 @@ class SeqDescription(QtGui.QWidget):
 	    #warning message
 	    message = QtGui.QMessageBox.question(self, 'Message',
 	"Shot name already exists, choose a unique name (it is recommended to leave 10 between each shot in case shots need to be added in the middle)", QtGui.QMessageBox.Ok)
-
+	self.addShot.blockSignals(0)
+	
     def selectShotByName(self, sName):
 	
 	stree = self._sequenceTreeItem._shotTreeWidget
 	#item = stree.findItems(sName,1)
 	for x in range(0,stree.topLevelItemCount()):
-	    print stree.topLevelItem(x).text(1)
-	    print sName
+	    #print stree.topLevelItem(x).text(1)
+	    #print sName
 	    if int(stree.topLevelItem(x).text(1))==int(sName):
 		item = stree.topLevelItem(x)
 		stree.setCurrentItem(item)
@@ -104,24 +106,27 @@ class SeqDescription(QtGui.QWidget):
 		return shot	    
     '''    
     def CreateTasks(self, shotid = None, shot = None):
+	
 	if shot is None:
 	    #print "getting shot by id"
 	    if str(shotid) in sharedDB.myShots:
 		shot = sharedDB.myShots[str(shotid)]
 
-	if shot is not None:
-    
-	    		
-	    
+	if shot is not None:	    
 	    if not sharedDB.autoCreateShotTasks:
 		self.selectShotByName(shot._number)
 		for phase in self._project._phases.values():	    
 		    if phase._taskPerShot:
-			task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
-			task.taskAdded.connect(self._sequenceTreeItem._shotTreeWidget.AttachTaskToButton)
+			#print shot._number + " " + str(shot.id())
+			task = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = self._project._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 0)
+			#task.taskAdded.connect(self._sequenceTreeItem._shotTreeWidget.AttachTaskToButton)
+			task._new = 1
+			task.setDefaultStatus()
 			task.Save()
 			
 			shot._tasks[str(task.id())] = task
+			
+			
 	    
 	    #add shot to that widget
 	    self._sequenceTreeItem._shotTreeWidget.AddShot(shot)
