@@ -2,9 +2,11 @@ import sys
 import weakref
 import projexui
 import sharedDB
+import math
 
 from datetime import timedelta,datetime,date
 from PyQt4 import QtGui,QtCore
+
 #from PyQt4 import QtCore
 from PyQt4.QtGui    import QWidget
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
@@ -60,6 +62,37 @@ class MyTasksWidgetItem(QWidget):
 	if str(self._phaseassignment._idstatuses) in sharedDB.myStatuses:
 	    self.status.setText(sharedDB.myStatuses[str(self._phaseassignment._idstatuses)]._name)
 
+	#calculate pace
+	if self.user is not None and self._userassignment is not None and self.hours.text() != "0" and self._phaseassignment.hoursAlotted() > 1 and str(self._phaseassignment._taskPerShot) == "1":
+	     
+	    percentage = float(self._userassignment._hours) / self._phaseassignment.hoursAlotted()
+	    
+	    '''
+		For Pace: Get percentage assigned by comparing assigned hours to total budgeted hours.
+		Multiply percentage by number of shots.  
+	    '''
+	    
+	    taskNum = 0
+	    #get project
+	    for task in self._phaseassignment._tasks.values():
+		if task._status != 2 and task._status != 4 and task._status != 1:
+		    taskNum += 1
+
+	    print "Tasknum: "+str(taskNum)
+	    print "User Hours: "+str(self._userassignment._hours)
+	    print "percentage: "+str(percentage)
+	    uah = float(self._userassignment._hours)
+	    taskpercentage = float(taskNum*percentage)
+	    print str(taskNum*percentage)
+	    #print str(uah/taskpercentage)
+	    
+	    if taskNum == 0:
+		self.pace = "N/A"
+	    else:
+		self.pace.setText(str(int(math.ceil(self._userassignment._hours/(taskNum*percentage)))) + " hrs per shot")
+	    
+	else:
+	    self.pace.setText("N/A")
 	
 	self.UpdateColors()
 	    
