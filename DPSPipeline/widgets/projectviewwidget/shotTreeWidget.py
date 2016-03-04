@@ -14,7 +14,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 
     def __init__(self,_project,_sequence,_parentWidgetItem):
         super(QtGui.QTreeWidget, self).__init__()
-        
+       
+        self.phaseList = []
         #self._project = _project
         self._sequence = _sequence
         self.setProject(_project)
@@ -203,6 +204,8 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 	
 	headerText = self.headerItem().text(self.header().logicalIndexAt(pos))
 	
+	index =  self.header().logicalIndexAt(pos);
+	
 	#globalPos = self.mapToGlobal(pos)
 	menu = QtGui.QMenu()
 	
@@ -217,6 +220,13 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 	    
 	    menu.addAction("Claim all shots - "+headerText)
 	    
+	    menu.addSeparator()
+	    
+	    selectPhaseAction = menu.addAction("Select "+headerText+" Phase")
+	    selectPhaseAction.setData("phaseassignment_"+str(self.phaseList[index-2].id()))
+	    
+	    selectProjectAction = menu.addAction("Select Project")
+	    selectProjectAction.setData("project_"+str(self._project.id()))
 	    
 	    menu.triggered.connect( self.contextMenuActions )
 	    menu.exec_(point)
@@ -241,6 +251,11 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 			taskwidget = self.itemWidget(self.topLevelItem(y),x)
 			if taskwidget._uLabel.task is not None and taskwidget._uLabel.task._idusers == 0:
 			    taskwidget._uLabel.setUserFromName(username)
-		    
+	elif ( action.text().contains("Select ") ):
+	    actiondata = action.data().toPyObject().split("_")	    
+	    if actiondata[0] == "phaseassignment":
+		sharedDB.sel.select([sharedDB.myPhaseAssignments[str(actiondata[1])]])
+	    if actiondata[0] == "project":
+		sharedDB.sel.select([sharedDB.myProjects[str(actiondata[1])]])
 	    
 	
