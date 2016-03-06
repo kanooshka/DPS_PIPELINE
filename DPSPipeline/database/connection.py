@@ -179,7 +179,7 @@ class Connection(QObject):
 	
 		self.myIP = socket.gethostbyname(socket.gethostname())
 		
-		self._lastInsertId = ''		
+		#self._lastInsertId = ''		
 		
 		if sharedDB.localDB:
 			self._host = 'localhost'
@@ -226,14 +226,26 @@ class Connection(QObject):
 		return mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
 
 	def query(self, query = "", queryType = "fetchAll"):
-		rows = ""
+		rows = []
 		cnx = self.openConnection()
 		cursor = cnx.cursor()
-		cursor.execute(query)
-		self._lastInsertId = cursor.lastrowid
+		
+		limitAmount = 20
+
+		#self._lastInsertId = cursor.lastrowid
 		if queryType == "fetchAll":
-			rows = cursor.fetchall()
+			loop = 1
+			while loop:
+				#print query+" LIMIT "+str(limitAmount)
+				cursor.execute(query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount))
+				newRows = cursor.fetchall()
+				if not len(newRows):
+					loop = 0
+				else:
+					loop += 1
+				rows.extend(newRows)
 		elif queryType == "commit":
+			cursor.execute(query)
 			if not sharedDB.disableSaving:
 				cnx.commit()
 		
