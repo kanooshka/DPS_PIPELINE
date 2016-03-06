@@ -26,7 +26,7 @@ myVersion = version.Version("0.1.06")
 #TEST SETTINGS
 ignoreVersion = 0
 testDB = 0
-testing = 0
+debugging = 1
 disableSaving = 0
 autologin = 0
 localDB = 0

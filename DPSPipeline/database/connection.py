@@ -279,8 +279,6 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myDepartments:
 					department = sharedDB.myDepartments[str(row[0])]
-					#if not str(sharedDB.app.sessionId()) == str(row[2]) or sharedDB.testing:
-					#	department.SetValues(_iddepartments = row[0],_name = row[1])
 				else:
 					#create department
 					print "New Department found in database CREATING department: "+str(row[0])
@@ -302,8 +300,6 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myStatuses:
 					status = sharedDB.myStatuses[str(row[0])]
-					#if not str(sharedDB.app.sessionId()) == str(row[3]) or sharedDB.testing:
-						#phase.SetValues(_idstatuses = row[0],_name = row[1])
 				else:
 					#create status
 					print "New Status found in database CREATING status: "+str(row[0])
@@ -325,7 +321,7 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myPhases:
 					phase = sharedDB.myPhases[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[8]):
 						phase.SetValues(_idphases = row[0],_name = row[1],_ganttChartBGColor = row[2],_ganttChartTextColor = row[3],_manHoursToMinuteRatio = row[4],_iddepartments = row[5],_taskPerShot = row[6],_defaultTaskStatus = row[7])
 				else:
 					#create phase
@@ -348,7 +344,7 @@ class Connection(QObject):
 			
 				if str(row[0]) in sharedDB.myClients:
 					client = sharedDB.myClients[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[4]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[4]):
 						client.SetValues(_idclients = row[0],_name = row[1])
 				else:
 					#create client
@@ -372,7 +368,7 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myIps:
 					ip = sharedDB.myIps[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[5]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[5]):
 						ip.SetValues(_idips = row[0],_name = row[1],_idclients = row[2])
 				else:
 					#create ip
@@ -405,7 +401,7 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myProjects:
 					proj = sharedDB.myProjects[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[14]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[14]):
 						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_statusDescription = row[7],_folderLocation = row[8],_fps = row[9],_idclients = row[12], _idips = row[13])
 
 				else:
@@ -440,7 +436,7 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myTempRigs:
 					rig = sharedDB.myTempRigs[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[8]):
 						rig.SetValues(_idtemprigs = row[0],_name = row[1],_idprojects = row[2],_setnumber = row[3],_typ = row[4],_status = row[5],_description = row[6],_folderLocation = row[7])
 
 				else:
@@ -473,7 +469,7 @@ class Connection(QObject):
 				
 				if str(row[0]) in sharedDB.myPhaseAssignments:
 					phase = sharedDB.myPhaseAssignments[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[11]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[11]):
 						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_description = row[7],_timestamp = row[8],_hoursalotted = row[12],_assigned = row[13])
 
 				else:
@@ -507,7 +503,7 @@ class Connection(QObject):
 	
 				if str(row[0]) in sharedDB.mySequences:
 					seq = sharedDB.mySequences[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[8]):
 						seq.SetValues(_idsequences = row[0],_number = row[1],_idstatuses = row[2],_description = row[3],_timestamp = row[4])
 
 				else:
@@ -539,7 +535,7 @@ class Connection(QObject):
 	
 				if str(row[0]) in sharedDB.myShots:
 					shot = sharedDB.myShots[str(row[0])]						
-					if not str(sharedDB.app.sessionId()) == str(row[12]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[12]):
 						shot.SetValues(_idshots = row[0],_number = row[1],_startframe = row[2],_endframe = row[3],_description = row[4],_idstatuses = row[5],_timestamp = row[6],_idprojects = row[7],_idsequences = row[8], _shotnotes = row[11])
 
 				else:
@@ -581,7 +577,7 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myTasks:
 					task = sharedDB.myTasks[str(row[0])]						
-					if not str(sharedDB.app.sessionId()) == str(row[15]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[15]):
 						#idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp
 						task.SetValues(_idtasks = row[0],_idphaseassignments = row[1],_idprojects = row[2],_idshots = row[3],_idusers = row[4],_idphases = row[5],_timealotted = row[6], _idsequences = row[7], _duedate = row[8], _percentcomplete = row[9], _approved = row[10], _timestamp = row[11], _status = row[14])
 					
@@ -628,7 +624,7 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myUserAssignments:
 					assignment = sharedDB.myUserAssignments[str(row[0])]						
-					if not str(sharedDB.app.sessionId()) == str(row[8]) or sharedDB.testing:
+					if not str(sharedDB.app.sessionId()) == str(row[8]):
 						#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
 						assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
 					
@@ -656,7 +652,7 @@ class Connection(QObject):
 				existed = False
 				for hours in sharedDB.myHours:
 					if str(hours._idhours) == str(row[0]):						
-						if not str(sharedDB.app.sessionId()) == str(row[9]) or sharedDB.testing:
+						if not str(sharedDB.app.sessionId()) == str(row[9]):
 							#idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid
 							assignment.SetValues(_idhours = row[0], _idusers = row[1],_idphaseassignments = row[2],_idprojects = row[3], _description = row[4], _hours = row[5], _date = row[6], _timestamp = row[7])
 						existed = True
@@ -725,7 +721,7 @@ class Connection(QObject):
 				for entry in existingEntries:
 					#if id exists update entry
 					if str(entry._idclients) == str(row[0]):
-						if not str(sharedDB.mySQLConnection.myIP) == str(row[3]) or sharedDB.testing:
+						if not str(sharedDB.mySQLConnection.myIP) == str(row[3]):
 							client.SetValues(_idclients = row[0],_name = row[1])
 						existed = True
 						break
