@@ -40,9 +40,10 @@ class MainWindow(QtGui.QMainWindow):
             self.app.loginWidget
         except:
             self.app.loginWidget = loginwidget.LoginWidget()
-            
-        self.app.loginWidget.show()
-        self.app.loginWidget.activateWindow()
+        
+	if not sharedDB.autologin:    
+	    self.app.loginWidget.show()
+	    self.app.loginWidget.activateWindow()
 	
 	
 	
