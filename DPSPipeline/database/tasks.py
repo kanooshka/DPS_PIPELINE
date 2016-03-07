@@ -88,6 +88,8 @@ class Tasks(QObject):
 		
 		sharedDB.mySQLConnection.query("UPDATE tasks SET idphaseassignments = '"+str(self._idphaseassignments)+"', idprojects = '"+str(self._idprojects)+"', idshots = '"+str(self._idshots)+"', idusers = '"+str(self._idusers)+"', idphases = '"+str(self._idphases)+"', timealotted = '"+str(self._timealotted)+"', idsequences = '"+str(self._idsequences)+"', duedate = '"+str(self._duedate)+"', percentcomplete = '"+str(self._percentcomplete)+"', approved = '"+str(self._approved)+"', status = '"+str(self._status)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idtasks = "+str(self._idtasks)+";","commit")
 
+		self.emitTaskChanged()
+	
 	def SetValues(self,_idtasks = 0, _idphaseassignments = 0, _idprojects = 0, _idshots = 0, _idusers = 0, _idphases = 0, _timealotted = 0, _idsequences = 0, _duedate = datetime.now(), _percentcomplete = 0, _approved = 0, _status = 0, _timestamp = datetime.now()):
 		print ("Downloaded updated for Task '"+str(self._idtasks)+"'")
 		
