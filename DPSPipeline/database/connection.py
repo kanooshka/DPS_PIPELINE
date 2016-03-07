@@ -225,18 +225,21 @@ class Connection(QObject):
 	def openConnection(self):
 		return mysql.connector.connect(user = self._user, password = self._password, host = self._host, database = self._database)
 
-	def query(self, query = "", queryType = "fetchAll"):
+	def query(self, query = "", queryType = "fetchAll", limitOverride = 0):
 		rows = []
 		cnx = self.openConnection()
 		cursor = cnx.cursor()
 		
-		limitAmount = 20
+		if limitOverride != 0:
+			limitAmount = limitOverride
+		else:
+			limitAmount = 20
 
 		#self._lastInsertId = cursor.lastrowid
 		if queryType == "fetchAll":
 			loop = 1
 			while loop:
-				#print query+" LIMIT "+str(limitAmount)
+				print query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount)
 				cursor.execute(query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount))
 				newRows = cursor.fetchall()
 				if not len(newRows):
