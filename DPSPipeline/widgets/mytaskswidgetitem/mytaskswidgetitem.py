@@ -43,6 +43,7 @@ class MyTasksWidgetItem(QWidget):
 	self._phaseassignment.userAssigned.connect(self.deleteThisRow)
 	
 	sharedDB.mySQLConnection.dateChanged.connect(self.UpdateValues)
+	self.tasklist = []
 	
 	self.UpdateValues()
 	
@@ -63,36 +64,63 @@ class MyTasksWidgetItem(QWidget):
 	    self.status.setText(sharedDB.myStatuses[str(self._phaseassignment._idstatuses)]._name)
 
 	#calculate pace
+	self.pace.setText("N/A")
 	if self.user is not None and self._userassignment is not None and self.hours.text() != "0" and self._phaseassignment.hoursAlotted() > 1 and str(self._phaseassignment._taskPerShot) == "1":
 	     
 	    percentage = float(self._userassignment._hours) / self._phaseassignment.hoursAlotted()
 	    
-	    '''
-		For Pace: Get percentage assigned by comparing assigned hours to total budgeted hours.
-		Multiply percentage by number of shots.  
-	    '''
-	    
 	    taskNum = 0
 	    #get project
 	    for task in self._phaseassignment._tasks.values():
-		if task._status != 2 and task._status != 4 and task._status != 1:
+		if (task._status != 2 and task._status != 4 and task._status != 1) or (task._status == 1 and task._idusers == self.user.id()):
 		    taskNum += 1
+	    
+	    if taskNum > 0 and self._userassignment._hours>1:
 
-	    print "Tasknum: "+str(taskNum)
-	    print "User Hours: "+str(self._userassignment._hours)
-	    print "percentage: "+str(percentage)
-	    uah = float(self._userassignment._hours)
-	    taskpercentage = float(taskNum*percentage)
-	    print str(taskNum*percentage)
-	    #print str(uah/taskpercentage)
-	    
-	    if taskNum == 0:
-		self.pace = "N/A"
-	    else:
-		self.pace.setText(str(int(math.ceil(self._userassignment._hours/(taskNum*percentage)))) + " hrs per shot")
-	    
-	else:
-	    self.pace.setText("N/A")
+		for task in self._phaseassignment._tasks.values():
+		    if task not in self.tasklist:
+			task.taskChanged.connect(self.UpdateValues)
+			self.tasklist.append(task)
+
+		if self._phaseassignment._startdate <= date.today() <= self._phaseassignment._enddate:
+		    user = sharedDB.myUsers[str(self._userassignment._idusers)]
+		    numhours = 0
+		    currdate = date.today()
+		    while currdate <= self._phaseassignment._enddate:
+			if str(currdate) in user._bookingDict:
+			   for b in user._bookingDict[str(currdate)]:
+				if str(b._idphaseassignments) == str(self._phaseassignment.id()):
+				    hourspassed = 0
+				    if currdate == date.today():
+					h = datetime.now().hour
+					if h > 9:
+					    if h < 17:
+						hourspassed = h-9						
+					    else:
+						hourspassed = 8
+						
+					    if hourspassed > b._hours:
+						hourspassed = int(b._hours)
+					#print hourspassed
+				    numhours += int(b._hours)-hourspassed
+			
+			currdate = currdate + timedelta(days=1)
+
+		elif date.today()>self._phaseassignment._enddate:
+		    numhours = 1
+		else:
+		    numhours = self._userassignment._hours
+		
+		#print "\nTasknum: "+str(taskNum)
+		#print "User Hours: "+str(numhours)
+		#print "percentage: "+str(percentage)
+		#print "numtasksToAssign: "+str(math.ceil(taskNum*percentage))
+		#print "pace: "+str(numhours/(math.ceil(taskNum*percentage)))
+
+		pace = round(numhours/(math.ceil(taskNum*percentage)),1)
+		if pace != 0:
+		    self.pace.setText(str(pace) + " hrs per shot")
+
 	
 	self.UpdateColors()
 	    
