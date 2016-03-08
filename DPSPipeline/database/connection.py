@@ -239,7 +239,7 @@ class Connection(QObject):
 		if queryType == "fetchAll":
 			loop = 1
 			while loop:
-				print query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount)
+				#print query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount)
 				cursor.execute(query+" LIMIT "+str(limitAmount)+" OFFSET "+str((loop-1)*limitAmount))
 				newRows = cursor.fetchall()
 				if not len(newRows):

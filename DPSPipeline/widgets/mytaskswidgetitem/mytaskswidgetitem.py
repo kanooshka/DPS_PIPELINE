@@ -72,7 +72,11 @@ class MyTasksWidgetItem(QWidget):
 	    taskNum = 0
 	    #get project
 	    for task in self._phaseassignment._tasks.values():
-		if (task._status != 2 and task._status != 4 and task._status != 1) or (task._status == 1 and task._idusers == self.user.id()):
+		if (int(task._approved) == 0 and task._status != 2 and task._status != 4 and task._status != 1) or (task._status == 1 and task._idusers == self.user.id() ):
+		    #if shot deleted skip task
+		    if int(task._idshots) > 0 and str(task._idshots) in sharedDB.myShots and sharedDB.myShots[str(task._idshots)]._idstatuses > 2:
+			#print "Shot "+sharedDB.myShots[str(task._idshots)]._number+" Deleted, skipping tasks."
+			continue		    
 		    taskNum += 1
 	    
 	    if taskNum > 0 and self._userassignment._hours>1:
