@@ -95,7 +95,7 @@ class Users():
 		global userDictToSort
 		
 		#iterate through users, add 1 for each phase assignment they can do
-		if self._phases != ["0"] and str(self._fulltime) == "1":
+		if self._phases != ["0"] and str(self._fulltime) == "1" and str(self._active) == "1":
 			userDictToSort[str(self.id())] = len(self._phases)
 		self.sortUserListByAbility()
 		
