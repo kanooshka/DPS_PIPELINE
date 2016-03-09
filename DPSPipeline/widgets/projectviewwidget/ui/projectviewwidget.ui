@@ -810,6 +810,28 @@ Structure</string>
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="rendersTab">
+          <attribute name="title">
+           <string>Renders</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="rendersTabLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item>

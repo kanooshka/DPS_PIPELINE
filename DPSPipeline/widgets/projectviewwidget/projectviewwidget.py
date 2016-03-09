@@ -20,6 +20,7 @@ from DPSPipeline.widgets.temprigwidgetitem import temprigwidgetitem
 from DPSPipeline.widgets.projectviewwidget import sequenceTreeWidgetItem
 from DPSPipeline.widgets.projectviewwidget import projectNameLineEdit
 from DPSPipeline.widgets.projectviewwidget import shotTreeWidget
+from DPSPipeline.widgets.rendertimelinewidget import rendertimelinewidget
 from DPSPipeline.widgets import textEditAutosave
 from DPSPipeline import clickableImageQLabel
 
@@ -68,6 +69,15 @@ class ProjectViewWidget(QWidget):
 	
 	self.rigList.setColumnHidden(0,True)
 	
+	self.renderTimeline = rendertimelinewidget.RenderTimelineWidget(self)
+	self.rendersTabLayout.addWidget(self.renderTimeline)
+	self.projectPartWidget.currentChanged.connect(self.projectPartTabChanged)
+	
+    def projectPartTabChanged(self, index):
+	if index == 2:
+	    self.renderTimeline.ChangeProject(self._currentProject)
+    
+    
     def propogateUI(self, ):
 	self.setPrivelages()
 
@@ -109,7 +119,7 @@ class ProjectViewWidget(QWidget):
 	    for seq in self._currentProject._sequences.values():
 		for shot in seq._shots.values():
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\anim\\"))
-		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\"))
+		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\renders\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\lighting\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\maya\\fx\\"))
 		    paths.append(str(self.projectPath.text()+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\"))
@@ -284,6 +294,8 @@ class ProjectViewWidget(QWidget):
 	    self.LoadRigListValues()
 	    
 	    self.setProgressListVisibility()
+	    
+	    self.renderTimeline.ChangeProject(self._currentProject)
 	    
 	self._blockUpdates = 0
 	#self.blockSignals(False)
