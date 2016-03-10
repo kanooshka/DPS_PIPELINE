@@ -69,7 +69,13 @@ class ProjectViewWidget(QWidget):
 	
 	self.rigList.setColumnHidden(0,True)
 	
-	self.renderTimeline = rendertimelinewidget.RenderTimelineWidget(self)
+	self.renderIconSize = QtGui.QSlider(QtCore.Qt.Horizontal)	
+	self.renderIconSize.setMaximum(2000)
+	self.renderIconSize.setMinimum(20)
+	self.renderIconSize.setValue(200)
+	self.rendersTabLayout.addWidget(self.renderIconSize)
+	
+	self.renderTimeline = rendertimelinewidget.RenderTimelineWidget(self,sizeSlider = self.renderIconSize)
 	self.rendersTabLayout.addWidget(self.renderTimeline)
 	self.projectPartWidget.currentChanged.connect(self.projectPartTabChanged)
 	
@@ -295,7 +301,7 @@ class ProjectViewWidget(QWidget):
 	    
 	    self.setProgressListVisibility()
 	    
-	    self.renderTimeline.ChangeProject(self._currentProject)
+	    #self.renderTimeline.ChangeProject(self._currentProject)
 	    
 	self._blockUpdates = 0
 	#self.blockSignals(False)

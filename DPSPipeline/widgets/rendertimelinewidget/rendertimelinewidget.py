@@ -2,8 +2,10 @@ import os
 import glob
 import ntpath
 
-from PyQt4.QtGui    import QListWidget,QListWidgetItem,QIcon
-from PyQt4.QtCore   import QSize,QThread,pyqtSignal,QString
+import sharedDB
+
+from PyQt4.QtGui    import QListWidget,QListWidgetItem,QIcon,QImage,QPixmap
+from PyQt4.QtCore   import QSize,QThread,pyqtSignal,QString,Qt
 
 #project = None
 
@@ -29,25 +31,37 @@ class CheckForImages(QThread):
 
                             try:
                                 imagelist = glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]'))
-                                for image in imagelist:
-                                    if len(image)>3:
-                                        print "Loading Shot Image: "+image
-                                        self.listWidget.addImageSignal.emit(image)
-                                        #sharedDB.myAttributeEditorWidget.shotWidget.shotImagePath = newImage
-                                        #sharedDB.myAttributeEditorWidget.shotWidget.shotImageFound.emit(newImage)
+                                for imagepath in imagelist:
+                                    if len(imagepath)>3:
+                                        print "Loading Shot Image: "+imagepath
+                                        
+					#base = ntpath.basename(str(imagepath))
+					#base = os.path.splitext(base)[0]
+				       
+					qimg = QImage()
+					qimg.load(imagepath)
+					
+					#currItem = QListWidgetItem(QIcon(imagepath),base)
+					
+					#currItem.path = imagepath
+					#self.listWidget.itemList.append(currItem)					
+					self.listWidget.addImageSignal.emit(qimg,imagepath,str(shot.id()))
                                     
                             except:
                                 print "No Image file found for selected shot"
 
 class RenderTimelineWidget(QListWidget):
-    addImageSignal = pyqtSignal(QString)   
+    addImageSignal = pyqtSignal(QImage,QString,QString)   
    
-    def __init__( self, parent = None ):
+    def __init__( self, parent = None ,sizeSlider = ''):
         
         super(RenderTimelineWidget, self).__init__( parent )
         
         self.setViewMode(QListWidget.IconMode)
-        self.setIconSize(QSize(200,200))        
+	self.sizeSlider = sizeSlider
+        self.updateIconSize()
+	self.sizeSlider.valueChanged.connect(self.updateIconSize)
+	
         self.setResizeMode(QListWidget.Adjust)
         
         self.cfip = CheckForImages()
@@ -59,7 +73,10 @@ class RenderTimelineWidget(QListWidget):
         
         self.itemList = []
         
-        self.itemDoubleClicked.connect(self.openImage)
+	self.setSelectionMode(self.NoSelection)
+	self.setVerticalScrollMode(self.ScrollPerItem)
+        #self.itemDoubleClicked.connect(self.openImage)
+	self.itemClicked.connect(self.selectShot)
 
     def ChangeProject(self, proj):
         #global project
@@ -73,19 +90,26 @@ class RenderTimelineWidget(QListWidget):
             
             self.cfip.start()
     
-    def AddImage(self,imagepath):
-        base = ntpath.basename(str(imagepath))
+    def AddImage(self,image,imagepath,shotid):
+ 	base = ntpath.basename(str(imagepath))
         base = os.path.splitext(base)[0]
        
-        currItem = QListWidgetItem(QIcon(imagepath),base)
-        self.addItem(currItem);
+        currItem = QListWidgetItem(QIcon(QPixmap(image)),base)        
         currItem.path = imagepath
+	currItem.shot = sharedDB.myShots[str(shotid)]
         self.itemList.append(currItem)
-        
+
+        self.addItem(currItem);
         self.sortItems()
-        
+    '''
     def openImage(self, qitem):
         try:
             os.startfile(qitem.path)
         except:
             print "Unable to open image"
+    '''    
+    def selectShot(self,item):
+	sharedDB.sel.select([item.shot])
+    
+    def updateIconSize(self):
+	self.setIconSize(QSize(self.sizeSlider.value(),self.sizeSlider.value()))
