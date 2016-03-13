@@ -13,7 +13,7 @@ from datetime import timedelta,datetime
 #from projexui import qt import Signal
 from PyQt4 import QtGui,QtCore
 #from PyQt4 import QtCore
-from PyQt4.QtGui    import QWidget
+from PyQt4.QtGui    import QWidget,QImage
 from PyQt4.QtCore   import QDate,QTime,QVariant,Qt
 from DPSPipeline import clickableImageQLabel
 from DPSPipeline.widgets import textEditAutosave
@@ -23,14 +23,17 @@ class CheckForImagePath(QtCore.QThread):
 
     def run(self):
 	#search for image
-	sentpath = sharedDB.myAttributeEditorWidget.shotWidget.shotImageDir
+	sentpath = self.AEShot.shotImageDir
 	
 	try:
-		newImage = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
-		if len(newImage)>3:
-			print "Loading Shot Image: "+newImage
-			sharedDB.myAttributeEditorWidget.shotWidget.shotImagePath = newImage
-			sharedDB.myAttributeEditorWidget.shotWidget.shotImageFound.emit(newImage)
+		imagepath = max(glob.iglob(os.path.join(sentpath, '*.[Jj][Pp]*[Gg]')), key=os.path.getctime)
+		if len(imagepath)>3:
+			print "Loading Shot Image: "+imagepath
+			#sharedDB.myAttributeEditorWidget.shotWidget.shotImagePath = newImage
+			qimg = QImage()
+			qimg.load(imagepath)
+			
+			self.AEShot.shotImageFound.emit(qimg)
 		
 	except:
 	    print "No Image file found for selected shot"
@@ -60,7 +63,7 @@ class CheckForPlayblastPath(QtCore.QThread):
 	    
 
 class AEShot(QWidget):
-    shotImageFound = QtCore.pyqtSignal(QtCore.QString)
+    shotImageFound = QtCore.pyqtSignal(QImage)
     
     def __init__( self, parent = None ):
     
@@ -88,8 +91,9 @@ class AEShot(QWidget):
 	self.shotNotes.save.connect(self.SaveShotNotes)
 	
 	self.cfip = CheckForImagePath()
+	self.cfip.AEShot = self
 	self.shotImageFound.connect(self.shotImage.assignImage)
-	self.shotImageDir = ''	
+	#self.shotImageDir = ''	
 	
 	self.cfpb = CheckForPlayblastPath()
 	self.shotPlayblastPath = None
