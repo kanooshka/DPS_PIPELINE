@@ -86,8 +86,10 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	#hoursItem = IntQTableWidgetItem.IntQTableWidgetItem()
 	hoursItem = UserAssignmentSpinBox.UserAssignmentSpinBox(_phaseAssignment = self._parent._currentPhaseAssignment,_user = user,_parent = self)
         #hoursItem.setValue(int(hours))
-	hoursItem.setMaximum(float(availhoursItem.text())+1)
+	#hoursItem.setMaximum(float(availhoursItem.text())+1)
+	hoursItem.setMaximum(99999999)
 	hoursItem.setKeyboardTracking(0)
+	
 	#hoursItem.setToolTip(name)
         #hoursItem.setFrame(0)
         #validator = QtGui.QIntValidator()
@@ -123,12 +125,17 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 	
     def setHoursColor(self,status):
 	for i in range(0,self.rowCount()):
-	    item = self.cellWidget(i,3)
-	    if item is not None:
+	    hoursitem = self.cellWidget(i,3)
+	    if hoursitem is not None:
 		if status:
-		    item.setStyleSheet('color: green')
+		    
+		    if hoursitem.value() > int(self.item(i,2).text()):
+			hoursitem.setStyleSheet('color: red')
+		    else:
+			hoursitem.setStyleSheet('color: green')
+		    #hoursitem.setStyleSheet('color: green')
 		else:
-		    item.setStyleSheet('color: red')
+		    hoursitem.setStyleSheet('color: red')
     
     def mActions(self, username):
         for u in sharedDB.myUsers.values():
