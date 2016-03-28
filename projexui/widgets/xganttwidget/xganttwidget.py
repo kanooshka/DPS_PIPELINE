@@ -17,6 +17,7 @@ __email__           = 'team@projexsoftware.com'
 
 import weakref
 import sys
+import operator
 
 import sharedDB
 
@@ -799,10 +800,34 @@ class XGanttWidget(QWidget):
 	    menu.addSeparator()
 	    if sharedDB.currentUser._idPrivileges < 2:
 		addPhaseMenu = menu.addMenu("Add Phase")
+		
+		phases = sharedDB.myPhases.values()        
+		phases.sort(key=operator.attrgetter('_name'))
+		
+		middleChar = phases[len(phases)/2]._name[0]
+		
+		AMMenu = addPhaseMenu.addMenu('A - '+middleChar)
+		NZMenu = addPhaseMenu.addMenu(chr(ord(middleChar) + 1)+' - Z')
+		
+		for x in range(0,len(phases)):
+		    phase = phases[x]
+		    
+		    if phase._name == "DUE":
+			continue
+		    
+		    #col    = self.column(column)
+		    if x<len(phases)/2 or phase._name[0] == middleChar:
+			action = AMMenu.addAction(phase._name)
+			action.setData("addphase_"+str(phase.id())+"_"+str(dbentry.id()))
+		    else:
+			action = NZMenu.addAction(phase._name)
+			action.setData("addphase_"+str(phase.id())+"_"+str(dbentry.id()))
+		'''
 		for phase in sharedDB.myPhases.values():
 		    if phase._name != "DUE":
 			addPhaseAction = addPhaseMenu.addAction(phase._name)
 			addPhaseAction.setData("addphase_"+str(phase.id())+"_"+str(dbentry.id()))
+		'''
 	else:
 	    if sharedDB.currentUser._idPrivileges < 2:
 		menu.addAction("Create Project")
@@ -829,7 +854,21 @@ class XGanttWidget(QWidget):
 	    phase = sharedDB.phaseAssignments.PhaseAssignments(_idphases = phaseId, _startdate = proj._startdate,_enddate = proj._startdate,_updated = 0)
 	    proj.AddPhase(phase)
 	    
-	    
+	    #iterate through shots for
+	    for image in proj._images.values():
+		currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = proj._idprojects, _idshots = image._idshots, _idphases = phase._idphases, _new = 1)
+		currentTask.Save()
+		image._tasks[str(currentTask.id())] = (currentTask)
+
+		currentTask.Save()
+	    for seq in proj._sequences.values():
+		for shot in seq._shots.values():
+		    currentTask = sharedDB.tasks.Tasks(_idphaseassignments = phase._idphaseassignments, _idprojects = proj._idprojects, _idshots = shot._idshots, _idphases = phase._idphases, _new = 1)
+		    currentTask.Save()
+		    shot._tasks[str(currentTask.id())] = (currentTask)
+    
+		    
+
     def loadinprojectview(self, project):
 	#print "Loading Project"+self.cellWidget(row,column)._phaseassignment._name
 	sharedDB.mainWindow.centralTabbedWidget.setCurrentIndex(0)
