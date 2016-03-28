@@ -64,6 +64,9 @@ class Projects(QObject):
 		
 		sharedDB.mySQLConnection.firstLoadComplete.connect(self.UpdateStartDate)
 		
+		if sharedDB.initialLoad:
+			self.UpdateStartDate()
+		
 		#Connect new project to UI elements
 		#self.projectAdded.connect(sharedDB.calendarview.AddNewProjects)
 	

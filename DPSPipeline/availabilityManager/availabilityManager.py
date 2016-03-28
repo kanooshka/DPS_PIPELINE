@@ -39,10 +39,11 @@ class updateAvailability(QtCore.QThread):
 	
 	sortedPhaseAssignmentList.sort(key=operator.attrgetter('_startdate'))
 	
-	start_date = sortedPhaseAssignmentList[0]._startdate
+	if len(sortedPhaseAssignmentList):
+	    start_date = sortedPhaseAssignmentList[0]._startdate
     
-	self.CreatePhaseAssignmentList(start_date, end_date, list(sortedPhaseAssignmentList),"UA")
-	self.CreatePhaseAssignmentList(start_date, end_date, list(sortedPhaseAssignmentList), "")
+	    self.CreatePhaseAssignmentList(start_date, end_date, list(sortedPhaseAssignmentList),"UA")
+	    self.CreatePhaseAssignmentList(start_date, end_date, list(sortedPhaseAssignmentList), "")
 	
     def CreatePhaseAssignmentList(self, start_date, end_date, sortedPhaseAssignmentList, typ):
 	#iterate through days

@@ -147,6 +147,8 @@ class CreateProjectWidget(QWidget):
 	    ip = sharedDB.myIps[str(idips)]
 	    ip._projects[str(newProj.id())] = newProj
 	
+	newProj.UpdateStartDate()
+	
         self.close();
         
 def InitializeDates(phases,due_date,duration):
