@@ -430,7 +430,12 @@ class ProjectViewWidget(QWidget):
 		if str(sequence._idstatuses)== "5" or str(sequence._idstatuses) == "6":
 		    sequenceTreeItem.setHidden(1)   
 		else:
-		    sequenceTreeItem.setExpanded(True)
+		    #Check if all tasks are finished or not and expand accordingly
+		    for shot in sequence._shots.values():
+			for task in shot._tasks.values():
+			    if task._status < 4 and task._approved != 1:
+				sequenceTreeItem.setExpanded(True)
+				return
 		#self.CreateFolderStructure()
     	
     def AddShotToProgressList(self, shotid = None, shot = None):
