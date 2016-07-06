@@ -427,7 +427,10 @@ class ProjectViewWidget(QWidget):
 		#Add Sequences to list
 		sequenceTreeItem = sequenceTreeWidgetItem.SequenceTreeWidgetItem(sequence, self.progressList, self._currentProject,self)	    		
 		self.progressList.addTopLevelItem(sequenceTreeItem)
-		sequenceTreeItem.setExpanded(True)
+		if str(sequence._idstatuses)== "5" or str(sequence._idstatuses) == "6":
+		    sequenceTreeItem.setHidden(1)   
+		else:
+		    sequenceTreeItem.setExpanded(True)
 		#self.CreateFolderStructure()
     	
     def AddShotToProgressList(self, shotid = None, shot = None):

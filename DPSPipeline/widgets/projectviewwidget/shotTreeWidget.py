@@ -78,9 +78,12 @@ class ShotTreeWidget(QtGui.QTreeWidget):
 		#self._shots.sort(key=operator.attrgetter('_number'))
 		for x in range(0, len(sortedShots)):
 		    shot=sortedShots[x]                    
-		    if str(shot._idstatuses) != "5" and str(shot._idstatuses) != "6":
-			shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self.phaseList, project = self._project)
-			shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
+		    
+		    shotWidgetItem = shotTreeWidgetItem.ShotTreeWidgetItem(shotWidget = self,shotPhaseNames = self.shotPhaseNames, shot = shot, phases = self.phaseList, project = self._project)
+		    shotWidgetItem.setSizeHint(3,QtCore.QSize(0,self.rowHeight))
+		    
+		    if str(shot._idstatuses) == "5" or str(shot._idstatuses) == "6":
+			shotWidgetItem.setHidden(1)
 		self.sortItems(1,QtCore.Qt.AscendingOrder)
 		
 		self.UpdateWidgetHeight()
