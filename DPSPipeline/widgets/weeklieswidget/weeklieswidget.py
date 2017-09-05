@@ -33,7 +33,7 @@ class WeekliesWidget(QWidget):
         
         mainlay.addWidget(self.textBox)       
         
-                
+        sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.CalculateWeeklies)        
         
         #self.setWindowFlags(QtCore.Qt.Tool)
         
