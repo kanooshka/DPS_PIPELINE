@@ -99,8 +99,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def CreateProjectWidget(self):
 	
+	#if not hasattr(sharedDB, 'myCreateProjectWidget'):
 	if not hasattr(sharedDB, 'myCreateProjectWidget'):
 	    sharedDB.myCreateProjectWidget = createprojectwidget.CreateProjectWidget(sharedDB.mainWindow)
+
+	sharedDB.myCreateProjectWidget.show()
 		
 	sharedDB.myCreateProjectWidget.setDefaults()
 	sharedDB.myCreateProjectWidget.dockWidget.show()
