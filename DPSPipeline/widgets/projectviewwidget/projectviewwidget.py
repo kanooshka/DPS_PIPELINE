@@ -5,6 +5,7 @@ import math
 import sys
 import os
 import glob
+import subprocess
 
 import multiprocessing
 import time
@@ -78,6 +79,24 @@ class ProjectViewWidget(QWidget):
 	self.renderTimeline = rendertimelinewidget.RenderTimelineWidget(self,sizeSlider = self.renderIconSize)
 	self.rendersTabLayout.addWidget(self.renderTimeline)
 	self.projectPartWidget.currentChanged.connect(self.projectPartTabChanged)
+	
+	self.projectPath.setContextMenuPolicy(Qt.CustomContextMenu)
+	self.projectPath.customContextMenuRequested.connect(self.ProjectPathMenu)
+	
+	
+
+    def ProjectPathMenu(self, position):
+    
+	menu = QtGui.QMenu()
+
+	explorerAction = menu.addAction("Open In Explorer")
+	
+	action = menu.exec_(self.projectPath.mapToGlobal(position))
+	if action == explorerAction:
+	    self.openProjectInExplorer()
+	
+    def openProjectInExplorer(self):	
+	subprocess.Popen('explorer "{0}"'.format(self.projectPath.text()))
 	
     def projectPartTabChanged(self, index):
 	if index == 2:
@@ -176,6 +195,7 @@ class ProjectViewWidget(QWidget):
 	    
     def projectChanged(self,projectId):
         #set project name
+	
 	for project in sharedDB.myProjects:	
 		if str(project._idprojects) == projectId:
 			for x in range(0,self.projectName.count()):
@@ -253,9 +273,12 @@ class ProjectViewWidget(QWidget):
 
     def LoadProjectValues(self):
 	self._blockUpdates = 1
+	
+	
 	#self.blockSignals(True)
 	
 	if self._currentProject is not None:
+	    self._shotTreeWidget = None
 	    
 	    #set name
 	    self.projectValueGrp.setEnabled(1)
@@ -524,6 +547,8 @@ class ProjectViewWidget(QWidget):
 	if shot is not None:
 	    
 	    #add shot to that widget
+	    #print self._shotTreeWidget
+	    
 	    if self._shotTreeWidget is None:
 		self.CreateShotTreeWidget()
 	    		
@@ -546,13 +571,14 @@ class ProjectViewWidget(QWidget):
 	
 	stree = self._shotTreeWidget
 	#item = stree.findItems(sName,1)
-	for x in range(0,stree.topLevelItemCount()):
-	    print stree.topLevelItem(x).text(1)
-	    print sName
-	    if str(stree.topLevelItem(x).text(1))==str(sName):
-		item = stree.topLevelItem(x)
-		stree.setCurrentItem(item)
-		break
+	if (stree is not None):
+	    for x in range(0,stree.topLevelItemCount()):
+		print stree.topLevelItem(x).text(1)
+		print sName
+		if str(stree.topLevelItem(x).text(1))==str(sName):
+		    item = stree.topLevelItem(x)
+		    stree.setCurrentItem(item)
+		    break
 	    
     def LoadRigListValues(self):
 	self.rigList.clear()
