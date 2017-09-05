@@ -21,7 +21,7 @@ class WaitTimer(QtCore.QThread):
 			sharedDB.myTasksWidget.AddTaskSignal.emit()
 			#sharedDB.calendarview.AddPhaseAssignmentSignal.emit()
 		
-		time.sleep(.05)
+		time.sleep(1)
 
 class MyTasksWidget(QtGui.QTableWidget):
     AddTaskSignal = QtCore.pyqtSignal()
@@ -384,8 +384,26 @@ class MyTasksWidget(QtGui.QTableWidget):
 	showOutForApprovalAction.setCheckable(True)
 	showOutForApprovalAction.setChecked(self.showOutForApprovalEnabled)
 	showOutForApprovalAction.triggered.connect(self.toggleShowOutForApprovalAction)
-
-        menu.exec_(ev.globalPos())
+	
+	if sharedDB.currentUser._idPrivileges < 3:
+		menu.addSeparator()
+		
+		#dynamically create menu based off of statuses
+		
+		statusMenu = menu.addMenu("Status")
+		
+		for s in sharedDB.myStatuses.values():
+		    statusMenu.addAction(str(s._name))     
+		
+		statusMenu.triggered.connect(self.setStatus)
+        
+	menu.exec_(ev.globalPos())
+    
+    def setStatus(self, action):
+	for status in sharedDB.myStatuses.values():		
+		if status._name == str(action.text()):	
+			pa = self.cellWidget(self.currentRow(),self.currentColumn())._phaseassignment	
+			pa.setIdstatuses(status._idstatuses)
     
     def toggleJustMyAssignmentsAction(self):
 	self.showAllUsersInDepartmentEnabled = 0
