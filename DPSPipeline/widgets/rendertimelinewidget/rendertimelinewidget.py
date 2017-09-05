@@ -1,6 +1,7 @@
 import os
 import glob
 import ntpath
+import re
 
 import sharedDB
 
@@ -27,25 +28,34 @@ class CheckForImages(QThread):
                         shots = seq._shots.values()
                         for shot in shots:
                             
-                            d = str(proj._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\renders\\")	   
+			    #rendersrv = re.sub(proj._folderLocation, "\\zed\lego", "\\rendersrv1\renders\lego", flags=re.I)
+			    rendersrv = re.sub(r"\\\\zed\\Lego*", r"\\\\rendersrv1\\renders\\lego", proj._folderLocation, flags=re.I)
+			    #proj._folderLocation.replace("\\\\zed\\lego","\\\\rendersrv1\\renders\\lego")
+			    
+			    #d = str(proj._folderLocation+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\img\\renders\\")	   
+			    d = str(rendersrv+"\\Animation\\seq_"+seq._number+"\\shot_"+seq._number+"_"+shot._number+"\\currentFootage\\fullRes\\")	   
 
                             try:
-                                imagelist = glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]'))
-                                for imagepath in imagelist:
-                                    if len(imagepath)>3:
-                                        print "Loading Shot Image: "+imagepath
-                                        
-					#base = ntpath.basename(str(imagepath))
-					#base = os.path.splitext(base)[0]
-				       
-					qimg = QImage()
-					qimg.load(imagepath)
-					
-					#currItem = QListWidgetItem(QIcon(imagepath),base)
-					
-					#currItem.path = imagepath
-					#self.listWidget.itemList.append(currItem)					
-					self.listWidget.addImageSignal.emit(qimg,imagepath,str(shot.id()))
+                                #imagelist = glob.iglob(os.path.join(d, '*.[Jj][Pp]*[Gg]'))
+				imagelist = glob.glob(os.path.join(d, '*.[Pp][Nn][Gg]'))
+				
+				for x in range(0,len(imagelist)):
+				    imagepath = imagelist[x]
+				    if len(imagepath)>3:
+					if x == 0 or x == len(imagelist) or x%10 == 0:
+					    print "Loading Shot Image: "+imagepath
+					    
+					    #base = ntpath.basename(str(imagepath))
+					    #base = os.path.splitext(base)[0]
+					   
+					    qimg = QImage()
+					    qimg.load(imagepath)
+					    
+					    #currItem = QListWidgetItem(QIcon(imagepath),base)
+					    
+					    #currItem.path = imagepath
+					    #self.listWidget.itemList.append(currItem)					
+					    self.listWidget.addImageSignal.emit(qimg,imagepath,str(shot.id()))
                                     
                             except:
                                 print "No Image file found for selected shot"
