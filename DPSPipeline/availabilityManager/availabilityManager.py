@@ -8,6 +8,16 @@ import sharedDB
 import operator
 import atexit
 
+class WaitTimer(QtCore.QThread):
+
+	def run(self):
+		
+		if sharedDB.calendarview is not None:
+			sharedDB.calendarview.AddProjectSignal.emit()
+			#sharedDB.calendarview.AddPhaseAssignmentSignal.emit()
+		
+		time.sleep(.5)
+
 class updateAvailability(QtCore.QThread):
     
     def run(self):
