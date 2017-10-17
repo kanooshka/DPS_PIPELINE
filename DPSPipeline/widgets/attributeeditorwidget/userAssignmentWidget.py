@@ -144,7 +144,7 @@ class UserAssignmentWidget(QtGui.QTableWidget):
 		#add user assignment with 0 hours
 		self.userList.append(u)
 		
-		self._userAssignment = sharedDB.userassignments.UserAssignment(_idusers = u._idusers,_assignmentid = self._parent._currentPhaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = 0, _new = 1)		
+		self._userAssignment = sharedDB.userassignments.UserAssignment(_idusers = u._idusers,_idprojects = self._parent._currentPhaseAssignment._idprojects,_assignmentid = self._parent._currentPhaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = 0, _new = 1)		
 		self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
 		self._userAssignment.Save()
 		self._userAssignment.connectToDBClasses()

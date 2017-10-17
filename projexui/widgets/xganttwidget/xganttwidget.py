@@ -828,6 +828,9 @@ class XGanttWidget(QWidget):
 			addPhaseAction = addPhaseMenu.addAction(phase._name)
 			addPhaseAction.setData("addphase_"+str(phase.id())+"_"+str(dbentry.id()))
 		'''
+	    if sharedDB.currentUser._idPrivileges == 1:
+		archiveAction = menu.addAction("Archive Project")
+		archiveAction.setData(dbentry.id())
 	else:
 	    if sharedDB.currentUser._idPrivileges < 2:
 		menu.addAction("Create Project")
@@ -842,6 +845,8 @@ class XGanttWidget(QWidget):
 	if act == "Open in Project View":
 	    self.loadinprojectview(sharedDB.myProjects[str(action.data().toPyObject())])
 	    #print sharedDB.myProjects[str(projectId)]._name
+	elif act == "Archive Project":
+	    sharedDB.myProjects[str(action.data().toPyObject())].setArchived(1)
 	elif act == "Create Project":
 	    if not hasattr(sharedDB, 'myCreateProjectWidget'):
 		sharedDB.myCreateProjectWidget = createprojectwidget.CreateProjectWidget(sharedDB.mainWindow)

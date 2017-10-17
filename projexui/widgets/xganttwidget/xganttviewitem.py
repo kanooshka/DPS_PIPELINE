@@ -19,6 +19,7 @@ import weakref
 import sharedDB
 
 from projexui import qt          #import wrapVariant
+from PyQt4          import QtGui
 from PyQt4.QtCore   import Qt
 from PyQt4.QtGui    import QGraphicsRectItem,\
                                  QColor,\
@@ -51,16 +52,9 @@ class XGanttViewItem(QGraphicsRectItem):
         self._treeItem                  = weakref.ref(treeItem)        
         self._scrollBar                 = ''
         
+        self._locked                    = False;
+        
         # setup standard properties
-        '''
-        if (sharedDB.currentUser._idPrivileges>1):
-            self.setFlags( flags )
-            flags |= self.ItemIsFocusable
-        else:
-            flags = self.ItemIsMovable
-            flags |= self.ItemIsSelectable 
-            flags |= self.ItemIsFocusable
-        '''
         self.setPrivelages()
         
         effect = QGraphicsDropShadowEffect()
@@ -145,10 +139,6 @@ class XGanttViewItem(QGraphicsRectItem):
         return self._syncing
     
     def disableMovement (self):
-        # setup standard properties
-        #flags  = self.ItemIsMovable 
-        #flags |= self.ItemIsSelectable 
-        #flags |= self.ItemIsFocusable
        
         self.setFlag( self.ItemIsMovable, False )
     
@@ -533,12 +523,16 @@ class XGanttViewItem(QGraphicsRectItem):
     def setPrivelages(self):
         #iterate through fields and adjust edit flag
         #print ("Privelages: "+str(sharedDB.currentUser._idPrivileges))
-        if sharedDB.currentUser._idPrivileges > 1:
+        if sharedDB.currentUser._idPrivileges > 1 or self._locked:
             self.setFlags( self.flags() ^ Qt.ItemIsEditable )
+            self.setFlag( self.ItemIsMovable, False )
+            self.setFlag( self.ItemIsSelectable, True )
+            self.setFlag( self.ItemIsFocusable, True )
         else:
             flags = self.ItemIsMovable
             flags |= self.ItemIsSelectable 
             flags |= self.ItemIsFocusable
+            flags |= Qt.ItemIsEditable
             self.setFlags( flags )
     
     def setProgressColor( self, color ):
@@ -613,3 +607,27 @@ class XGanttViewItem(QGraphicsRectItem):
         :return     <XGanttWidgetItem>
         """
         return self._treeItem()
+
+    def contextMenuEvent(self, ev):
+        #if typ == "phaseassignment":
+	#    statusMenu = menu.addMenu("TEST")
+	#elif typ == "project":
+        menu	 = QtGui.QMenu()
+        
+        lockAction = QtGui.QAction('Locked', None)
+        lockAction.triggered.connect( self.toggleLock )
+        menu.addAction(lockAction)
+        lockAction.setCheckable(True)
+        lockAction.setChecked(self._locked)
+        #statusAction.setData(dbentry.id())
+        #menu.addSeparator()
+        menu.exec_(ev.screenPos())
+        
+        
+    
+    def toggleLock(self):       
+
+        #print "Showing All Phases"
+        self._locked = not self._locked           
+        
+        self.setPrivelages()

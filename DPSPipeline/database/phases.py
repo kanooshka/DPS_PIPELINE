@@ -53,7 +53,7 @@ class Phases():
 		
 		self.CalculateCapacityPerDay()
 		
-		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments():
+		if "0" in sharedDB.currentUser.departments() or str(_iddepartments) in sharedDB.currentUser.departments() or sharedDB.currentUser._idPrivileges == 1:
 			self._visible = 1
 		else:
 			self._visible = 0

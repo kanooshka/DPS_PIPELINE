@@ -57,7 +57,7 @@ class UserAssignmentSpinBox(QtGui.QSpinBox):
                 #sharedDB.myTasksWidget.CheckForUnassigned(self._phaseAssignment._idphaseassignments)
                 self._phaseAssignment.updateAssigned()
         elif self.value()>0:
-            self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = self._user._idusers,_assignmentid = self._phaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = self.value(), _new = 1)
+            self._userAssignment =sharedDB.userassignments.UserAssignment(_idusers = self._user._idusers,_idprojects = self._phaseAssignment._idprojects, _assignmentid = self._phaseAssignment._idphaseassignments,_assignmenttype = "phase_assignment",_idstatuses = 1, _hours = self.value(), _new = 1)
 	    
             self._userAssignment.userAssignmentAdded.connect(sharedDB.myTasksWidget.AddUserAssignment)
             #sharedDB.myUserAssignments.append(self._userAssignment)

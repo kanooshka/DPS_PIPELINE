@@ -38,32 +38,46 @@ class processQueries(QtCore.QThread):
 			#Check for database updates
 			#sharedDB.mySQLConnection.CheckForNewEntries()
 			
-			if sharedDB.initialLoad:
-		
+			if sharedDB.initialLoadComplete < 1:
+				print "Commencing initial Database load"				
+				
+				self._queries.append(["SELECT","departments","SELECT iddepartments,name,appsessionid FROM departments"])			
+				self._queries.append(["SELECT","statuses","SELECT idstatuses,name,appsessionid FROM statuses"])			
+				self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases"])			
+				self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients"])			
+				self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips"])			
+			
+				self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, archived, budget, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE archived < 1"])			
+				self._queries.append(["SELECT","phaseassignments","SELECT A.idphaseassignments, A.idprojects, A.idphases, A.startdate, A.enddate, A.idstatuses, A.archived, A.description, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid, A.hoursalotted, A.assigned FROM phaseassignments A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
+				self._queries.append(["SELECT","temprigs","SELECT A.idtemprigs, A.name, A.idprojects, A.setNumber, A.type, A.status, A.description, A.folderLocation, A.appsessionid FROM temprigs A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])							
+				self._queries.append(["SELECT","sequences","SELECT A.idsequences, A.number, A.idstatuses, A.description, A.timestamp, A.idprojects, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid FROM sequences A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])			
+				self._queries.append(["SELECT","shots","SELECT A.idshots, A.number, A.startframe, A.endframe, A.description, A.idstatuses, A.timestamp, A.idprojects, A.idsequences, A.lasteditedbyname, A.lasteditedbyip, A.shotnotes, A.appsessionid FROM shots A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])			
+				self._queries.append(["SELECT","tasks","SELECT A.idtasks, A.idphaseassignments, A.idprojects, A.idshots, A.idusers, A.idphases, A.timealotted, A.idsequences, A.duedate, A.percentcomplete, A.approved, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.status, A.appsessionid FROM tasks A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
+				self._queries.append(["SELECT","userassignments","SELECT A.iduserassignments, A.idusers, A.idprojects, A.assignmentid, A.assignmenttype, A.idstatuses, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid, A.hours FROM userassignments A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
+				self._queries.append(["SELECT","hours","SELECT A.idhours, A.idusers, A.idphaseassignments, A.idprojects, A.description, A.hours, A.date, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid FROM hours A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
+			else:
 				newdatetime = sharedDB.mySQLConnection.GetTimestamp();
 				#newdatetime = datetime.now()- timedelta(years=4);
 				newdatetime = newdatetime[0]
 				sharedDB.lastUpdate = newdatetime - timedelta(seconds=4)
-			else:
-				print "Commencing initial Database load"
-				
-				#sharedDB.myStatuses = sharedDB.statuses.GetStatuses()				
-				#sharedDB.myPhases = sharedDB.phases.GetPhaseNames()
-				#sharedDB.myUsers = sharedDB.users.GetAllUsers()
+
 			
-			self._queries.append(["SELECT","departments","SELECT iddepartments,name,appsessionid FROM departments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","statuses","SELECT idstatuses,name,appsessionid FROM statuses WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","temprigs","SELECT idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid FROM temprigs WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-			self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE archived = 0 and timestamp > \""+str(sharedDB.lastUpdate)+"\""])
-			self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hours FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
-			self._queries.append(["SELECT","hours","SELECT idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM hours WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+				#check if associated list is empty, if so do not use timestamp
+			
+				self._queries.append(["SELECT","departments","SELECT iddepartments,name,appsessionid FROM departments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","statuses","SELECT idstatuses,name,appsessionid FROM statuses WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","phases","SELECT idphases,name,ganttChartBGColor,ganttChartTextColor,manHoursToMinuteRatio,idDepartment,taskPerShot,defaultTaskStatus,appsessionid FROM phases WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","clients","SELECT idclients, name, lasteditedbyname, lasteditedbyip, appsessionid FROM clients WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				
+				self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, archived, budget, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","temprigs","SELECT idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid FROM temprigs WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])							
+				self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","tasks","SELECT idtasks, idphaseassignments, idprojects, idshots, idusers, idphases, timealotted, idsequences, duedate, percentcomplete, approved, timestamp, lasteditedbyname, lasteditedbyip, status, appsessionid FROM tasks WHERE archived = 0 and timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+				self._queries.append(["SELECT","userassignments","SELECT iduserassignments, idusers, idprojects, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hours FROM userassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
+				self._queries.append(["SELECT","hours","SELECT idhours,idusers, idphaseassignments, idprojects, description, hours, date, timestamp, lasteditedbyname, lasteditedbyip, appsessionid FROM hours WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])
 			
 			while True:
 				if len(self._queries)>0:
@@ -163,7 +177,7 @@ class Connection(QObject):
 		# define custom properties
 		self._user = _user
 		self._password = _password
-		self._localhost = '10.9.21.12'
+		self._localhost = '192.168.0.70'
 		self._remotehost = '174.79.161.184'
 		
 		sharedDB.mySQLConnection = self
@@ -285,7 +299,7 @@ class Connection(QObject):
 				else:
 					#create department
 					print "New Department found in database CREATING department: "+str(row[0])
-					myDepartment =sharedDB.departments.Departments(_iddepartments = row[0],_name = row[1])
+					myDepartment = sharedDB.departments.Departments(_iddepartments = row[0],_name = row[1])
 					#add department to department list
 					sharedDB.myDepartments[str(row[0])] = myDepartment
 					
@@ -404,14 +418,14 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myProjects:
 					proj = sharedDB.myProjects[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[14]):
-						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_statusDescription = row[7],_folderLocation = row[8],_fps = row[9],_idclients = row[12], _idips = row[13])
+					if not str(sharedDB.app.sessionId()) == str(row[16]):
+						proj.SetValues(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_archived = row[6],_budget = row[7],_description = row[8],_statusDescription = row[9],_folderLocation = row[10],_fps = row[11],_idclients = row[14], _idips = row[15])
 
 				else:
 					#create project
 					print "New PROJECT found in database CREATING project: "+str(row[0])
 					#sharedDB.myProjects.append(sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_folderLocation = row[7],_fps = row[8],_new = 0))
-					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_description = row[6],_statusDescription = row[7],_folderLocation = row[8],_fps = row[9],_idclients = row[12], _idips = row[13],_new = 0)
+					myProj =sharedDB.projects.Projects(_idprojects = row[0],_name = row[1],_due_date = row[2],_idstatuses = row[3],_renderWidth = row[4],_renderHeight = row[5],_archived = row[6],_budget = row[7],_description = row[8],_statusDescription = row[9],_folderLocation = row[10],_fps = row[11],_idclients = row[14], _idips = row[15],_new = 0)
 					#add project to project list
 					sharedDB.myProjects[str(row[0])] = myProj
 					#iterate through projects
@@ -627,15 +641,15 @@ class Connection(QObject):
 
 				if str(row[0]) in sharedDB.myUserAssignments:
 					assignment = sharedDB.myUserAssignments[str(row[0])]						
-					if not str(sharedDB.app.sessionId()) == str(row[8]):
+					if not str(sharedDB.app.sessionId()) == str(row[9]):
 						#iduserassignmentsidusers, idusers, assignmentid, assignmenttype, idstatuses, timestamp, lasteditedbyname, lasteditedbyip
-						assignment.SetValues(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3], _idstatuses = row[4], _timestamp = row[5], _hours = row[9])
+						assignment.SetValues(_iduserassignments = row[0], _idusers = row[1], _idprojects = row[2], _assignmentid = row[3],_assignmenttype = row[4], _idstatuses = row[5], _timestamp = row[6], _hours = row[10])
 					
 				else:
 				#create User Assignment
 					print "New USER ASSIGNMENT found in database CREATING user assignment id: "+str(row[0])
 					#create instance of user assignment class				
-					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1],_assignmentid = row[2],_assignmenttype = row[3],_idstatuses = row[4],_timestamp = row[5], _hours = row[9])
+					myUserAssignment =sharedDB.userassignments.UserAssignment(_iduserassignments = row[0], _idusers = row[1], _idprojects = row[2], _assignmentid = row[3],_assignmenttype = row[4],_idstatuses = row[5],_timestamp = row[6], _hours = row[10])
 					#add task to task list
 					sharedDB.myUserAssignments[str(row[0])] = myUserAssignment
 					sharedDB.mySQLConnection.newUserAssignmentSignal.emit(str(myUserAssignment._iduserassignments))
@@ -674,12 +688,14 @@ class Connection(QObject):
 				del self._hoursToBeParsed[0]
 					
 			else:
-				if len(sharedDB.myProjects) and sharedDB.initialLoad == 0:
-					print "First Load Complete!"
-					sharedDB.initialLoad=1
-					sharedDB.mySQLConnection.firstLoadComplete.emit()
-					sharedDB.mySQLConnection.firstLoadCompleteInt = 1
 				break
+		
+		if sharedDB.initialLoadComplete == 0:
+			print "First Load Complete!"
+			sharedDB.initialLoadComplete=1
+			sharedDB.mySQLConnection.firstLoadComplete.emit()
+			sharedDB.mySQLConnection.firstLoadCompleteInt = 1
+		
 				
 	
 	def setHost(self, typeString):

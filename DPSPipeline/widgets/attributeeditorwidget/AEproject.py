@@ -62,6 +62,35 @@ class AEProject(QtGui.QWidget):
 	self.statusDescrBox.setLayout(self.statusDescrLayout)
 	self.statusDescrLayout.addWidget(self.statusDescription)
 	
+	
+	#Budget
+	self.budgetBox = QtGui.QGroupBox()
+	self.budgetBox.setFixedHeight(70)
+	self.budgetBox.setTitle("Budget")
+	self.aeprojectlayout.addWidget(self.budgetBox)
+	
+	self.budgetLine = QtGui.QLineEdit("0")
+	validator = QtGui.QIntValidator()
+	self.budgetLine.setValidator(validator)
+	self.budgetLine.textChanged.connect(self.saveBudget)
+	
+	self.budgetLayout = QtGui.QVBoxLayout()
+	self.budgetLayout.setContentsMargins(2,2,2,2)
+	self.budgetBox.setLayout(self.budgetLayout)
+	self.budgetLayout.addWidget(self.budgetLine)
+	
+	#Total Hours Assigned
+	self.hoursBox = QtGui.QGroupBox()
+	self.hoursBox.setFixedHeight(70)
+	self.hoursBox.setTitle("Hours Assigned")
+	self.aeprojectlayout.addWidget(self.hoursBox)
+	
+	self.hoursLine = QtGui.QLabel("0")
+
+	self.hoursLayout = QtGui.QVBoxLayout()
+	self.hoursLayout.setContentsMargins(2,2,2,2)
+	self.hoursBox.setLayout(self.hoursLayout)
+	self.hoursLayout.addWidget(self.hoursLine)	
 
 	#Bottom spacer
 	self.spacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
@@ -97,6 +126,12 @@ class AEProject(QtGui.QWidget):
 		    #set Description
 		    self.statusDescription.blockSignals = 1
 		    
+		    #set Budget
+		    self.budgetLine.setText(str(self._currentProject._budget))
+		    
+		    #set Hours assigned
+		    self.setHoursLine()
+		    
 		    self.statusDescription.setText("")
 		    if self._currentProject._statusDescription is not None:			
 			self.statusDescription.setSource(self._currentProject,'_statusDescription')
@@ -124,8 +159,14 @@ class AEProject(QtGui.QWidget):
 	
 	self._currentProject.setIdstatuses(self.projectStatus.itemData(self.projectStatus.currentIndex()).toString())
     
+    def saveBudget(self):
+	
+	self._currentProject.setBudget(self.budgetLine.text())
         
     def setPrivileges (self):
+	if sharedDB.currentUser._idPrivileges > 1:
+	    self.budgetBox.setHidden(1)
+	    
 	if sharedDB.currentUser._idPrivileges < 2:
 	    self.projectStatus.setEnabled(1)
 	    self.statusDescription.setEnabled(1)
@@ -133,7 +174,16 @@ class AEProject(QtGui.QWidget):
 	    self.projectStatus.setEnabled(0)
 	    self.statusDescription.setEnabled(0)
 	
+    def setHoursLine (self):
+	hours = 0
 	
+	for phase in self._currentProject._phases.values():
+	    hours = hours + int(phase._hoursalotted)
+	    
+	self.hoursLine.setText(str(hours))
+	
+    
+    
     def propogateStatuses(self):
 	self.projectStatus.blockSignals(1)
 	self.projectStatus.clear()

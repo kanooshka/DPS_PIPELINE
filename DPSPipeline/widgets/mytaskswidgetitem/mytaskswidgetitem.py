@@ -179,17 +179,19 @@ class MyTasksWidgetItem(QWidget):
 	
 	self.mytaskwidget.setRowHidden(self._rowItem.row(),1)
 	
-	#if unassigned
-	if self._userassignment is None:
-	    if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self.mytaskwidget.showUnassignedEnabled:
-		#if sharedDB.currentUser._idPrivileges == 2 and self._phaseassignment._iddepartments in sharedDB.currentUser.departments():
-		if sharedDB.currentUser._idPrivileges == 1 or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
-		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
-	else:	
-	    if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self._userassignment.hours() > 0:
-		if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
-		    #self.mytaskwidget._rowItem.row().setHidden(0)
-		    self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
+	if self._project._archived == 0:
+	    
+	    #if unassigned
+	    if self._userassignment is None:
+		if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self.mytaskwidget.showUnassignedEnabled:
+		    #if sharedDB.currentUser._idPrivileges == 2 and self._phaseassignment._iddepartments in sharedDB.currentUser.departments():
+		    if sharedDB.currentUser._idPrivileges == 1 or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
+			self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
+	    else:	
+		if self.mytaskwidget.allowedStatuses.count(int(self._phaseassignment.idstatuses())) and self._userassignment.hours() > 0:
+		    if self._userassignment.idUsers() == sharedDB.currentUser.idUsers() or self.mytaskwidget.showAllUsersEnabled or (self.mytaskwidget.showAllUsersInDepartmentEnabled and str(self._phaseassignment._iddepartments) in str(sharedDB.currentUser.departments())):
+			#self.mytaskwidget._rowItem.row().setHidden(0)
+			self.mytaskwidget.setRowHidden(self._rowItem.row(),0)
 		
 	    
 	self.mytaskwidget.setSortingEnabled(1)

@@ -140,7 +140,8 @@ class XTreeWidgetItem(QTreeWidgetItem):
         self._hoverForeground   = {}
         self._expandedIcon      = {}
         self._dragData          = {}
-        self._fixedHeight       = 0
+        self._fixedHeight       = 0    
+        
         
         # set whether or not the tree widget is editable
         flags = self.flags() | Qt.ItemIsEditable
@@ -1318,6 +1319,8 @@ class XTreeWidget(QTreeWidget):
         self._downState             = None
         self._downColumn            = None
         
+        self._showArchived = False
+        
         palette = self.palette()
         self._hintColor             = palette.color(palette.Disabled, 
                                                     palette.Text)
@@ -1714,6 +1717,13 @@ class XTreeWidget(QTreeWidget):
         collapseAll = menu.addAction( 'Collapse All Projects' )
         collapseAll.triggered.connect(sharedDB.calendarview._myXGanttWidget.collapseAllTrees)
         menu.addSeparator()
+        
+        showArchived = menu.addAction( 'Show Archived' )
+        showArchived.setCheckable(True)
+        showArchived.setChecked(self._showArchived)        
+        showArchived.triggered.connect(self.toggleArchiveVisibility)
+        menu.addSeparator()
+        
         
         #Show/Hide Phases
         phaseFilterMenu = menu.addMenu( 'Show/Hide Phases' )
@@ -3163,6 +3173,9 @@ class XTreeWidget(QTreeWidget):
         
         self.resizeToContents()
         self.update()
+      
+    def toggleArchiveVisibility  (self, action):
+        self._showArchived = not self._showArchived
         
     def togglePhasesByAction( self, action ):
         """

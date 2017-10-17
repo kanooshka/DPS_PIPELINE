@@ -19,13 +19,14 @@ class UserAssignment(QObject):
 	userAssignmentChanged = QtCore.pyqtSignal(QtCore.QString)
 	userAssignmentAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _timestamp = datetime.now(), _hours = 0, _updated = 0, _new = 0):
+	def __init__(self,_iduserassignments = -1, _idusers = -1, _idprojects = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _timestamp = datetime.now(), _hours = 0, _updated = 0, _new = 0):
 		
 		super(QObject, self).__init__()
 		
 		# define custom properties
 		self._iduserassignments      = _iduserassignments
 		self._idusers     	     = _idusers
+		self._idprojects	     = _idprojects
 		self._assignmentid	     = _assignmentid		
 		self._assignmenttype         = _assignmenttype
 		self._idstatuses	     = _idstatuses
@@ -47,7 +48,14 @@ class UserAssignment(QObject):
 			self.connectToDBClasses()
 		
 		self._estimatedHoursLeft           = 0
+		
 		'''
+		# Populates idprojects if empty
+		if self._idprojects == 0:
+			self._idprojects = sharedDB.myPhaseAssignments[str(self._assignmentid)]._idprojects
+			self._updated = 1
+			self.Save()
+		
 		if self.assignmentType() == "phase_assignment":
 			self._scarcityIndex = sharedDB.myPhaseAssignments(str(self._assignmentid))._scarcityIndex
 		else:
@@ -77,7 +85,7 @@ class UserAssignment(QObject):
 	
 	def AddUserAssignmentToDB(self):
 	
-		rows,self._iduserassignments = sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid, hours) VALUES ('"+str(self._idusers)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hours)+"');","commit")	
+		rows,self._iduserassignments = sharedDB.mySQLConnection.query("INSERT INTO userassignments (idusers, idprojects, assignmentid, assignmenttype, idstatuses, lasteditedbyname, lasteditedbyip, appsessionid, hours) VALUES ('"+str(self._idusers)+"', '"+str(self._idprojects)+"', '"+str(self._assignmentid)+"', '"+str(self._assignmenttype)+"', '"+str(self._idstatuses)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hours)+"');","commit")	
 	
 		#self._iduserassignments = sharedDB.mySQLConnection._lastInsertId
 		
@@ -89,14 +97,15 @@ class UserAssignment(QObject):
 	def UpdateUserAssignmentInDB (self):
 		
 		if self.id() is not None:
-			sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
+			sharedDB.mySQLConnection.query("UPDATE userassignments SET idusers = '"+str(self._idusers)+"', idprojects = '"+str(self._idprojects)+"', assignmentid = '"+str(self._assignmentid)+"', assignmenttype = '"+str(self._assignmenttype)+"', idstatuses = '"+str(self._idstatuses)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hours = '"+str(self._hours)+"' WHERE iduserassignments = "+str(self._iduserassignments)+";","commit")
 			self._updated = 0
 
-	def SetValues(self,_iduserassignments = -1, _idusers = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _hours = 0, _timestamp = datetime.now()):
+	def SetValues(self,_iduserassignments = -1, _idusers = -1, _idprojects = -1, _assignmentid = -1, _assignmenttype = '', _idstatuses = 1, _hours = 0, _timestamp = datetime.now()):
 		print ("Downloaded update for UserAssignment '"+str(self._iduserassignments)+"'")
 		
 		self._iduserassignments         = _iduserassignments
 		self._idusers			= _idusers
+		self._idprojects		= _idprojects
 		self._assignmentid		= _assignmentid		
 		self._assignmenttype            = _assignmenttype
 		self._idstatuses		= _idstatuses

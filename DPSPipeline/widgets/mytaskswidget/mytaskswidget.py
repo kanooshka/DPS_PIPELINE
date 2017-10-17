@@ -116,7 +116,7 @@ class MyTasksWidget(QtGui.QTableWidget):
 	
 	self._connectedPhaseAssignments = []
 	
-	if sharedDB.initialLoad:
+	if sharedDB.initialLoadComplete:
 	    self.propogateUI
 	else:
 	    sharedDB.mySQLConnection.firstLoadComplete.connect(self.propogateUI)

@@ -8,7 +8,7 @@ import sharedDB
 
 from projexui import qt
 
-from PyQt4 import QtCore
+from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import QObject
 #import sys
 #timestamp
@@ -21,7 +21,7 @@ class Projects(QObject):
 	statusChanged = QtCore.pyqtSignal(QtCore.QString)
 	projectAdded = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = '',_statusDescription = ''):
+	def __init__(self,_idprojects = -1,_idips = -1,_idclients = -1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '',_renderPriority = 50, _updated = 0,_new = 1,_description = '',_budget = 0, _statusDescription = '',_archived = 0):
 		super(QObject, self).__init__()
 		
 		# define custom properties
@@ -39,6 +39,8 @@ class Projects(QObject):
 		self._statusDescription	     = _statusDescription
 		self._idips		     = _idips
 		self._idclients		     = _idclients
+		self._archived		     = _archived
+		self._budget		     = _budget
 		
 		self._updated                = _updated
 		#self._loadedChanges	     = 0
@@ -64,7 +66,7 @@ class Projects(QObject):
 		
 		sharedDB.mySQLConnection.firstLoadComplete.connect(self.UpdateStartDate)
 		
-		if sharedDB.initialLoad:
+		if sharedDB.initialLoadComplete:
 			self.UpdateStartDate()
 		
 		#Connect new project to UI elements
@@ -172,7 +174,7 @@ class Projects(QObject):
 
 		self.UpdateVisibility()
 
-		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+descr+"', statusDescription = '"+statdescr+"', idips = '"+str(self._idips)+"', idclients = '"+str(self._idclients)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idprojects = '"+str(self._idprojects)+"';","commit")
+		sharedDB.mySQLConnection.query("UPDATE projects SET name = '"+str(name)+"', folderLocation = '"+str(self._folderLocation).replace("\\", "\\\\")+"', idstatuses = '"+str(self._idstatuses)+"', fps = '"+str(self._fps)+"', renderWidth = '"+str(self._renderWidth)+"', renderHeight = '"+str(self._renderHeight)+"', due_date = '"+str(self._due_date)+"', archived = '"+str(self._archived)+"', budget = '"+str(self._budget)+"', renderPriority = '"+str(self._renderPriority)+"', description = '"+descr+"', statusDescription = '"+statdescr+"', idips = '"+str(self._idips)+"', idclients = '"+str(self._idclients)+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"' WHERE idprojects = '"+str(self._idprojects)+"';","commit")
 		#print ("Updating project in DB: "+str(self._idprojects))
 	
 	def AddProjectToDB (self):
@@ -196,7 +198,7 @@ class Projects(QObject):
 		name = self._name.replace("\'","\'\'")
 		#print ("Adding project to DB: "+str(self._idprojects))
 
-		rows,self._idprojects = sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, description, statusDescription, fps, idips, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+name+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+descr+"', '"+statdescr+"', '"+str(self._fps)+"', '"+str(self._idips)+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
+		rows,self._idprojects = sharedDB.mySQLConnection.query("INSERT INTO projects (name, idstatuses, due_date, renderWidth, renderHeight, archived, budget, description, statusDescription, fps, idips, idclients, lasteditedbyname, lasteditedbyip, appsessionid) VALUES ('"+name+"', '"+str(self._idstatuses)+"', '"+str(self._due_date)+"', '"+str(self._renderWidth)+"', '"+str(self._renderHeight)+"', '"+str(self._archived)+"', '"+str(self._budget)+"', '"+descr+"', '"+statdescr+"', '"+str(self._fps)+"', '"+str(self._idips)+"', '"+str(self._idclients)+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"');","commit")
 		
 		#self._idprojects = sharedDB.mySQLConnection._lastInsertId
 	
@@ -205,7 +207,7 @@ class Projects(QObject):
 		#self.projectAdded.emit(str(self._idprojects))
 		
 	
-	def SetValues(self,_idprojects , _idclients = 1, _idips = 1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '', _statusDescription = '' ):
+	def SetValues(self,_idprojects , _idclients = 1, _idips = 1, _name = '', _folderLocation = '', _idstatuses = 1, _fps = 25,_renderWidth = 1280,_renderHeight = 720,_due_date = '', _description = '', _statusDescription = '', _archived = 0, _budget = 0):
 		print ("Downloaded updated for Project '"+str(self._name)+"'")
 		
 		self._idprojects             = _idprojects
@@ -220,6 +222,8 @@ class Projects(QObject):
 		self._due_date               =_due_date
 		self._description	     = _description
 		self._statusDescription	     = _statusDescription
+		self._archived		     = _archived
+		self._budget		     = _budget
 		#self._loadedChanges	     = 1
 		
 		self.UpdateVisibility()
@@ -237,7 +241,8 @@ class Projects(QObject):
 		self._updated = 1
 	
 	def UpdateVisibility(self):
-		if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
+		#if self._idstatuses == 4 or self._idstatuses == 5 or self._idstatuses == 6:
+		if self._archived:
 			self._hidden = True
 		else:
 			self._hidden = False
@@ -276,11 +281,33 @@ class Projects(QObject):
 		sentphase.Save()
 		self._phases[str(sentphase.id())] = sentphase
 	
-	'''	    
-	def getPhaseAssignmentByIDPhases(self, idrequest):
-		for phase in phases:
-			if phase._idphases == idrequest:
-				return phase
-			
-		return 0
-	'''
+	def setArchived(self, a):
+		msg = QtGui.QMessageBox()
+		msg.setIcon(QtGui.QMessageBox.Warning)
+	     
+		msg.setText("Are you sure you wish to archive this project?")
+		msg.setWindowTitle("Are you sure?")
+		msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+		#msg.buttonClicked.connect(self.msgbtn)
+		     
+		retval = msg.exec_()
+		
+		if retval == QtGui.QMessageBox.Ok:
+			#print "value of pressed message box button:", retval		
+			self._archived = a
+			self.UpdateVisibility()
+			self._updated = 1
+			self.emitProjectChanged()
+		
+	
+	#def msgbtn(i):
+	#	print "Button pressed is:",i.text()
+	
+	def setBudget(self, budget = 0):
+		self._budget = budget
+		self._updated = 1
+	
+	
+def getProjectQuery():
+	#self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+	pass

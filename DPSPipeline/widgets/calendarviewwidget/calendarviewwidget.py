@@ -130,6 +130,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			projectXGanttWidgetItem.setName(project._name)
 			
 			viewItem = projectXGanttWidgetItem.viewItem()
+			viewItem._locked = True
+			viewItem.setPrivelages()
 			#viewItem.setText(project._name)
 			
 			#projectXGanttWidgetItem.setHidden(True)
