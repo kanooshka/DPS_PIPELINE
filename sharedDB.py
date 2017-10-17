@@ -1,5 +1,6 @@
 from DPSPipeline.database import clients
 from DPSPipeline.database import ips
+from DPSPipeline.database import departments
 from DPSPipeline.database import projects
 from DPSPipeline.database import phaseAssignments
 from DPSPipeline.database import hours
@@ -26,9 +27,9 @@ myVersion = version.Version("0.1.08")
 #TEST SETTINGS
 ignoreVersion = 0
 testDB = 0
-debugging = 0
+debugging = 1
 disableSaving = 0
-autologin = 0
+autologin = 1
 localDB = 0
 remote = 0
 autoCreateShotTasks = 0
@@ -41,6 +42,7 @@ currentDate = date.today()
 earliestDate = QDate.currentDate().toPyDate()
 
 '''Database Lists'''
+myDepartments = {}
 myStatuses = {}
 myPhases = {}
 myShots = {}
@@ -75,6 +77,6 @@ leftWidget = ''
 rightWidget = ''
 loginWidget = ''
 
-initialLoad = 0
+initialLoadComplete = 0
 
 sel = selection.Selection() 
