@@ -69,15 +69,19 @@ class AEProject(QtGui.QWidget):
 	self.budgetBox.setTitle("Budget")
 	self.aeprojectlayout.addWidget(self.budgetBox)
 	
-	self.budgetLine = QtGui.QLineEdit("0")
-	validator = QtGui.QIntValidator()
-	self.budgetLine.setValidator(validator)
-	self.budgetLine.textChanged.connect(self.saveBudget)
+	self.budgetsb = QtGui.QSpinBox()
+	self.budgetsb.setValue(0)
+	#validator = QtGui.QIntValidator()
+	#self.budgetLine.setValidator(validator)
+	self.budgetsb.setMinimum(0)
+	self.budgetsb.setMaximum(999999999)
+	self.budgetsb.setPrefix("$")
+	self.budgetsb.valueChanged.connect(self.saveBudget)
 	
 	self.budgetLayout = QtGui.QVBoxLayout()
 	self.budgetLayout.setContentsMargins(2,2,2,2)
 	self.budgetBox.setLayout(self.budgetLayout)
-	self.budgetLayout.addWidget(self.budgetLine)
+	self.budgetLayout.addWidget(self.budgetsb)
 	
 	#Total Hours Assigned
 	self.hoursBox = QtGui.QGroupBox()
@@ -127,7 +131,7 @@ class AEProject(QtGui.QWidget):
 		    self.statusDescription.blockSignals = 1
 		    
 		    #set Budget
-		    self.budgetLine.setText(str(self._currentProject._budget))
+		    self.budgetsb.setValue(int(self._currentProject._budget))
 		    
 		    #set Hours assigned
 		    self.setHoursLine()
@@ -161,7 +165,7 @@ class AEProject(QtGui.QWidget):
     
     def saveBudget(self):
 	
-	self._currentProject.setBudget(self.budgetLine.text())
+	self._currentProject.setBudget(self.budgetsb.value())
         
     def setPrivileges (self):
 	if sharedDB.currentUser._idPrivileges > 1:
@@ -178,7 +182,8 @@ class AEProject(QtGui.QWidget):
 	hours = 0
 	
 	for phase in self._currentProject._phases.values():
-	    hours = hours + int(phase._hoursalotted)
+	    if phase._idstatuses != 5 and phase._idstatuses != 6:
+		hours = hours + int(phase._hoursalotted)
 	    
 	self.hoursLine.setText(str(hours))
 	
