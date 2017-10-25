@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-a = Analysis(['application.py'],
+a = Analysis(['Sludge.py'],
              pathex=['\\'],
              hiddenimports=[],
              hookspath=['.'],
@@ -14,7 +14,7 @@ pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='application.exe',
+          name='Sludge.exe',
           debug=False,
           strip=None,
           upx=True,
@@ -25,4 +25,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=None,
                upx=True,
-               name='application')
+               name='Sludge')

@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-a = Analysis(['/Users/Shellane/DPS_PIPELINE/application.py'],
+a = Analysis(['/Users/Shellane/DPS_PIPELINE/Sludge.py'],
              pathex=['\\'],
              hiddenimports=[],
              hookspath=['/Users/Shellane/DPS_PIPELINE/.'],
@@ -30,7 +30,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='application',
+          name='Sludge',
           debug=False,
           strip=None,
           upx=True,
@@ -38,5 +38,5 @@ exe = EXE(pyz,
 		  icon = 'pipe.icns')
 
 app = BUNDLE(exe,
-			 name = 'application.app',
+			 name = 'Sludge.app',
 			 icon = 'pipe.icns')
