@@ -12,7 +12,7 @@ class PhaseAssignments(QObject):
 	userAssigned = QtCore.pyqtSignal()
 	unassignedSignal = QtCore.pyqtSignal(QtCore.QString)
 	
-	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _assigned = 0, _description = '', _timestamp = datetime.now()):
+	def __init__(self,_idphaseassignments = 0,_idphases = 0,_idprojects = -1,_name = '', _startdate = '',_enddate = '',_idstatuses = 1,_progress = 0.0,_archived = 0, _updated = 0, _new = 0, _hoursalotted = 0, _assigned = 0, _description = '', _timestamp = datetime.now()):
 		
 		super(QObject, self).__init__()
 		
@@ -34,7 +34,7 @@ class PhaseAssignments(QObject):
 		
 		self._updated                      = _updated
 		self._new                    	   = _new
-		self._name                         = ''
+		self._name                         = _name
 		self._taskPerShot		   = 1
 		self._type                         = "phaseassignment"
 		self.project                       = None
@@ -104,7 +104,8 @@ class PhaseAssignments(QObject):
 			phase = sharedDB.myPhases[str(self._idphases)]
 
 			self._phase = phase
-			self._name = phase._name
+			if self._name == '' or self._name == 'None' or self._name is None:
+				self._name = phase._name
 			self._taskPerShot = phase._taskPerShot
 			self._iddepartments = phase._iddepartments
 		
@@ -119,7 +120,7 @@ class PhaseAssignments(QObject):
 		
 		descr = self._description.replace("\'","\'\'")	
 		
-		rows,self._idphaseassignments = sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, startdate, enddate, idstatuses, archived, description, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+descr+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
+		rows,self._idphaseassignments = sharedDB.mySQLConnection.query("INSERT INTO phaseassignments (idprojects, idphases, name, startdate, enddate, idstatuses, archived, description, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned) VALUES ('"+str(self._idprojects)+"', '"+str(self._idphases)+"', '"+str(self._name)+"', '"+str(self._startdate)+"', '"+str(self._enddate)+"', '"+str(self._idstatuses)+"', '"+str(self._archived)+"', '"+descr+"', '"+str(sharedDB.currentUser._name)+"', '"+str(sharedDB.mySQLConnection.myIP)+"', '"+str(sharedDB.app.sessionId())+"', '"+str(self._hoursalotted)+"', '"+str(self._assigned)+"');","commit")	
 	
 		#self._idphaseassignments = sharedDB.mySQLConnection._lastInsertId
 	
@@ -138,16 +139,17 @@ class PhaseAssignments(QObject):
 		
 		descr = self._description.replace("\'","\'\'")
 		
-		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hoursalotted = '"+str(self._hoursalotted)+"', assigned = '"+str(self._assigned)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
+		sharedDB.mySQLConnection.query("UPDATE phaseassignments SET idprojects = '"+str(self._idprojects)+"', idphases = '"+str(self._idphases)+"', name = '"+str(self._name)+"', startdate = '"+str(self._startdate)+"', enddate = '"+str(self._enddate)+"', idstatuses = '"+str(self._idstatuses)+"', archived = '"+str(self._archived)+"', description = '"+descr+"', lasteditedbyname = '"+str(sharedDB.currentUser._name)+"', lasteditedbyip = '"+str(sharedDB.mySQLConnection.myIP)+"', appsessionid = '"+str(sharedDB.app.sessionId())+"', hoursalotted = '"+str(self._hoursalotted)+"', assigned = '"+str(self._assigned)+"' WHERE idphaseassignments = "+str(self._idphaseassignments)+";","commit")
 		#print ("Updating phase in DB: "+str(self._idphaseassignments))
 		
 		
-	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _startdate = '', _enddate = '',_idstatuses = 1 ,_archived = 0, _timestamp = '', _hoursalotted = 0, _assigned = 0, _description = ''):
+	def SetValues(self,_idphaseassignments = 0, _idprojects = '', _idphases = 1, _name = '', _startdate = '', _enddate = '',_idstatuses = 1 ,_archived = 0, _timestamp = '', _hoursalotted = 0, _assigned = 0, _description = ''):
 		print ("Downloaded updated for PhaseAssignment '"+str(self._idphaseassignments)+"'")
 		
 		self._idphaseassignments             = _idphaseassignments
 		self._idprojects                   = _idprojects
 		self._idphases         = _idphases
+		self._name		= _name
 		self._startdate               = _startdate
 		self._enddate               = _enddate
 		self._idstatuses               = _idstatuses
@@ -237,6 +239,10 @@ class PhaseAssignments(QObject):
 			idusers.append(str(ua.idUsers()))
 			
 		return idusers
+	
+	def setName(self, newname):
+		self._name = newname
+		self._updated = 1
 	
 	'''
 	def updateAvailability(self):

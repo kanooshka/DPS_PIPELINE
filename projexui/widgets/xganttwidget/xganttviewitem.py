@@ -614,16 +614,21 @@ class XGanttViewItem(QGraphicsRectItem):
 	#elif typ == "project":
         menu	 = QtGui.QMenu()
         
-        lockAction = QtGui.QAction('Locked', None)
-        lockAction.triggered.connect( self.toggleLock )
-        menu.addAction(lockAction)
-        lockAction.setCheckable(True)
-        lockAction.setChecked(self._locked)
+        if self.treeItem()._dbEntry._type == "project" and sharedDB.currentUser._idPrivileges < 2:
+            lockAction = QtGui.QAction('Locked', None)
+            lockAction.triggered.connect( self.toggleLock )
+            menu.addAction(lockAction)
+            lockAction.setCheckable(True)
+            lockAction.setChecked(self._locked)
+        
+        if self.treeItem()._dbEntry._type == "phaseassignment" and sharedDB.currentUser._idPrivileges < 2:
+            renameAction = QtGui.QAction('Rename', None)
+            renameAction.triggered.connect( self.renameDialog )
+            menu.addAction(renameAction)
+          
         #statusAction.setData(dbentry.id())
         #menu.addSeparator()
-        menu.exec_(ev.screenPos())
-        
-        
+        menu.exec_(ev.screenPos())        
     
     def toggleLock(self):       
 
@@ -631,3 +636,11 @@ class XGanttViewItem(QGraphicsRectItem):
         self._locked = not self._locked           
         
         self.setPrivelages()
+        
+    def renameDialog(self):
+        dialog = QtGui.QInputDialog()
+        text, ok = dialog.getText(dialog, ('Rename Phase: '+self.treeItem()._dbEntry.name()), 'Enter new name:                                                                            ')
+		
+        if ok and len(text):
+           self.treeItem()._dbEntry.setName(text)
+    

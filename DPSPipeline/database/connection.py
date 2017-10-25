@@ -48,7 +48,7 @@ class processQueries(QtCore.QThread):
 				self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips"])			
 			
 				self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, archived, budget, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE archived < 1"])			
-				self._queries.append(["SELECT","phaseassignments","SELECT A.idphaseassignments, A.idprojects, A.idphases, A.startdate, A.enddate, A.idstatuses, A.archived, A.description, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid, A.hoursalotted, A.assigned FROM phaseassignments A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
+				self._queries.append(["SELECT","phaseassignments","SELECT A.idphaseassignments, A.idprojects, A.idphases, A.name, A.startdate, A.enddate, A.idstatuses, A.archived, A.description, A.timestamp, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid, A.hoursalotted, A.assigned FROM phaseassignments A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])
 				self._queries.append(["SELECT","temprigs","SELECT A.idtemprigs, A.name, A.idprojects, A.setNumber, A.type, A.status, A.description, A.folderLocation, A.appsessionid FROM temprigs A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])							
 				self._queries.append(["SELECT","sequences","SELECT A.idsequences, A.number, A.idstatuses, A.description, A.timestamp, A.idprojects, A.lasteditedbyname, A.lasteditedbyip, A.appsessionid FROM sequences A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])			
 				self._queries.append(["SELECT","shots","SELECT A.idshots, A.number, A.startframe, A.endframe, A.description, A.idstatuses, A.timestamp, A.idprojects, A.idsequences, A.lasteditedbyname, A.lasteditedbyip, A.shotnotes, A.appsessionid FROM shots A INNER JOIN projects B ON A.idprojects = B.idprojects AND B.archived < 1"])			
@@ -71,7 +71,7 @@ class processQueries(QtCore.QThread):
 				self._queries.append(["SELECT","ips","SELECT idips, name, idclients, lasteditedbyname, lasteditedbyip, appsessionid FROM ips WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 				
 				self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, archived, budget, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
-				self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
+				self._queries.append(["SELECT","phaseassignments","SELECT idphaseassignments,idprojects, idphases, name, startdate, enddate, idstatuses, archived, description, timestamp, lasteditedbyname, lasteditedbyip, appsessionid, hoursalotted, assigned FROM phaseassignments WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 				self._queries.append(["SELECT","temprigs","SELECT idtemprigs, name, idprojects, setNumber, type, status, description, folderLocation, appsessionid FROM temprigs WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])							
 				self._queries.append(["SELECT","sequences","SELECT idsequences, number, idstatuses, description, timestamp, idprojects, lasteditedbyname, lasteditedbyip, appsessionid FROM sequences WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
 				self._queries.append(["SELECT","shots","SELECT idshots, number, startframe, endframe, description, idstatuses, timestamp, idprojects, idsequences, lasteditedbyname, lasteditedbyip, shotnotes, appsessionid FROM shots WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
@@ -486,14 +486,14 @@ class Connection(QObject):
 				
 				if str(row[0]) in sharedDB.myPhaseAssignments:
 					phase = sharedDB.myPhaseAssignments[str(row[0])]
-					if not str(sharedDB.app.sessionId()) == str(row[11]):
-						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_description = row[7],_timestamp = row[8],_hoursalotted = row[12],_assigned = row[13])
+					if not str(sharedDB.app.sessionId()) == str(row[12]):
+						phase.SetValues(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_name = row[3],_startdate = row[4],_enddate = row[5],_idstatuses = row[6],_archived = row[7],_description = row[8],_timestamp = row[9],_hoursalotted = row[13],_assigned = row[14])
 
 				else:
 					#create phase assignment
 					print "New PHASE ASSIGNMENT found in database CREATING phase assignment: "+str(row[0])
 					#create instance of phase assignment class				
-					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_startdate = row[3],_enddate = row[4],_idstatuses = row[5],_archived = row[6],_description = row[7],_timestamp = row[8], _new = 0, _hoursalotted = row[12], _assigned = row[13])
+					myPhase =sharedDB.phaseAssignments.PhaseAssignments(_idphaseassignments = row[0],_idprojects = row[1],_idphases = row[2],_name = row[3], _startdate = row[4],_enddate = row[5],_idstatuses = row[6],_archived = row[7],_description = row[8],_timestamp = row[9], _new = 0, _hoursalotted = row[13], _assigned = row[14])
 					#add phase to phase assignment list
 					sharedDB.myPhaseAssignments[str(row[0])] = myPhase
 					

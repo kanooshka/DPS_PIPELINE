@@ -227,8 +227,8 @@ class CalendarViewWidget(QtGui.QWidget):
 			viewItem.setColor(BGcolor)
 			viewItem.setTextColor(textColor)			
 			
-			childItem.GetDatesFromDBEntry()
-			phase.phaseAssignmentChanged.connect(childItem.GetDatesFromDBEntry)
+			childItem.RefreshFromDB()
+			phase.phaseAssignmentChanged.connect(childItem.RefreshFromDB)
 			
 			parentItem.addChild(childItem)
 			

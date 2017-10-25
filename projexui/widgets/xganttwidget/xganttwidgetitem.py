@@ -210,12 +210,14 @@ class XGanttWidgetItem(XTreeWidgetItem):
         """
         return XGanttViewItem(self)
     
-    def GetDatesFromDBEntry(self):
+    def RefreshFromDB(self):
         if self._dbEntry is not None:
             startDate = self._dbEntry._startdate
             endDate = self._dbEntry._enddate
             self.setDateStart(QDate(startDate.year,startDate.month,startDate.day),True)
 	    self.setDateEnd(QDate(endDate.year,endDate.month,endDate.day),True)
+	    self.setName(self._dbEntry._name)
+	    self.sync()
         
     
     def dataUpdated(self,startdate,enddate):

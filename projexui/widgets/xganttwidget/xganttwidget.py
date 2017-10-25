@@ -649,7 +649,7 @@ class XGanttWidget(QWidget):
 		keepVisible = False
 		for c in range(projectWidgetItem.childCount()):
 		    child = projectWidgetItem.child(c)
-		    if (child._name == phaseName):
+		    if (child._dbEntry._phase._name == phaseName):
 			#projectWidgetItem.setHidden(not visibility)
 			child.setHidden(not visibility)
 			if (visibility):
