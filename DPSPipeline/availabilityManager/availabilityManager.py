@@ -81,7 +81,7 @@ class updateAvailability(QtCore.QThread):
 		    #is it even possible with capacity?
 		    
 		    if pa._phase._capacity * pa._weekdays < int(pa._hoursalotted):
-			pa._phase._availability[str(d)] = 3
+			pa._phase._availability[str(d)] = int(pa._hoursalotted) - (pa._phase._capacity * pa._weekdays)
 		    elif str(d) not in pa._phase._availability:
 			pa._phase._availability[str(d)] = 2	
 		    #print sharedDB.myPhases[str(pa._idphases)]._name + "  " +str(d)
@@ -176,7 +176,7 @@ class updateAvailability(QtCore.QThread):
 		    #print "PA Availability: "+str(pa._availability[str(d)])		    
 		    #print str(pa.id()) + " "+user._name+" "+str(assignedHours)
 		    
-		    book = booking.Booking(_idusers = user.id() , _hours = assignedHours, _idphaseassignments = pa.id())
+		    book = booking.Booking(_idusers = user.id() , _hours = assignedHours, _idphaseassignments = pa.id(), _idprojects = pa._idprojects)
 		    if str(d) in user._bookingDict:
 			user._bookingDict[str(d)].append(book)
 		    else:
@@ -203,12 +203,12 @@ class updateAvailability(QtCore.QThread):
 		#if enddate and still not finished
 		if str(d) == str(pa._enddate):
 		    #print pa._name +" still has hours left"
-		    pa._phase._availability[str(d)] = 3
+		    pa._phase._availability[str(d)] = pa._estimatedHoursLeft
 		    #break
 		#if not possible even at capacity
 		elif pa._phase._capacity * (pa.WeekdaysFromStartDate(d)) < pa._estimatedHoursLeft:
 		    #print pa._name +" Impossible to complete at this point because of " + str(pa._estimatedHoursLeft) + " hours needed over " + str(pa.WeekdaysFromStartDate(d)) + " days"
-		    pa._phase._availability[str(d)] = 3
+		    pa._phase._availability[str(d)] = pa._estimatedHoursLeft - (pa._phase._capacity * (pa.WeekdaysFromStartDate(d)))
 		    #break
 
     def CalculateUserAssignmentAvailablity(self, d, tempUserAssignmentDict):
@@ -247,7 +247,7 @@ class updateAvailability(QtCore.QThread):
 		    #print "PA Availability: "+str(pa._availability[str(d)])
 		    #print str(pa.id()) + " "+user._name+" "+str(assignedHours)
 		    
-		    book = booking.Booking(_idusers = user.id() , _hours = assignedHours, _idphaseassignments = pa.id(), _iduserassignments = ua.id())
+		    book = booking.Booking(_idusers = user.id() , _hours = assignedHours, _idphaseassignments = pa.id(), _iduserassignments = ua.id(), _idprojects = pa._idprojects)
 		    if str(d) in user._bookingDict:
 			user._bookingDict[str(d)].append(book)
 		    else:

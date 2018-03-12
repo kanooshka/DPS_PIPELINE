@@ -67,6 +67,13 @@ class CalendarViewWidget(QtGui.QWidget):
 		self._departmentXGanttWidget.uiGanttSPLT.setSizes(sizes)
 		self._departmentXGanttWidget.uiGanttSPLT.setStretchFactor(0,0)
 		
+		#insert context menu for availability info
+		# setup header
+		self._departmentXGanttWidget.setContextMenuPolicy( Qt.CustomContextMenu )
+		
+		# connect signals
+		self._departmentXGanttWidget.customContextMenuRequested.connect( self.showAvailabilityContextMenu )
+		
 		#sharedDB.mainWindow.setCentralWidget(self._myXGanttWidget)
 		#dockWidget.setWidget(self._myXGanttWidget)
 		#dockWidget.setWindowTitle("Calendar View")
@@ -304,3 +311,86 @@ class CalendarViewWidget(QtGui.QWidget):
 	def UpdateDepartmentGanttDateRange(self):
 		self._departmentXGanttWidget.setDateStart(self._myXGanttWidget.dateStart())
 		self._departmentXGanttWidget.setDateEnd(self._myXGanttWidget.dateEnd())
+	
+	def showAvailabilityContextMenu(self, pos):
+		"""
+		Displays the header menu for this tree widget.
+		
+		:param      pos | <QPoint> || None
+		"""
+		
+		'''
+		header = self.header()
+		index  = header.logicalIndexAt(pos)
+		self._headerIndex = index
+		
+		# show a pre-set menu
+		if self._headerMenu:
+		    menu = self._headerMenu
+		else:
+		    menu = self.createHeaderMenu(index)
+		'''
+		
+		menu = QtGui.QMenu(self)
+	       
+		mappedPos = self._departmentXGanttWidget.viewWidget().mapFromParent(pos)
+		
+		horscrollOffset = self._departmentXGanttWidget.uiGanttVIEW.horizontalScrollBar().value()-10
+		verscrollOffset = self._departmentXGanttWidget.uiGanttVIEW.verticalScrollBar().value()-20
+		headerHeight = self._departmentXGanttWidget.treeWidget().header().height()			
+				
+		date = self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset).toString("yyyy-MM-dd")
+		item = self._departmentXGanttWidget.topLevelItem((verscrollOffset+mappedPos.y()-headerHeight)/self._departmentXGanttWidget.cellHeight())
+		
+		#date = self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset))
+		#Take date and grab booking info for that date
+	       
+		#expandAll = menu.addAction( "Hor POS: " + str(mappedPos.x()))
+		#expandAll = menu.addAction( "DATE: " + str(date))
+		#expandAll = menu.addAction( "Ver Scroll Offset: " + str(verscrollOffset))
+		#expandAll = menu.addAction( "Ver Pos: " + str(mappedPos.y()))
+		
+		#go through the users
+		#if date in booking dict
+		#if booking dict phase assignment in phase
+		#add Project - Phase assignment
+		
+		use = sharedDB.myUsers.values()
+		use.sort(key=operator.attrgetter('_name'),reverse=False)
+		for i in xrange(0, len(use)):
+		    if date in use[i]._bookingDict.keys():
+			bookings = use[i]._bookingDict[str(date)]
+			
+			skip = 1
+			
+			for b in bookings:
+				if item._dbEntry.id() == sharedDB.myPhaseAssignments[str(b.idphaseassignments())]._idphases:
+					skip = 0
+					exec("user_menu%d = QtGui.QMenu(use[i]._name)" % (i + 1))
+					exec("menu.addMenu(user_menu%d)" % (i + 1))
+					break
+			if skip is not 1:
+				for j in xrange(0, len(bookings)):
+					exec("user_menu%d.addAction(%s)" % (i + 1,repr(str(sharedDB.myProjects[str(bookings[j].idprojects())].name()) + ": "+str(sharedDB.myPhaseAssignments[str(bookings[j].idphaseassignments())].name()))))
+		
+		'''
+		for user in sharedDB.myUsers.values():
+			#print date
+			#print user._bookingDict.keys() 
+			if date in user._bookingDict.keys():
+				#print date
+				expandAll = menu.addAction(user.name() + ": " + str(sum(user._bookingDict[str(date)])))		
+		'''
+		#if item._dbEntry._type == "phase":
+		#	phase = item._dbEntry
+		#	for key in phase._availability.keys():			    
+		#		if QDate.fromString(key,"yyyy-MM-dd") == date:		
+		#			expandAll = menu.addAction( "Item: " + str(item._dbEntry.name()))
+		# determine the point to show the menu from
+		#if pos is not None:
+		#    point = header.mapToGlobal(pos)
+		#else:
+		point = QtGui.QCursor.pos()
+		
+		#self.headerMenuAboutToShow.emit(menu)
+		menu.exec_(point)

@@ -281,6 +281,10 @@ class Projects(QObject):
 		sentphase.Save()
 		self._phases[str(sentphase.id())] = sentphase
 	
+	def name(self):
+		return self._name
+	
+	
 	def setArchived(self, a):
 		msg = QtGui.QMessageBox()
 		msg.setIcon(QtGui.QMessageBox.Warning)

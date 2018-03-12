@@ -101,6 +101,7 @@ class XGanttWidget(QWidget):
 	self._unavailableBrush = QBrush(QColor(75,75,75))
 	self._underbookedBrush = QBrush(QColor(255,255,20))
 	self._overbookedBrush = QBrush(QColor(255,25,25))
+	self._overbookedAmount = {}
 	self._unassignedBrush = QBrush(QColor(25,25,255))
 	
 	weekendColor            = color.darker(148)

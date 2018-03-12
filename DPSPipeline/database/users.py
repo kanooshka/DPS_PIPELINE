@@ -54,6 +54,9 @@ class Users():
 	def id(self):
 		return self._idusers
 	
+	def name(self):
+		return self._name
+	
 
 	def Save(self,timestamp):
 		

@@ -45,6 +45,8 @@ class XGanttScene(QGraphicsScene):
         self._labels            = []
         self._dirty             = True
         
+	self._maxOverbooked = 0
+	
         # create connections
         ganttWidget.dateRangeChanged.connect(self.setDirty)
     
@@ -187,9 +189,14 @@ class XGanttScene(QGraphicsScene):
 	    painter.setBrush(gantt.unassignedBrush())
 	    painter.drawRect(rect)
 	
-	for rect in self._overbookedRects:
-	    painter.setBrush(gantt.overbookedBrush())
-	    painter.drawRect(rect)
+	for rect in self._overbookedRects:	    
+	    darkenAmount = 100 + (100*( float(rect[1]) / float(self._maxOverbooked)))
+	    #newBrush = gantt.overbookedBrush()[:]
+	    
+	    #newBrush = newBrush.setColor(newBrush.color().darker(darkenAmount))
+	    painter.setBrush(QBrush(QColor(255,25,25).darker(darkenAmount)))
+	    painter.drawRect(rect[0])
+	    painter.drawText(rect[0], Qt.AlignCenter, str(rect[1]));
     
     def ganttWidget( self ):
         """
@@ -302,6 +309,8 @@ class XGanttScene(QGraphicsScene):
             x += cell_width
             i += 1
 
+	self._maxOverbooked = 0
+
         if gantt._availabilityEnabled:
 	    #iterate through rows
 	    for itemcount in range(0,gantt.topLevelItemCount()):
@@ -318,8 +327,10 @@ class XGanttScene(QGraphicsScene):
 				    self._underbookedRects.append(rect)
 				elif phase._availability[key] == 2:
 				    self._bookedRects.append(rect)
-				elif phase._availability[key] == 3:
-				    self._overbookedRects.append(rect)
+				elif phase._availability[key] > 2:
+				    if self._maxOverbooked < int (phase._availability[key]):
+					self._maxOverbooked = int(phase._availability[key])
+				    self._overbookedRects.append([rect,int(phase._availability[key])])
 			'''
 			for pa in item._dbEntry._phaseAssignments.values():
 			    for key in pa._availability.keys():						    
