@@ -258,6 +258,9 @@ class PhaseAssignments(QObject):
 		#view.syncView()
 	'''
 	
+	def type(self):
+		return self._type
+	
 
 	def updateAssigned(self):
 		for userids in self._userAssignments:

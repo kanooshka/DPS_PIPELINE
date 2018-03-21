@@ -32,6 +32,7 @@ class Users():
 		self._updated                = _updated
 		self._type                   = "user"
 		self._hidden                 = False
+		self._calendarVisibility     = True
 		
 		self._idphaseslist = _idphaseslist
 		self._phases = self._idphaseslist.split(',')

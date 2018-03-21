@@ -1726,7 +1726,7 @@ class XTreeWidget(QTreeWidget):
         
         
         #Show/Hide Phases
-        phaseFilterMenu = menu.addMenu( 'Show/Hide Phases' )
+        phaseFilterMenu = menu.addMenu( 'Phases' )
         phaseFilterMenu.setIcon(QIcon(resources.find('img/columns.png')))
         phaseFilterMenu.addAction('Show All')
         phaseFilterMenu.addAction('Hide All')
@@ -1754,27 +1754,35 @@ class XTreeWidget(QTreeWidget):
         
         phaseFilterMenu.triggered.connect( self.togglePhasesByAction )
         
-        '''#Show/Hide Columns
-        colmenu = menu.addMenu( 'Show/Hide Columns' )
-        colmenu.setIcon(QIcon(resources.find('img/columns.png')))
-        colmenu.addAction('Show All')
-        colmenu.addAction('Hide All')
-        colmenu.addSeparator()
+        #Show/Hide User
+        userFilterMenu = menu.addMenu( 'Users' )
+        userFilterMenu.setIcon(QIcon(resources.find('img/columns.png')))
+        userFilterMenu.addAction('Show All')
+        userFilterMenu.addAction('Hide All')
+        userFilterMenu.addSeparator()
         
-        hitem = self.headerItem()
-        columns = self.columns()
-        for column in sorted(columns):
-            col    = self.column(column)
-            action = colmenu.addAction(column)
+        hitem = self.headerItem()        
+        users = sharedDB.myUsers.values()        
+        users.sort(key=operator.attrgetter('_name'))
+        
+        middleChar = users[len(users)/2]._name[0]
+        
+        AMUserMenu = userFilterMenu.addMenu('A - '+middleChar)
+        NZUserMenu = userFilterMenu.addMenu(chr(ord(middleChar) + 1)+' - Z')
+        
+        for x in range(0,len(users)):
+            user = users[x]
+            #col    = self.column(column)
+            if x<len(users)/2 or user._name[0] == middleChar:
+                action = AMUserMenu.addAction(user._name)
+            else:
+                action = NZUserMenu.addAction(user._name)
+            
             action.setCheckable(True)
-            action.setChecked(not self.isColumnHidden(col))
+            action.setChecked(user._calendarVisibility)
         
-        colmenu.triggered.connect( self.toggleColumnByAction )'''
-        
-        #menu.addSeparator()
-        #export = menu.addAction('Export as...')
-        #export.setIcon(QIcon(resources.find('img/export.png')))
-        #export.triggered.connect(self.exportAs)
+        userFilterMenu.triggered.connect( self.toggleUsersByAction )
+
         
         return menu
     
@@ -3195,6 +3203,29 @@ class XTreeWidget(QTreeWidget):
             state   = action.isChecked()
             #print (action.text() + " = " + str(state))
             sharedDB.calendarview._myXGanttWidget.updatePhaseVisibility(state,action.text())
+
+        
+        self.resizeToContents()
+        self.update()
+    
+    def toggleUsersByAction( self, action ):
+        """
+        Toggles whether or not the column at the inputed action's name should \
+        be hidden.
+        `
+        :param      action | <QAction>
+        """       
+  
+        if ( action.text() == 'Show All' ):
+            #print "Showing All Users"
+            sharedDB.calendarview._myXGanttWidget.updateUserVisibility(True)            
+        elif ( action.text() == 'Hide All' ):
+            sharedDB.calendarview._myXGanttWidget.updateUserVisibility(False)
+            #print "Hiding All Users"
+        else:
+            state   = action.isChecked()
+            #print (action.text() + " = " + str(state))
+            sharedDB.calendarview._myXGanttWidget.updateUserVisibility(state,action.text())
 
         
         self.resizeToContents()

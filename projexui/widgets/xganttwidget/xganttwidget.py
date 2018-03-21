@@ -699,7 +699,81 @@ class XGanttWidget(QWidget):
 	    #print ("Changing all phases to: "+ str(visibility))
 	    
 	self.syncView()
+
+    def updateUserVisibility(self, visibility, username = ''):
+	if (username != ''):
+	    #print ("Changing "+ phaseName + " to : "+ str(visibility))
+	    #iterate through all projects
+	    for x in range(0,self.treeWidget().topLevelItemCount()):
+		projectWidgetItem = self.treeWidget().topLevelItem(x)
+		keepProjectVisible = False
+		for c in range(projectWidgetItem.childCount()):
+		    child = projectWidgetItem.child(c)
+
+		    if (child._dbEntry.type() == "phaseassignment"):
+		   	print "keeping "+ username + " visible."
+			
+			if self.CheckUserAssignmentForUser(child._dbEntry._userAssignments.values(),username):
+			    child.setHidden(not visibility)
+			    if (visibility):
+				keepProjectVisible = True			
+			    
+		    
+		    if (visibility == False and not child.isHidden() and keepProjectVisible == False):
+			keepProjectVisible = True
+		
+		if (keepProjectVisible):
+		    if (projectWidgetItem.isHidden()):
+			projectWidgetItem.setHidden(False)
+		elif (not visibility):
+		    if (not projectWidgetItem.isHidden()):
+			#self.syncView()			
+			for c in range(projectWidgetItem.childCount()):
+			    projectWidgetItem.child(c).setHidden(True)
+			
+			projectWidgetItem.setHidden(True)
+				
+	    #if phase matches, change visibility
+	    
+	    for user in sharedDB.myUsers.values():
+		if (user.name() == username):
+		    user._calendarVisibility = visibility
+	    
+	else:
+	    #iterate through all projects
+	    #iterate through all phases
+	    #change visibility
+	    if visibility == False:
+		self.collapseAllTrees()
+	    
+	    for x in range(0,self.treeWidget().topLevelItemCount()):
+		projectWidgetItem = self.treeWidget().topLevelItem(x)		
+		for c in range(projectWidgetItem.childCount()):
+		    child = projectWidgetItem.child(c)
+		    child.setHidden(not visibility)
+		#self.syncView()
+		projectWidgetItem.setHidden(not visibility)
+		
+	    
+	    for phase in sharedDB.myPhases.values():
+		phase._visible = visibility
+		
+	    for user in sharedDB.myUsers.values():
+		user._calendarVisibility = visibility
+	    
+		
+	    #print ("Changing all phases to: "+ str(visibility))
+  
+	self.syncView()
     
+    def CheckUserAssignmentForUser(self, userAssignments, username):
+	for ua in userAssignments:
+	    if ua._hours > 1 and ua.idUsers() is not None:
+		if (sharedDB.myUsers[str(ua.idUsers())].name() == username):			
+		    return True
+	
+	return False
+
     def viewWidget( self ):
 	"""
 	Returns the view widget for this gantt widget.

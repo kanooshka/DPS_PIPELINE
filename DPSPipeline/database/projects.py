@@ -311,6 +311,8 @@ class Projects(QObject):
 		self._budget = budget
 		self._updated = 1
 	
+	def type(self):
+		return self._type
 	
 def getProjectQuery():
 	#self._queries.append(["SELECT","projects","SELECT idprojects, name, due_date, idstatuses, renderWidth, renderHeight, description, statusDescription, folderLocation, fps, lasteditedbyname, lasteditedbyip, idclients, idips, appsessionid FROM projects WHERE timestamp > \""+str(sharedDB.lastUpdate)+"\""])			
