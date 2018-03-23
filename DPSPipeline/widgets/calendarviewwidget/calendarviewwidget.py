@@ -339,7 +339,7 @@ class CalendarViewWidget(QtGui.QWidget):
 		verscrollOffset = self._departmentXGanttWidget.uiGanttVIEW.verticalScrollBar().value()-20
 		headerHeight = self._departmentXGanttWidget.treeWidget().header().height()			
 				
-		date = self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset).toString("yyyy-MM-dd")
+		datestring = self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset).toString("yyyy-MM-dd")
 		item = self._departmentXGanttWidget.topLevelItem((verscrollOffset+mappedPos.y()-headerHeight)/self._departmentXGanttWidget.cellHeight())
 		
 		#date = self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset))
@@ -358,8 +358,8 @@ class CalendarViewWidget(QtGui.QWidget):
 		use = sharedDB.myUsers.values()
 		use.sort(key=operator.attrgetter('_name'),reverse=False)
 		for i in xrange(0, len(use)):
-		    if date in use[i]._bookingDict.keys():
-			bookings = use[i]._bookingDict[str(date)]
+		    if datestring in use[i]._bookingDict.keys():
+			bookings = use[i]._bookingDict[str(datestring)]
 			
 			skip = 1
 			
@@ -372,6 +372,17 @@ class CalendarViewWidget(QtGui.QWidget):
 			if skip is not 1:
 				for j in xrange(0, len(bookings)):
 					exec("user_menu%d.addAction(%s)" % (i + 1,repr(str(sharedDB.myProjects[str(bookings[j].idprojects())].name()) + ": "+str(sharedDB.myPhaseAssignments[str(bookings[j].idphaseassignments())].name()))))
+		
+		#List Unassigned phase assignments
+		unassigned_menu = QtGui.QMenu("UNASSIGNED")
+		
+		
+		
+		for pa in item._dbEntry._phaseAssignments.values():
+			#if unassigned and date in phase range
+			if not pa.assigned() and pa.visibility() and pa.startDate() <= self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset).toPython() <= pa.endDate():
+				menu.addMenu(unassigned_menu)
+				exec("unassigned_menu.addAction(%s)" % repr(str(sharedDB.myProjects[str(pa.idprojects())].name())))			
 		
 		'''
 		for user in sharedDB.myUsers.values():

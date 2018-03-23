@@ -176,6 +176,9 @@ class PhaseAssignments(QObject):
 		else:
 			self._hidden = False
 	
+	def visibility(self):
+		return not self._hidden
+	
 	'''	
 	def AddTaskToList(self, task):
 		if task._idphaseassignments == self._idphaseassignments:
@@ -195,6 +198,10 @@ class PhaseAssignments(QObject):
 	def name(self):
 		return self._name
 	
+	def idprojects(self):
+		return self._idprojects
+	
+	
 	def idstatuses(self):
 		return self._idstatuses
 	
@@ -202,6 +209,10 @@ class PhaseAssignments(QObject):
 		self._idstatuses = value
 		self._updated = 1
 
+	def startDate(self):
+		return self._startdate
+	
+	
 	def endDate(self):
 		return self._enddate
 	
