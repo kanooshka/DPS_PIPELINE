@@ -382,7 +382,7 @@ class CalendarViewWidget(QtGui.QWidget):
 			#if unassigned and date in phase range
 			if not pa.assigned() and pa.visibility() and pa.startDate() <= self._departmentXGanttWidget.viewWidget().scene().dateAt(mappedPos.x()+horscrollOffset).toPython() <= pa.endDate():
 				menu.addMenu(unassigned_menu)
-				exec("unassigned_menu.addAction(%s)" % repr(str(sharedDB.myProjects[str(pa.idprojects())].name())))			
+				exec("unassigned_menu.addAction(%s)" % repr(str(sharedDB.myProjects[str(pa.idprojects())].name())+": " + pa.name()))			
 		
 		'''
 		for user in sharedDB.myUsers.values():
