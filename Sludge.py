@@ -158,7 +158,7 @@ class MainWindow(QtGui.QMainWindow):
             if not hasattr(sharedDB, 'myWeekliesWidget'):
 		sharedDB.myWeekliesWidget = weeklieswidget.WeekliesWidget(sharedDB.mainWindow)
 		
-	    sharedDB.myWeekliesWidget.CalculateWeeklies()
+	    #sharedDB.myWeekliesWidget.CalculateWeeklies()
 	    sharedDB.myWeekliesWidget.dockWidget.show()
 	if (action.text() == 'Assignments'):		
 	    sharedDB.myAssignmentsWidget.dockWidget.show()

@@ -24,24 +24,131 @@ class WeekliesWidget(QWidget):
         
         self.dateEdit = QtGui.QDateEdit(date.today())
         self.dateEdit.setCalendarPopup(True)
-        self.dateEdit.dateChanged.connect(self.CalculateWeeklies)
+        #self.dateEdit.dateChanged.connect(self.CalculateWeeklies)
+        self.dateEdit.dateChanged.connect(self.PopulateTable)
         topLayout.addWidget(self.dateEdit)
         
+        self.userDropdown = QtGui.QComboBox()       
+        self.userDropdown.currentIndexChanged.connect(self.PopulateTable)
+        topLayout.addWidget(self.userDropdown)
+        
+        '''
         self.textBox = QtGui.QTextEdit()
         self.textDocument = QtGui.QTextDocument()
-        self.textBox.setDocument(self.textDocument)
+        self.textBox.setDocument(self.textDocument)        
+        '''
         
-        mainlay.addWidget(self.textBox)       
+        self.buttonPrint = QtGui.QPushButton('Print', self)
+        self.buttonPrint.clicked.connect(self.handlePrint)
+        self.buttonPreview = QtGui.QPushButton('Preview', self)
+        self.buttonPreview.clicked.connect(self.handlePreview)
+        topLayout.addWidget(self.buttonPrint)
+        topLayout.addWidget(self.buttonPreview,1)
         
-        sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.CalculateWeeklies)        
+        self.table = QtGui.QTableWidget()
+        self.table.setColumnCount(6)
+        self.table.verticalHeader().setVisible(False)
+        mainlay.addWidget(self.table)
+        '''
+        for i,row in enumerate(cur):
+            self.table.insertRow(self.table.rowCount())
+            for j,val in enumerate(row):
+                self.table.setItem(i, j, QtGui.QTableWidgetItem(str(val)))
+        '''
         
-        #self.setWindowFlags(QtCore.Qt.Tool)
+        self.PopulateUsers()
+        #self.PopulateTable()
         
+        #mainlay.addWidget(self.textBox)   
+        
+        #sharedDB.mySQLConnection.newPhaseAssignmentSignal.connect(self.CalculateWeeklies)        
+    
+    def PopulateUsers(self):
+        #for user in user list
+        userList = []
+        
+        for user in sharedDB.myUsers.values():
+            if user.isActive() == 1:
+                userList.extend(user.name())        
+                self.userDropdown.addItem(user.name(),user.idUsers())
+
+        self.userDropdown.model().sort(0)
+    
+    def handlePrint(self):
+        dialog = QtGui.QPrintDialog()
+        if dialog.exec_() == QtGui.QDialog.Accepted:
+            self.handlePaintRequest(dialog.printer())
+        
+    def handlePreview(self):
+        dialog = QtGui.QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec_()    
+    
+    def handlePaintRequest(self, printer):
+        document = self.makeTableDocument()
+        document.print_(printer)
+    
+    def makeTableDocument(self):
+        document = QtGui.QTextDocument()
+        cursor = QtGui.QTextCursor(document)
+        rows = self.table.rowCount()
+        columns = self.table.columnCount()
+        table = cursor.insertTable(rows + 1, columns)
+        format = table.format()
+        format.setHeaderRowCount(1)
+        table.setFormat(format)
+        format = cursor.blockCharFormat()
+        format.setFontWeight(QtGui.QFont.Bold)
+        for column in range(columns):
+            cursor.setCharFormat(format)
+            cursor.insertText(
+                self.table.horizontalHeaderItem(column).text())
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+        for row in range(rows):
+            for column in range(columns):
+                if self.table.item(row, column) is not None:
+                    cursor.insertText(self.table.item(row, column).text())
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+        return document
+    
+    def PopulateTable(self):
+        day = self.dateEdit.date().toPyDate()
+        
+        mon = day - timedelta(days=day.weekday())
+        
+        self.table.setRowCount(0)
+        self.table.setWordWrap(1)
+        
+        
+        dates = [mon,mon + timedelta(days=1),mon + timedelta(days=2),mon + timedelta(days=3),mon + timedelta(days=4)]
+        self.table.setHorizontalHeaderLabels(("","Mon "+mon.strftime("%m/%d/%y"),"Tues "+(mon + timedelta(days=1)).strftime("%m/%d/%y"),"Wed "+(mon + timedelta(days=2)).strftime("%m/%d/%y"),"Thurs "+(mon + timedelta(days=3)).strftime("%m/%d/%y"),"Fri "+(mon + timedelta(days=4)).strftime("%m/%d/%y")))
+    
+        self.table.insertRow(0)
+    
+        #find user then set name column
+        currentUser = sharedDB.myUsers[str(self.userDropdown.itemData(self.userDropdown.currentIndex()).toString())]
+        self.table.setItem(0,0,QtGui.QTableWidgetItem(str(currentUser.name())))
+        
+        #d+1 is column, b is row
+        for d in range(0,len(dates)):
+            #iterate through users bookings
+            if str(dates[d]) in currentUser._bookingDict:
+                bookings = currentUser._bookingDict[str(dates[d])]
+                for b in range(0,len(bookings)):
+                    if b >= self.table.rowCount():
+                         self.table.insertRow(self.table.rowCount())
+                    
+                    #assemble Text
+                    text = sharedDB.myProjects[str(bookings[b].idprojects())].name() + " - " + sharedDB.myPhaseAssignments[str(bookings[b].idphaseassignments())].name()
+                    self.table.setItem(b,d+1,QtGui.QTableWidgetItem(text))
+                    #print bookings[b].idprojects() idphaseassignments
+                
+          
+        self.table.resizeRowsToContents()      
+    '''    
     def CalculateWeeklies(self):
         
         day = self.dateEdit.date().toPyDate()
-
-        #dt = datetime.strptime(day, '%d/%b/%Y')
         
         mon = day - timedelta(days=day.weekday())
         
@@ -147,3 +254,4 @@ class WeekliesWidget(QWidget):
                 text += "<br>"+startTag+dateInfo+"<u>"+sharedDB.myProjects[str(phase._idprojects)]._name+"</u>"+userInfo+additionalInfo+endTag+"\n"
             text += "<br><br>"
         self.textDocument.setHtml(text)
+    '''
